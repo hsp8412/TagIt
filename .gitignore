@@ -47,3 +47,6 @@ GoogleService-Info.plist
 
 # SwiftPM
 .build/
+
+# Xcode Previews
+.previews/
