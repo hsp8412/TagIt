@@ -7,6 +7,8 @@
 
 # Xcode specific
 *.xcworkspace
+
+
 !shared.xcworkspace
 *.xcuserdata
 *.xcodeproj
@@ -50,3 +52,6 @@ GoogleService-Info.plist
 
 # Xcode Previews
 .previews/
+
+Preview\ Content/
+Preview\ Assets.xcassets/
