@@ -12,7 +12,7 @@ struct ContentView: View {
         VStack{
             TopNavView()
             TabView {
-                HomeView()
+                ItemTableView()
                     .tabItem {
                         Label("Home", systemImage: "house.fill")
                     }
