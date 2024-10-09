@@ -11,10 +11,6 @@
 
 !shared.xcworkspace
 *.xcuserdata
-*.xcodeproj
-*.xccheckout
-*.xcscmblueprint
-*.xcscheme
 DerivedData/
 .idea/
 
