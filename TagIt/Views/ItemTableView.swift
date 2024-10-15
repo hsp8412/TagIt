@@ -18,11 +18,9 @@ struct ItemTableView: View {
                     ItemView(item: item)
                 }
             }
-            //.navigationTitle("All Item List")
+            .navigationTitle("All Item List")
         }
         .searchable(text: $searchText, prompt: "Looking for a product or grocery store?")
-        
-        Spacer()
     }
     
     var searchResult: [TableItem] {

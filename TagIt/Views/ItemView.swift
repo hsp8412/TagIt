@@ -48,15 +48,17 @@ struct ItemView: View {
                     }
                 }
                 
-                Image(systemName: item.productImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 100)
+                AsyncImage(url: URL(string: item.productImage)) { image in
+                    image.image?.resizable()
+                }
+                .scaledToFit()
+                .frame(width: 120, height: 120)
+                .clipShape(.rect(cornerRadius: 25))
             }
         }
     }
 }
 
 #Preview {
-    ItemView(item: TableItem(username: "Alice", time: "2h", productName: "Carrot", price: "3.00", comment: "Carrots on sale! This is the best offer!", location: "Freshco", userImage: "person.circle.fill", productImage: "pills.fill"))
+    ItemView(item: TableItem(username: "Alice", time: "2h", productName: "Carrot", price: "3.00", comment: "Carrots on sale! This is the best offer!", location: "Freshco", userImage: "person.circle.fill", productImage: "https://i.imgur.com/8ciNZcY.jpeg"))
 }
