@@ -42,7 +42,7 @@ struct TopNavView: View {
             .padding(.trailing, 16)
         }
         .frame(height: 60)
-        .background(.white)
+        .background(.topNavBG)
         .foregroundColor(.black)
         .shadow(color: Color.gray.opacity(0.2), radius: 5, x: 3, y: 3)
     }
