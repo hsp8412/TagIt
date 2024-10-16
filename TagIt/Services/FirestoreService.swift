@@ -32,7 +32,7 @@ class FirestoreService {
             UserProfile(userId: "user1", email: "user1@example.com", displayName: "User One", avatarURL: nil),
             UserProfile(userId: "user2", email: "user2@example.com", displayName: "User Two", avatarURL: "https://example.com/avatar2.jpg")
         ]
-        initializeCollection(collectionName: FirestoreCollections.userProfile, initialData: userProfileData) { error in
+        initializeCollection(collectionName: FirestoreCollections.user, initialData: userProfileData) { error in
             if let error = error {
                 print("Error initializing UserProfile collection: \(error.localizedDescription)")
             } else {
@@ -58,7 +58,7 @@ class FirestoreService {
             BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", commentIDs: ["comment1", "comment3"], barcodeNumber: "1234567890123"),
             BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", commentIDs: ["comment2", "comment4"], barcodeNumber: "9876543210987")
         ]
-        initializeCollection(collectionName: FirestoreCollections.barcodeItemReview, initialData: barcodeItemReviewData) { error in
+        initializeCollection(collectionName: FirestoreCollections.revItem, initialData: barcodeItemReviewData) { error in
             if let error = error {
                 print("Error initializing BarcodeItemReview collection: \(error.localizedDescription)")
             } else {
@@ -71,7 +71,7 @@ class FirestoreService {
             ReviewStars(id: nil, barcodeNumber: "1234567890123", reviewStars: 4.5, productName: "Product 1"),
             ReviewStars(id: nil, barcodeNumber: "9876543210987", reviewStars: 3.7, productName: "Product 2")
         ]
-        initializeCollection(collectionName: FirestoreCollections.reviewStars, initialData: reviewStarsData) { error in
+        initializeCollection(collectionName: FirestoreCollections.revStars, initialData: reviewStarsData) { error in
             if let error = error {
                 print("Error initializing ReviewStars collection: \(error.localizedDescription)")
             } else {
@@ -84,7 +84,7 @@ class FirestoreService {
             UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", type: 0, upvote: 50, downvote: 2),
             UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", type: 1, upvote: 25, downvote: 5)
         ]
-        initializeCollection(collectionName: FirestoreCollections.userComments, initialData: userCommentsData) { error in
+        initializeCollection(collectionName: FirestoreCollections.userComm, initialData: userCommentsData) { error in
             if let error = error {
                 print("Error initializing UserComments collection: \(error.localizedDescription)")
             } else {
