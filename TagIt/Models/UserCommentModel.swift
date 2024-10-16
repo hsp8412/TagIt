@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Comment: Identifiable, Decodable {
+struct UserComments: Identifiable, Codable {
     @DocumentID var id: String?
     var userID: String
     var commentText: String
@@ -19,12 +19,11 @@ struct Comment: Identifiable, Decodable {
     var downvote: Int
 }
 
-func findCommentByID (id: String) -> Comment? {
-    // Stub
+func findCommentByID (id: String) -> UserComments? {
     let comments = [
-        Comment(id: "CommentID1", userID: "2", commentText: "Comments.", type: 0, upvote: 6, downvote: 7),
-        Comment(id: "CommentID2", userID: "2", commentText: "Comments.", type: 1, upvote: 8, downvote: 9),
-        Comment(id: "CommentID3", userID: "2", commentText: "Comments.", type: 0, upvote: 10, downvote: 11)
+        UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", type: 0, upvote: 6, downvote: 7),
+        UserComments(id: "CommentID2", userID: "2", commentText: "Comments.", type: 1, upvote: 8, downvote: 9),
+        UserComments(id: "CommentID3", userID: "2", commentText: "Comments.", type: 0, upvote: 10, downvote: 11)
     ]
 
     return comments.first {$0.id == id}

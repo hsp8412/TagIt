@@ -9,13 +9,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     FirebaseApp.configure()
       
     // Initialize Firestore collections using FirebaseManager(Commented out as we only need to initialize once)
-//    FirebaseManager.shared.initializeAllCollections { success in
-//        if success {
-//            print("Firebase collections initialized successfully.")
-//        } else {
-//            print("Firebase collections initialization failed.")
-//        }
-//    }
+    FirestoreService.shared.initializeAllCollections { success in
+        if success {
+            print("Firebase collections initialized successfully.")
+        } else {
+            print("Firebase collections initialization failed.")
+        }
+    }
       
     return true
   }
