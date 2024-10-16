@@ -6,9 +6,9 @@
 //
 
 struct FirestoreCollections {
-    static let userProfile = "UserProfile"
+    static let user = "UserProfile"
     static let deals = "Deals"
-    static let barcodeItemReview = "BarcodeItemReview"
-    static let reviewStars = "ReviewStars"
-    static let userComments = "UserComments"
+    static let revItem = "BarcodeItemReview"
+    static let revStars = "ReviewStars"
+    static let userComm = "UserComments"
 }

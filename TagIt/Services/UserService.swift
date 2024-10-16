@@ -10,7 +10,7 @@ import Foundation
 class UserService{
     
     func getUserById(id: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
-        FirestoreService.shared.readDocument(collectionName: FirestoreCollections.userProfile, documentID: id, modelType: UserProfile.self, completion: completion)
+        FirestoreService.shared.readDocument(collectionName: FirestoreCollections.user, documentID: id, modelType: UserProfile.self, completion: completion)
     }
     
 }
