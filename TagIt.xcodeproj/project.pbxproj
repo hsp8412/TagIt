@@ -75,6 +75,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		40851C7B2CC04CAC009AE166 /* Other */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Other; sourceTree = "<group>"; };
 		BF3FBB362CBF37EE00F026FC /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -152,6 +153,7 @@
 		40F8B5EB2C9FA8AF0024C7EF /* TagIt */ = {
 			isa = PBXGroup;
 			children = (
+				40851C7B2CC04CAC009AE166 /* Other */,
 				BF3FBB362CBF37EE00F026FC /* Services */,
 				BF3FBB352CBF37E600F026FC /* Utilities */,
 				BF3FBB2D2CBF374400F026FC /* GoogleService-Info.plist */,
@@ -209,6 +211,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				40851C7B2CC04CAC009AE166 /* Other */,
 				BF3FBB362CBF37EE00F026FC /* Services */,
 			);
 			name = TagIt;
