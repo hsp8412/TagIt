@@ -7,7 +7,12 @@
 
 import Foundation
 
-func getUserById(id:String) -> User? {
-    return nil
+class UserService{
+    
+    func getUserById(id: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
+        FirestoreService.shared.readDocument(collectionName: FirestoreCollections.userProfile, documentID: id, modelType: UserProfile.self, completion: completion)
+    }
+    
 }
+
 

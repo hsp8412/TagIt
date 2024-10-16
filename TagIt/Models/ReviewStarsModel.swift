@@ -8,9 +8,10 @@
 import Foundation
 import FirebaseFirestore
 
-struct ReviewStars: Identifiable, Decodable {
+struct ReviewStars: Identifiable, Codable {
     // UserID
     @DocumentID var id: String?
     var barcodeNumber: String
     var reviewStars: Double
+    var productName: String
 }
