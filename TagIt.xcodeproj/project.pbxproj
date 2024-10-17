@@ -21,6 +21,8 @@
 		4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0D2CB50EF800EB6411 /* MainView.swift */; };
 		4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */; };
 		40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */; };
+		40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BB0CDA2CC0C10F004D070B /* ProfileView.swift */; };
+		40BB0CDD2CC0C462004D070B /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BB0CDC2CC0C462004D070B /* ProfileViewModel.swift */; };
 		40F8B5ED2C9FA8AF0024C7EF /* TagItApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F8B5EC2C9FA8AF0024C7EF /* TagItApp.swift */; };
 		40F8B5EF2C9FA8AF0024C7EF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F8B5EE2C9FA8AF0024C7EF /* ContentView.swift */; };
 		40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40F8B5F02C9FA8B10024C7EF /* Assets.xcassets */; };
@@ -59,6 +61,8 @@
 		4086FD0D2CB50EF800EB6411 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRecoveryViewModel.swift; sourceTree = "<group>"; };
+		40BB0CDA2CC0C10F004D070B /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		40BB0CDC2CC0C462004D070B /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		40F8B5E92C9FA8AF0024C7EF /* TagIt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TagIt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40F8B5EC2C9FA8AF0024C7EF /* TagItApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItApp.swift; sourceTree = "<group>"; };
 		40F8B5EE2C9FA8AF0024C7EF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -118,6 +122,7 @@
 				4086FD0D2CB50EF800EB6411 /* MainView.swift */,
 				5DB3653F2CBEEC2000424571 /* DealView.swift */,
 				5DB365432CBEECC500424571 /* DealDetailView.swift */,
+				40BB0CDA2CC0C10F004D070B /* ProfileView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -130,6 +135,7 @@
 				5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */,
 				40171D0B2CC06C27002E146C /* RegisterViewModel.swift */,
 				40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */,
+				40BB0CDC2CC0C462004D070B /* ProfileViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -307,8 +313,10 @@
 				4086FCF82CB47DDD00EB6411 /* NewDealView.swift in Sources */,
 				4086FCF42CB47D9600EB6411 /* HomeView.swift in Sources */,
 				40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */,
+				40BB0CDD2CC0C462004D070B /* ProfileViewModel.swift in Sources */,
 				5DB365402CBEEC2000424571 /* DealView.swift in Sources */,
 				90294B7C2CB60EE4006FAE3A /* ItemView.swift in Sources */,
+				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				40F8B5EF2C9FA8AF0024C7EF /* ContentView.swift in Sources */,
 				5DB364892CBED87500424571 /* DealModel.swift in Sources */,
