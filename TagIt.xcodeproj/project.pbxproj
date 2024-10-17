@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		40171D0C2CC06C27002E146C /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40171D0B2CC06C27002E146C /* RegisterViewModel.swift */; };
 		4086FCF42CB47D9600EB6411 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FCF32CB47D9600EB6411 /* HomeView.swift */; };
 		4086FCF62CB47DB000EB6411 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FCF52CB47DB000EB6411 /* SearchView.swift */; };
 		4086FCF82CB47DDD00EB6411 /* NewDealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FCF72CB47DDD00EB6411 /* NewDealView.swift */; };
@@ -19,6 +20,7 @@
 		4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */; };
 		4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0D2CB50EF800EB6411 /* MainView.swift */; };
 		4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */; };
+		40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */; };
 		40F8B5ED2C9FA8AF0024C7EF /* TagItApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F8B5EC2C9FA8AF0024C7EF /* TagItApp.swift */; };
 		40F8B5EF2C9FA8AF0024C7EF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F8B5EE2C9FA8AF0024C7EF /* ContentView.swift */; };
 		40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40F8B5F02C9FA8B10024C7EF /* Assets.xcassets */; };
@@ -42,6 +44,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		40171D0B2CC06C27002E146C /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		4086FCF32CB47D9600EB6411 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		4086FCF52CB47DB000EB6411 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		4086FCF72CB47DDD00EB6411 /* NewDealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDealView.swift; sourceTree = "<group>"; };
@@ -54,6 +57,7 @@
 		4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		4086FD0D2CB50EF800EB6411 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRecoveryViewModel.swift; sourceTree = "<group>"; };
 		40F8B5E92C9FA8AF0024C7EF /* TagIt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TagIt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40F8B5EC2C9FA8AF0024C7EF /* TagItApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItApp.swift; sourceTree = "<group>"; };
 		40F8B5EE2C9FA8AF0024C7EF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -122,6 +126,8 @@
 				4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */,
 				4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */,
 				5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */,
+				40171D0B2CC06C27002E146C /* RegisterViewModel.swift */,
+				40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -282,6 +288,7 @@
 				4086FD0A2CB5088800EB6411 /* RegisterView.swift in Sources */,
 				BF3FBB2E2CBF375300F026FC /* GoogleService-Info.plist in Sources */,
 				5DB365362CBEDD0F00424571 /* UserProfileModel.swift in Sources */,
+				40171D0C2CC06C27002E146C /* RegisterViewModel.swift in Sources */,
 				5DB365382CBEDE5300424571 /* BarcodeItemReviewModel.swift in Sources */,
 				5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */,
 				4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */,
@@ -295,6 +302,7 @@
 				4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */,
 				4086FCF82CB47DDD00EB6411 /* NewDealView.swift in Sources */,
 				4086FCF42CB47D9600EB6411 /* HomeView.swift in Sources */,
+				40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */,
 				5DB365402CBEEC2000424571 /* DealView.swift in Sources */,
 				90294B7C2CB60EE4006FAE3A /* ItemView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
