@@ -22,8 +22,8 @@ struct TopNavView: View {
                 .fontWeight(.bold)
                 .foregroundColor(Color.gray)
                 .padding(.leading, 10)
-                
-                
+            
+            
             Spacer() // Push items to the right
             
             // Navigation items
@@ -33,11 +33,13 @@ struct TopNavView: View {
                     .scaledToFit()
                     .frame(width: 40, height: 40)
                     .foregroundStyle(.gray)
-                Image(systemName: "person.circle.fill") // Replace "applelogo" with your desired SF Symbol
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .foregroundStyle(.gray)
+                NavigationLink(destination: ProfileView()) {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                        .foregroundStyle(.gray)
+                }
             }
             .padding(.trailing, 16)
         }
