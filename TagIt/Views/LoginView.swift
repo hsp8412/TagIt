@@ -35,6 +35,7 @@ struct LoginView: View {
                             .cornerRadius(10)
                             .padding(.horizontal, 40)
                             .shadow(radius: 5)
+                            .autocapitalization(.none)
                         
                         SecureField("Password", text: $viewModel.password)
                             .padding()
@@ -42,6 +43,7 @@ struct LoginView: View {
                             .cornerRadius(10)
                             .padding(.horizontal, 40)
                             .shadow(radius: 5)
+                            .autocapitalization(.none)
                     }.padding(.top, 30)
                     
                     NavigationLink(destination: PasswordRecoveryView()) {
@@ -52,17 +54,31 @@ struct LoginView: View {
                             .fontWeight(.light)
                             .padding(.top, 10)
                     }
+                    
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .padding(.horizontal)
+                    }
+                    
+                    
                     Button(action: {
-                        print("Button was tapped!")
+                        viewModel.login()
                     }) {
-                        
-                        Text("Login")
-                            .padding(.horizontal,20)
-                            .padding(.vertical, 15)
-                            .background(.white)
-                            .foregroundColor(.green)
-                            .cornerRadius(25)
+                        if viewModel.isLoading {
+                            ProgressView()
+                        }
+                        else{
+                            Text("Login")
+                                .padding(.horizontal,20)
+                                .padding(.vertical, 15)
+                                .background(.white)
+                                .foregroundColor(.green)
+                                .cornerRadius(25)
+                        }
                     }.padding(.top, 20)
+                    
+                    
                     HStack{
                         Text("New here?")
                             .foregroundStyle(.white)
@@ -76,6 +92,7 @@ struct LoginView: View {
             }
         }
         .dismissKeyboardOnTap()
+        .tint(.white)
     }
 }
 
