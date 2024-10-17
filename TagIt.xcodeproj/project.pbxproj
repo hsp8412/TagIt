@@ -41,6 +41,7 @@
 		90294B7C2CB60EE4006FAE3A /* ItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90294B7B2CB60EE4006FAE3A /* ItemView.swift */; };
 		9077461D2CB60C54007E17C2 /* ItemTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9077461C2CB60C54007E17C2 /* ItemTableView.swift */; };
 		BF3FBB2E2CBF375300F026FC /* GoogleService-Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = BF3FBB2D2CBF374400F026FC /* GoogleService-Info.plist */; };
+		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,7 @@
 		90294B7B2CB60EE4006FAE3A /* ItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemView.swift; sourceTree = "<group>"; };
 		9077461C2CB60C54007E17C2 /* ItemTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableView.swift; sourceTree = "<group>"; };
 		BF3FBB2D2CBF374400F026FC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -184,6 +186,7 @@
 		90294B702CB60DF8006FAE3A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */,
 				90294B712CB60E13006FAE3A /* TableModel.swift */,
 				5DB364882CBED87500424571 /* DealModel.swift */,
 				5DB365352CBEDD0F00424571 /* UserProfileModel.swift */,
@@ -289,6 +292,7 @@
 				BF3FBB2E2CBF375300F026FC /* GoogleService-Info.plist in Sources */,
 				5DB365362CBEDD0F00424571 /* UserProfileModel.swift in Sources */,
 				40171D0C2CC06C27002E146C /* RegisterViewModel.swift in Sources */,
+				BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */,
 				5DB365382CBEDE5300424571 /* BarcodeItemReviewModel.swift in Sources */,
 				5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */,
 				4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */,

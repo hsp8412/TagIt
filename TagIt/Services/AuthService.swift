@@ -64,8 +64,8 @@ class AuthService {
 
     
     // Insert a new user record in Firestore
-    private func insertUserRecord(id: String, displayName: String, email: String, avatarURL: String) {
-        let newUser = User(id: id, email: email, displayName: displayName,avatarURL: avatarURL )
+    private func insertUserRecord(id: String, displayName: String, email: String, avatarURL: String?) {
+        let newUser = UserProfile(userId: id, email: email, displayName: displayName, avatarURL: avatarURL )
         let db = Firestore.firestore()
         
         db.collection("UserProfile")
