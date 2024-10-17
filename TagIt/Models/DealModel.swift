@@ -18,6 +18,6 @@ struct Deal: Identifiable, Codable {
     var location: String
     var date: String
     var commentIDs: [String]
-//    var upvote: Int
-//    var downvote: Int
+    var upvote: Int
+    var downvote: Int
 }
