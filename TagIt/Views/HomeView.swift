@@ -31,7 +31,7 @@ struct HomeView: View {
     
     private func loadUserProfile() {
         // Listen for the auth state to get the current user's ID
-        AuthService.shared.addAuthStateChangeListener { userId in
+       _ = AuthService.shared.addAuthStateChangeListener { userId in
             if let userId = userId {
                 userService.getUserById(id: userId) { result in
                     switch result {
