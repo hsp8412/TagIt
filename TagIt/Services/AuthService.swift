@@ -62,6 +62,24 @@ class AuthService {
         }
     }
 
+    // Function to create a dummy user (with a known email and password)
+    func createDummyUser(withEmail email: String, password: String, displayName: String, avatarURL: String?, completion: @escaping (Result<String, Error>) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                completion(.failure(error)) // Return the error if registration fails
+                return
+            }
+
+            guard let userId = result?.user.uid else {
+                completion(.failure(NSError(domain: "RegistrationError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get user ID"])))
+                return
+            }
+
+            // Insert the user profile data into Firestore after registration
+            self.insertUserRecord(id: userId, displayName: displayName, email: email, avatarURL: avatarURL)
+            completion(.success(userId)) // Return userId if successful
+        }
+    }
     
     // Insert a new user record in Firestore
     private func insertUserRecord(id: String, displayName: String, email: String, avatarURL: String?) {
