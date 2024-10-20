@@ -27,71 +27,91 @@ class FirestoreService {
         - completion: A closure that returns a `Bool` indicating success or failure.
      */
     func initializeAllCollections(completion: @escaping (Bool) -> Void) {
-        // Initialize UserProfile collection
-        let userProfileData: [UserProfile] = [
-            UserProfile(userId: "user1", email: "user1@example.com", displayName: "User One", avatarURL: nil),
-            UserProfile(userId: "user2", email: "user2@example.com", displayName: "User Two", avatarURL: "https://example.com/avatar2.jpg")
-        ]
-        initializeCollection(collectionName: FirestoreCollections.user, initialData: userProfileData) { error in
-            if let error = error {
-                print("Error initializing UserProfile collection: \(error.localizedDescription)")
-            } else {
-                print("UserProfile collection initialized successfully!")
+        let group = DispatchGroup()
+
+        // Create user1 using AuthService and store in Firebase Auth and Firestore
+        group.enter()
+        AuthService.shared.createDummyUser(withEmail: "user1@example.com", password: "password123", displayName: "User One", avatarURL: nil) { result in
+            switch result {
+            case .success(let userId):
+                print("Created dummy user1: \(userId)")
+            case .failure(let error):
+                print("Failed to create dummy user1: \(error.localizedDescription)")
             }
+            group.leave()
         }
 
-        // Initialize Deals collection
-        let dealsData: [Deal] = [
-            Deal(id: "deal1", userID: "user1", photoURL: "https://example.com/photo1.jpg", productText: "Product 1", postText: "50% off on Product 1", price: 9.99, location: "Store A", date: "2024-10-15", commentIDs: ["comment1", "comment2"], upvote: 20, downvote: 10),
-            Deal(id: "deal2", userID: "user2", photoURL: "https://example.com/photo2.jpg", productText: "Product 2", postText: "30% off on Product 2", price: 19.99, location: "Store B", date: "2024-10-14", commentIDs: ["comment3", "comment4"], upvote: 2, downvote: 25)
-        ]
-        initializeCollection(collectionName: FirestoreCollections.deals, initialData: dealsData) { error in
-            if let error = error {
-                print("Error initializing Deals collection: \(error.localizedDescription)")
-            } else {
-                print("Deals collection initialized successfully!")
+        // Create user2 using AuthService and store in Firebase Auth and Firestore
+        group.enter()
+        AuthService.shared.createDummyUser(withEmail: "user2@example.com", password: "password123", displayName: "User Two", avatarURL: "https://example.com/avatar2.jpg") { result in
+            switch result {
+            case .success(let userId):
+                print("Created dummy user2: \(userId)")
+            case .failure(let error):
+                print("Failed to create dummy user2: \(error.localizedDescription)")
             }
+            group.leave()
         }
 
-        // Initialize BarcodeItemReview collection
-        let barcodeItemReviewData: [BarcodeItemReview] = [
-            BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", commentIDs: ["comment1", "comment3"], barcodeNumber: "1234567890123"),
-            BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", commentIDs: ["comment2", "comment4"], barcodeNumber: "9876543210987")
-        ]
-        initializeCollection(collectionName: FirestoreCollections.revItem, initialData: barcodeItemReviewData) { error in
-            if let error = error {
-                print("Error initializing BarcodeItemReview collection: \(error.localizedDescription)")
-            } else {
-                print("BarcodeItemReview collection initialized successfully!")
-            }
-        }
+        group.notify(queue: .main) {
+            // After creating the users, initialize the other collections
 
-        // Initialize ReviewStars collection
-        let reviewStarsData: [ReviewStars] = [
-            ReviewStars(id: nil, barcodeNumber: "1234567890123", reviewStars: 4.5, productName: "Product 1"),
-            ReviewStars(id: nil, barcodeNumber: "9876543210987", reviewStars: 3.7, productName: "Product 2")
-        ]
-        initializeCollection(collectionName: FirestoreCollections.revStars, initialData: reviewStarsData) { error in
-            if let error = error {
-                print("Error initializing ReviewStars collection: \(error.localizedDescription)")
-            } else {
-                print("ReviewStars collection initialized successfully!")
+            // Initialize Deals collection
+            let dealsData: [Deal] = [
+                Deal(id: "deal1", userID: "user1", photoURL: "https://example.com/photo1.jpg", productText: "Product 1", postText: "50% off on Product 1", price: 9.99, location: "Store A", date: "2024-10-15", commentIDs: ["comment1", "comment2"], upvote: 20, downvote: 10),
+                Deal(id: "deal2", userID: "user2", photoURL: "https://example.com/photo2.jpg", productText: "Product 2", postText: "30% off on Product 2", price: 19.99, location: "Store B", date: "2024-10-14", commentIDs: ["comment3", "comment4"], upvote: 2, downvote: 25)
+            ]
+            self.initializeCollection(collectionName: FirestoreCollections.deals, initialData: dealsData) { error in
+                if let error = error {
+                    print("Error initializing Deals collection: \(error.localizedDescription)")
+                } else {
+                    print("Deals collection initialized successfully!")
+                }
             }
-        }
 
-        // Initialize UserComments collection
-        let userCommentsData: [UserComments] = [
-            UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", type: 0, upvote: 50, downvote: 2),
-            UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", type: 1, upvote: 25, downvote: 5)
-        ]
-        initializeCollection(collectionName: FirestoreCollections.userComm, initialData: userCommentsData) { error in
-            if let error = error {
-                print("Error initializing UserComments collection: \(error.localizedDescription)")
-            } else {
-                print("UserComments collection initialized successfully!")
+            // Initialize BarcodeItemReview collection
+            let barcodeItemReviewData: [BarcodeItemReview] = [
+                BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", commentIDs: ["comment1", "comment3"], barcodeNumber: "1234567890123"),
+                BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", commentIDs: ["comment2", "comment4"], barcodeNumber: "9876543210987")
+            ]
+            self.initializeCollection(collectionName: FirestoreCollections.revItem, initialData: barcodeItemReviewData) { error in
+                if let error = error {
+                    print("Error initializing BarcodeItemReview collection: \(error.localizedDescription)")
+                } else {
+                    print("BarcodeItemReview collection initialized successfully!")
+                }
             }
+
+            // Initialize ReviewStars collection
+            let reviewStarsData: [ReviewStars] = [
+                ReviewStars(id: nil, barcodeNumber: "1234567890123", reviewStars: 4.5, productName: "Product 1"),
+                ReviewStars(id: nil, barcodeNumber: "9876543210987", reviewStars: 3.7, productName: "Product 2")
+            ]
+            self.initializeCollection(collectionName: FirestoreCollections.revStars, initialData: reviewStarsData) { error in
+                if let error = error {
+                    print("Error initializing ReviewStars collection: \(error.localizedDescription)")
+                } else {
+                    print("ReviewStars collection initialized successfully!")
+                }
+            }
+
+            // Initialize UserComments collection
+            let userCommentsData: [UserComments] = [
+                UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", type: 0, upvote: 50, downvote: 2),
+                UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", type: 1, upvote: 25, downvote: 5)
+            ]
+            self.initializeCollection(collectionName: FirestoreCollections.userComm, initialData: userCommentsData) { error in
+                if let error = error {
+                    print("Error initializing UserComments collection: \(error.localizedDescription)")
+                } else {
+                    print("UserComments collection initialized successfully!")
+                }
+            }
+
+            completion(true)
         }
     }
+
 
     /**
      Initializes a Firestore collection with predefined data.
