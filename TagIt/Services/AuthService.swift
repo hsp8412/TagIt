@@ -61,7 +61,7 @@ class AuthService {
             completion(.success(userId)) // Registration successful, return userId
         }
     }
-
+    
     // Function to create a dummy user (with a known email and password)
     func createDummyUser(withEmail email: String, password: String, displayName: String, avatarURL: String?, completion: @escaping (Result<String, Error>) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
@@ -69,12 +69,12 @@ class AuthService {
                 completion(.failure(error)) // Return the error if registration fails
                 return
             }
-
+            
             guard let userId = result?.user.uid else {
                 completion(.failure(NSError(domain: "RegistrationError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get user ID"])))
                 return
             }
-
+            
             // Insert the user profile data into Firestore after registration
             self.insertUserRecord(id: userId, displayName: displayName, email: email, avatarURL: avatarURL)
             completion(.success(userId)) // Return userId if successful
@@ -97,9 +97,11 @@ enum AuthError: Error {
     case userNotFound
     case invalidEmail
     case unknownError
-
+    case invalidCredential
+    
     static func from(error: Error) -> AuthError {
         let nsError = error as NSError
+        print(nsError)
         switch nsError.code {
         case AuthErrorCode.wrongPassword.rawValue:
             return .wrongPassword
@@ -107,14 +109,16 @@ enum AuthError: Error {
             return .userNotFound
         case AuthErrorCode.invalidEmail.rawValue:
             return .invalidEmail
+        case AuthErrorCode.invalidCredential.rawValue:
+            return .invalidCredential
         default:
             return .unknownError
         }
     }
-
+    
     var localizedDescription: String {
         switch self {
-        case .wrongPassword, .userNotFound, .invalidEmail:
+        case .wrongPassword, .userNotFound, .invalidEmail, .invalidCredential:
             return "Invalid credentials. Please check your email and password."
         case .unknownError:
             return "An unknown error occurred. Please try again."
