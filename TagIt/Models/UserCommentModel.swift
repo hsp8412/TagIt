@@ -18,13 +18,3 @@ struct UserComments: Identifiable, Codable {
     var upvote: Int
     var downvote: Int
 }
-
-func findCommentByID (id: String) -> UserComments? {
-    let comments = [
-        UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", type: 0, upvote: 6, downvote: 7),
-        UserComments(id: "CommentID2", userID: "2", commentText: "Comments.", type: 1, upvote: 8, downvote: 9),
-        UserComments(id: "CommentID3", userID: "2", commentText: "Comments.", type: 0, upvote: 10, downvote: 11)
-    ]
-
-    return comments.first {$0.id == id}
-}
