@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var user: UserProfile?
+    @StateObject var userService = UserService.shared // Reference the singleton instance
     @State private var isLoading = true
     @State private var errorMessage: String?
-    let userService = UserService()
-    
+
     var body: some View {
         VStack {
-            if let user = user {
+            if let user = userService.userProfile {
                 Text("Welcome, \(user.displayName)")
             } else if isLoading {
                 ProgressView()
@@ -28,21 +27,13 @@ struct HomeView: View {
             loadUserProfile()
         }
     }
-    
+
     private func loadUserProfile() {
         // Listen for the auth state to get the current user's ID
-       _ = AuthService.shared.addAuthStateChangeListener { userId in
+        _ = AuthService.shared.addAuthStateChangeListener { userId in
             if let userId = userId {
-                userService.getUserById(id: userId) { result in
-                    switch result {
-                    case .success(let fetchedUser):
-                        self.user = fetchedUser
-                        self.isLoading = false
-                    case .failure(let error):
-                        self.errorMessage = "Failed to load user profile: \(error.localizedDescription)"
-                        self.isLoading = false
-                    }
-                }
+                userService.loadUserProfile(userId: userId) // Load the profile via the singleton
+                self.isLoading = false
             } else {
                 // Handle case where user is not logged in
                 self.errorMessage = "User not logged in"
@@ -51,7 +42,6 @@ struct HomeView: View {
         }
     }
 }
-
 
 #Preview {
     HomeView()

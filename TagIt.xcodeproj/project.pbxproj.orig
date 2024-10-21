@@ -318,8 +318,10 @@
 				40BB0CDD2CC0C462004D070B /* ProfileViewModel.swift in Sources */,
 				5DA00C2E2CC5D8730057041E /* CommentView.swift in Sources */,
 				5DB365402CBEEC2000424571 /* DealView.swift in Sources */,
+<<<<<<< HEAD
+=======
 				BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */,
-				90294B7C2CB60EE4006FAE3A /* ItemView.swift in Sources */,
+>>>>>>> main
 				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				5DE8EE072CC5EB45008DF0B2 /* DealDetailandCommentsView.swift in Sources */,

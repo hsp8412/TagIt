@@ -106,5 +106,5 @@ struct CommentView: View {
 }
 
 #Preview {
-    CommentView(comment: UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", type: 0, upvote: 6, downvote: 7))
+    CommentView(comment: UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7))
 }
