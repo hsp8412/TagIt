@@ -1,36 +1,27 @@
-//
-//  Untitled.swift
-//  TagIt
-//
-//  Created by Peter Tran on 2024-10-20.
-//
-
 import FirebaseFirestore
 
-import FirebaseFirestore
-
-/// Service class responsible for handling vote-related operations, such as saving, updating, and deleting votes in Firestore.
+/// Service class responsible for handling vote-related operations for different types of items (comments, deals, reviews).
 class VoteService {
     static let shared = VoteService()
     
-    // init as singleton
     private init() {}
-    
+
     /**
      Handles voting logic for upvoting or downvoting an item. If the user has already voted with the same vote type, it removes the vote (undo).
      If the vote type is opposite, it updates the vote, and if there is no existing vote, it creates a new one.
      
      - Parameters:
         - userId: The unique identifier for the user casting the vote.
-        - itemId: The unique identifier for the item (e.g., a deal) being voted on.
+        - itemId: The unique identifier for the item being voted on.
+        - itemType: The type of item being voted on (e.g., comment, deal, review).
         - voteType: The type of vote being cast (`.upvote` or `.downvote`).
         - completion: A completion handler that returns a `Result<Void, Error>` indicating success or failure.
      */
-    func handleVote(userId: String, itemId: String, voteType: Vote.VoteType, completion: @escaping (Result<Void, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)" // Unique identifier for each vote (userId + itemId)
+    func handleVote(userId: String, itemId: String, itemType: Vote.ItemType, voteType: Vote.VoteType, completion: @escaping (Result<Void, Error>) -> Void) {
+        let voteId = "\(userId)_\(itemId)_\(itemType)" // Unique identifier for each vote (userId + itemId + itemType)
         
         // Check if the user has already voted on this item
-        getUserVote(userId: userId, itemId: itemId) { result in
+        getUserVote(userId: userId, itemId: itemId, itemType: itemType) { result in
             switch result {
             case .success(let existingVote):
                 if let existingVote = existingVote {
@@ -46,7 +37,7 @@ class VoteService {
                         }
                     } else {
                         // If the user clicks the opposite vote, update the vote to the new type
-                        let updatedVote = Vote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType)
+                        let updatedVote = Vote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
                         FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: updatedVote) { error in
                             if let error = error {
                                 completion(.failure(error))
@@ -58,7 +49,7 @@ class VoteService {
                     }
                 } else {
                     // If no vote exists, create a new vote
-                    let newVote = Vote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType)
+                    let newVote = Vote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
                     FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: newVote) { error in
                         if let error = error {
                             completion(.failure(error))
@@ -81,10 +72,11 @@ class VoteService {
      - Parameters:
         - userId: The unique identifier for the user.
         - itemId: The unique identifier for the item being voted on.
+        - itemType: The type of item being voted on (e.g., comment, deal, review).
         - completion: A completion handler that returns a `Result<Vote?, Error>`. The result is `nil` if no vote exists.
      */
-    func getUserVote(userId: String, itemId: String, completion: @escaping (Result<Vote?, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)"
+    func getUserVote(userId: String, itemId: String, itemType: Vote.ItemType, completion: @escaping (Result<Vote?, Error>) -> Void) {
+        let voteId = "\(userId)_\(itemId)_\(itemType)"
         
         // Read the user's vote document from the "Votes" collection
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.votes, documentID: voteId, modelType: Vote.self) { result in
@@ -103,10 +95,11 @@ class VoteService {
      - Parameters:
         - userId: The unique identifier for the user.
         - itemId: The unique identifier for the item.
+        - itemType: The type of item being voted on (e.g., comment, deal, review).
         - completion: A completion handler that returns a `Result<Void, Error>` indicating success or failure.
      */
-    func removeVote(userId: String, itemId: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)"
+    func removeVote(userId: String, itemId: String, itemType: Vote.ItemType, completion: @escaping (Result<Void, Error>) -> Void) {
+        let voteId = "\(userId)_\(itemId)_\(itemType)"
         
         // Delete the user's vote document from the "Votes" collection
         FirestoreService.shared.deleteDocument(collectionName: FirestoreCollections.votes, documentID: voteId) { error in
