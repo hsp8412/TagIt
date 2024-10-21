@@ -13,8 +13,12 @@ struct UserComments: Identifiable, Codable {
     var userID: String
     var commentText: String
     
-    // 0: Deals, 1: Barcode Item
-    var type: Int
+    var commentType: CommentType // Use enum for type instead of Int
     var upvote: Int
     var downvote: Int
+    
+    enum CommentType: Int, Codable {
+        case deal = 0
+        case barcodeItem = 1
+    }
 }
