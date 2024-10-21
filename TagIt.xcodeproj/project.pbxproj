@@ -43,6 +43,7 @@
 		5DE8EE052CC5E59E008DF0B2 /* CommentThreadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8EE042CC5E59E008DF0B2 /* CommentThreadsView.swift */; };
 		5DE8EE072CC5EB45008DF0B2 /* DealDetailandCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8EE062CC5EB45008DF0B2 /* DealDetailandCommentsView.swift */; };
 		BF3FBB2E2CBF375300F026FC /* GoogleService-Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = BF3FBB2D2CBF374400F026FC /* GoogleService-Info.plist */; };
+		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
 
@@ -81,6 +82,7 @@
 		5DE8EE042CC5E59E008DF0B2 /* CommentThreadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentThreadsView.swift; sourceTree = "<group>"; };
 		5DE8EE062CC5EB45008DF0B2 /* DealDetailandCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealDetailandCommentsView.swift; sourceTree = "<group>"; };
 		BF3FBB2D2CBF374400F026FC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -193,6 +195,7 @@
 		90294B702CB60DF8006FAE3A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */,
 				BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */,
 				5DB364882CBED87500424571 /* DealModel.swift */,
 				5DB365352CBEDD0F00424571 /* UserProfileModel.swift */,
@@ -315,6 +318,8 @@
 				40BB0CDD2CC0C462004D070B /* ProfileViewModel.swift in Sources */,
 				5DA00C2E2CC5D8730057041E /* CommentView.swift in Sources */,
 				5DB365402CBEEC2000424571 /* DealView.swift in Sources */,
+				BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */,
+				90294B7C2CB60EE4006FAE3A /* ItemView.swift in Sources */,
 				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				5DE8EE072CC5EB45008DF0B2 /* DealDetailandCommentsView.swift in Sources */,
