@@ -7,7 +7,13 @@
 
 import Foundation
 
-class UserService: ObservableObject{
+class UserService: ObservableObject {
+    // init as singleton
+    static let shared = UserService()
+
+    // Private initializer to prevent creating multiple instances
+    private init() {}
+
     @Published var userProfile: UserProfile?
     @Published var errorMessage: String?
     @Published var isLoading: Bool = false
@@ -30,8 +36,7 @@ class UserService: ObservableObject{
     func getUserById(id: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.user, documentID: id, modelType: UserProfile.self, completion: completion)
     }
-    
-    
 }
+
 
 
