@@ -8,25 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedTab: Int = 0
     var body: some View {
         NavigationView{
             VStack{
                 TopNavView()
-                TabView {
+                TabView(selection: $selectedTab) {
                     DealThreadsView()
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
-                        }
+                        }.tag(0)
                     
                     SearchView()
                         .tabItem {
                             Label("Search", systemImage: "tray.and.arrow.up.fill")
-                        }
+                        }.tag(1)
                     
-                    NewDealView()
+                    NewDealView(selectedTab: $selectedTab)
                         .tabItem {
                             Label("New Deal", systemImage: "plus.circle.fill")
-                        }
+                        }.tag(2)
                     
                     RankingView()
                         .tabItem {
@@ -36,7 +37,7 @@ struct ContentView: View {
                     ProductsView()
                         .tabItem {
                             Label("Products", systemImage: "bag.fill")
-                        }
+                        }.tag(3)
                 }
             }
         }

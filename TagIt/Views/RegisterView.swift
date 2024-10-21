@@ -88,6 +88,9 @@ struct RegisterView: View {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .padding(.horizontal)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
             }
