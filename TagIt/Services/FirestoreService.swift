@@ -292,21 +292,22 @@ class FirestoreService {
         group.enter()
         let votesData: [Vote] = [
             // Votes on Deals (itemType: .deal)
-            Vote(voteId: "user1_deal1", userId: "user1", itemId: "deal1", voteType: .upvote, itemType: .deal),
-            Vote(voteId: "user2_deal1", userId: "user2", itemId: "deal1", voteType: .downvote, itemType: .deal),
-            Vote(voteId: "user1_deal2", userId: "user1", itemId: "deal2", voteType: .upvote, itemType: .deal),
-            Vote(voteId: "user2_deal2", userId: "user2", itemId: "deal2", voteType: .upvote, itemType: .deal),
+            Vote(userId: "user1", itemId: "deal1", voteType: .upvote, itemType: .deal),
+            Vote(userId: "user2", itemId: "deal1", voteType: .downvote, itemType: .deal),
+            Vote(userId: "user1", itemId: "deal2", voteType: .upvote, itemType: .deal),
+            Vote(userId: "user2", itemId: "deal2", voteType: .upvote, itemType: .deal),
             
             // Votes on Comments (itemType: .comment)
-            Vote(voteId: "user1_comment1", userId: "user1", itemId: "comment1", voteType: .upvote, itemType: .comment),
-            Vote(voteId: "user2_comment1", userId: "user2", itemId: "comment1", voteType: .downvote, itemType: .comment),
-            Vote(voteId: "user1_comment2", userId: "user1", itemId: "comment2", voteType: .upvote, itemType: .comment),
-            Vote(voteId: "user2_comment2", userId: "user2", itemId: "comment2", voteType: .downvote, itemType: .comment),
+            Vote(userId: "user1", itemId: "comment1", voteType: .upvote, itemType: .comment),
+            Vote(userId: "user2", itemId: "comment1", voteType: .downvote, itemType: .comment),
+            Vote(userId: "user1", itemId: "comment2", voteType: .upvote, itemType: .comment),
+            Vote(userId: "user2", itemId: "comment2", voteType: .downvote, itemType: .comment),
             
             // Votes on Barcode Item Reviews (itemType: .review)
-            Vote(voteId: "user1_review1", userId: "user1", itemId: "review1", voteType: .upvote, itemType: .review),
-            Vote(voteId: "user2_review1", userId: "user2", itemId: "review1", voteType: .downvote, itemType: .review)
+            Vote(userId: "user1", itemId: "review1", voteType: .upvote, itemType: .review),
+            Vote(userId: "user2", itemId: "review1", voteType: .downvote, itemType: .review)
         ]
+
 
         self.initializeCollection(collectionName: FirestoreCollections.votes, initialData: votesData) { error in
             if let error = error {
@@ -347,18 +348,25 @@ class FirestoreService {
             case is ReviewStars.Type:
                 let review = data as! ReviewStars
                 documentID = review.barcodeNumber
+            case is Vote.Type:
+                let vote = data as! Vote
+                documentID = "\(vote.userId)_\(vote.itemId)_\(vote.itemType.rawValue)"
             default:
                 break
             }
             
-            if let documentID = documentID {
-                group.enter()
-                createDocumentIfNotExists(collectionName: collectionName, documentID: documentID, data: data) { error in
-                    if let error = error {
-                        finalError = error
-                    }
-                    group.leave()
+            // Unwrap documentID
+            guard let documentID = documentID else {
+                print("Error: documentID is nil for data of type \(T.self)")
+                continue
+            }
+
+            group.enter()
+            createDocumentIfNotExists(collectionName: collectionName, documentID: documentID, data: data) { error in
+                if let error = error {
+                    finalError = error
                 }
+                group.leave()
             }
         }
 

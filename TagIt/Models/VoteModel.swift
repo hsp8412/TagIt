@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct Vote: Codable {
-    let voteId: String
+    @DocumentID var id: String?
     let userId: String
     let itemId: String
     let voteType: VoteType

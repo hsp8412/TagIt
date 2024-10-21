@@ -37,7 +37,7 @@ class VoteService {
                         }
                     } else {
                         // If the user clicks the opposite vote, update the vote to the new type
-                        let updatedVote = Vote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
+                        let updatedVote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
                         FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: updatedVote) { error in
                             if let error = error {
                                 completion(.failure(error))
@@ -49,7 +49,7 @@ class VoteService {
                     }
                 } else {
                     // If no vote exists, create a new vote
-                    let newVote = Vote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
+                    let newVote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
                     FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: newVote) { error in
                         if let error = error {
                             completion(.failure(error))
