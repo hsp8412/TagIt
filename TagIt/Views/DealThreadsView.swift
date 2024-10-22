@@ -7,19 +7,14 @@
 
 
 // NEED GETUSERBYID TO RETURN USERPROFILE
-
 import SwiftUI
 
 struct DealThreadsView: View {
-    @State var deals: [Deal] = [
-        Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6),
-        Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6),
-        Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6),
-        Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6),
-        Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
-    ]
-    @State var search: String = ""
-
+    @State private var deals: [Deal] = []  // Empty deals array
+    @State private var search: String = ""
+    @State private var isLoading: Bool = true
+    @State private var errorMessage: String?
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -35,48 +30,12 @@ struct DealThreadsView: View {
                 .overlay() {
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(Color.gray, lineWidth: 1)
-//                        .fill(Color.gray.opacity(0.3))
                         .frame(height: 40)
                 }
                 .padding()
                 .onSubmit {
                     print("Searching \"\(search)\"")
                 }
-                
-                // Filter
-                // New to create a new view
-                ScrollView(.horizontal) {
-                    HStack(spacing: 10) {
-                        Button(action: {
-                            print("Filter Tapped")
-                        }) {
-                            Text("Today's Deals")
-                                .padding(.horizontal,10)
-                                .background(.white)
-                                .foregroundColor(.green)
-                                .overlay() {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.green, lineWidth: 1)
-                                }
-                        }
-                        
-                        Button(action: {
-                            print("Filter Tapped")
-                        }) {
-                            Text("Hottest Deals")
-                                .padding(.horizontal,10)
-                                .background(.white)
-                                .foregroundColor(.green)
-                                .overlay() {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.green, lineWidth: 1)
-                                }
-                            
-                        }
-                    }
-                }
-                .frame(height: 30)
-                .padding(.horizontal)
                 
                 // Title
                 HStack {
@@ -86,7 +45,6 @@ struct DealThreadsView: View {
                         .frame(width: 30)
                         .foregroundStyle(.red)
                     
-
                     Text("HOT DEALS NEAR YOU")
                         .foregroundStyle(.red)
                         .font(.system(size: 30))
@@ -94,19 +52,45 @@ struct DealThreadsView: View {
                         .padding(.vertical)
                 }
 
-                // Deals
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 30) {
-                        ForEach(deals) { deal in
-                            DealView(deal: deal)
-                                .background(.white)
+                if isLoading {
+                    ProgressView("Loading deals...")
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)")
+                } else {
+                    // Deals
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 30) {
+                            ForEach(deals) { deal in
+                                DealView(deal: deal)
+                                    .background(.white)
+                            }
                         }
                     }
+                    .padding(.horizontal)
+                    .refreshable {
+                        // Refresh the deal list
+                        fetchDeals()
+                    }
                 }
-                .refreshable {
-                    // Fetch Deals to update deals
-                }
-                .padding(.horizontal)
+            }
+            .onAppear {
+                // Fetch deals when the view appears
+                fetchDeals()
+            }
+        }
+    }
+    
+    // Function to fetch deals
+    private func fetchDeals() {
+        isLoading = true
+        DealService.shared.getDeals { result in
+            switch result {
+            case .success(let fetchedDeals):
+                self.deals = fetchedDeals
+                self.isLoading = false
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
             }
         }
     }
