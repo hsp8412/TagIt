@@ -63,11 +63,15 @@ class CommentService {
         - completion: A closure that returns a `Result<Void, Error>` indicating success or failure.
      */
     func addComment(newComment: UserComments, completion: @escaping (Result<Void, Error>) -> Void) {
+        var updatedComment = newComment
+        updatedComment.dateTime = nil  // Set dateTime to nil, so Firestore sets the timestamp
+        
         do {
-            let _ = try db.collection(FirestoreCollections.userComm).addDocument(from: newComment)
+            let _ = try db.collection(FirestoreCollections.userComm).addDocument(from: updatedComment)
             completion(.success(())) // Successfully added the comment
         } catch let error {
             completion(.failure(error)) // Return failure if an error occurs during the addition
         }
     }
+
 }

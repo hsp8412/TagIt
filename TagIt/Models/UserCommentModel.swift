@@ -17,6 +17,9 @@ struct UserComments: Identifiable, Codable {
     var upvote: Int
     var downvote: Int
     
+    @ServerTimestamp var dateTime: Timestamp?
+    
+    
     enum CommentType: Int, Codable {
         case deal = 0
         case barcodeItem = 1
