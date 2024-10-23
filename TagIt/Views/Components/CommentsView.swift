@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommentThreadsView: View {
+struct CommentsView: View {
     @State var comments: [UserComments]
 
 var body: some View {
@@ -33,7 +33,7 @@ var body: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 30) {
                     ForEach(comments) { comment in
-                        CommentView(comment: comment)
+                        CommentCardView(comment: comment)
                             .background(.white)
                     }
                 }
@@ -43,7 +43,7 @@ var body: some View {
 }
 
 #Preview {
-    CommentThreadsView(comments: [
+    CommentsView(comments: [
         UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7),
         UserComments(id: "CommentID2", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 8, downvote: 9),
         UserComments(id: "CommentID3", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 10, downvote: 11)

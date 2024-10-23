@@ -10,6 +10,12 @@ import SwiftUI
 struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
     var body: some View {
+        if viewModel.userProfile == nil{
+            ProgressView()
+        }else{
+            Text(viewModel.userProfile?.displayName ?? "error")
+        }
+        
         Button(action: {
             viewModel.logout()
         }) {
