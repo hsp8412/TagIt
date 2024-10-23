@@ -14,7 +14,7 @@ struct ContentView: View {
             VStack{
                 TopNavView()
                 TabView(selection: $selectedTab) {
-                    DealThreadsView()
+                    HomeView()
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
                         }.tag(0)

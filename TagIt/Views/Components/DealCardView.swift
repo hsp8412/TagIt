@@ -9,12 +9,12 @@
 
 import SwiftUI
 
-struct DealView: View {
+struct DealCardView: View {
     let deal: Deal
     let user: UserProfile = UserProfile(userId: "UID1", email: "user@example.com", displayName: "User Name", avatarURL: "https://i.imgur.com/8ciNZcY.jpeg")
     
     var body: some View {
-        NavigationLink(destination: DealDetailandCommentsView(deal: deal)) {
+        NavigationLink(destination: DealDetailView(deal: deal)) {
             ZStack {
                 Color.white
                     .frame(height: 170)
@@ -101,7 +101,7 @@ struct DealView: View {
 
 
 #Preview {
-    DealView(
+    DealCardView(
         deal: Deal(id: nil, userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
     )
 }
