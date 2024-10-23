@@ -12,7 +12,19 @@ import FirebaseFirestore
 class AuthService {
     static let shared = AuthService()
     
+    private var currentUserProfile: UserProfile? = nil
+    
     private init() {}
+    
+    func getCurrentUser(completion: @escaping (UserProfile?) -> Void) {
+        if let profile = currentUserProfile {
+            completion(profile)
+        } else {
+            fetchUser { profile in
+                completion(profile)
+            }
+        }
+    }
     
     // Function to add an Auth state change listener
     func addAuthStateChangeListener(completion: @escaping (_ userId: String?) -> Void) -> AuthStateDidChangeListenerHandle {
@@ -40,13 +52,16 @@ class AuthService {
                 completion(.failure(.unknownError))
                 return
             }
+            self.fetchUser(){_ in
+                print("User fetched")
+            }
             completion(.success(userId))
         }
     }
     
     // Register a new user with email and password
     func registerUser(withEmail email: String, password: String, displayName: String, completion: @escaping (Result<String, Error>) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+        Auth.auth().createUser(withEmail: email, password: password) {[weak self] result, error in
             if let error = error {
                 completion(.failure(error)) // Return the error if registration fails
                 return
@@ -57,7 +72,10 @@ class AuthService {
                 return
             }
             
-            self.insertUserRecord(id: userId, displayName: displayName, email: email, avatarURL: "")
+            self?.insertUserRecord(id: userId, displayName: displayName, email: email, avatarURL: "")
+            self?.fetchUser(){_ in
+                print("User fetched")
+            }
             completion(.success(userId)) // Registration successful, return userId
         }
     }
@@ -89,6 +107,38 @@ class AuthService {
         db.collection("UserProfile")
             .document(id)
             .setData(newUser.asDictionary())
+    }
+    
+    private func fetchUser(completion: @escaping (UserProfile?) -> Void) {
+        let db = Firestore.firestore()
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            completion(nil)
+            return
+        }
+        
+        let userDoc = db.collection("UserProfile").document(userId)
+        
+        userDoc.getDocument { [weak self] snapshot, error in
+            if let error = error {
+                print("Error fetching user profile: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            if let snapshot = snapshot, snapshot.exists {
+                do {
+                    self?.currentUserProfile = try snapshot.data(as: UserProfile.self)
+                    completion(self?.currentUserProfile)
+                } catch {
+                    print("Error decoding user profile: \(error.localizedDescription)")
+                    completion(nil)
+                }
+            } else {
+                print("User profile does not exist.")
+                completion(nil)
+            }
+        }
     }
 }
 

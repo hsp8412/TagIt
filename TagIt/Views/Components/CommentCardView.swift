@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommentView: View {
+struct CommentCardView: View {
     @State var comment: UserComments
     let user: UserProfile = UserProfile(userId: "UID1", email: "user@example.com", displayName: "User Name", avatarURL: "https://i.imgur.com/8ciNZcY.jpeg")
     let time = "1h"
@@ -106,5 +106,5 @@ struct CommentView: View {
 }
 
 #Preview {
-    CommentView(comment: UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7))
+    CommentCardView(comment: UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7))
 }
