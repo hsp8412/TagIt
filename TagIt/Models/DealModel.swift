@@ -20,4 +20,6 @@ struct Deal: Identifiable, Codable {
     var commentIDs: [String]
     var upvote: Int
     var downvote: Int
+    
+    @ServerTimestamp var dateTime: Timestamp?
 }

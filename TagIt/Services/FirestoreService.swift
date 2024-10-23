@@ -201,8 +201,8 @@ class FirestoreService {
     private func initializeDealsCollection(group: DispatchGroup) {
         group.enter()
         let dealsData: [Deal] = [
-            Deal(id: "deal1", userID: "user1", photoURL: "https://example.com/photo1.jpg", productText: "Product 1", postText: "50% off on Product 1", price: 9.99, location: "Store A", date: "2024-10-15", commentIDs: ["comment1", "comment2"], upvote: 20, downvote: 10),
-            Deal(id: "deal2", userID: "user2", photoURL: "https://example.com/photo2.jpg", productText: "Product 2", postText: "30% off on Product 2", price: 19.99, location: "Store B", date: "2024-10-14", commentIDs: ["comment3", "comment4"], upvote: 2, downvote: 25)
+            Deal(id: "deal1", userID: "user1", photoURL: "https://example.com/photo1.jpg", productText: "Product 1", postText: "50% off on Product 1", price: 9.99, location: "Store A", date: "2024-10-15", commentIDs: ["comment1", "comment2"], upvote: 20, downvote: 10, dateTime: Timestamp()),
+            Deal(id: "deal2", userID: "user2", photoURL: "https://example.com/photo2.jpg", productText: "Product 2", postText: "30% off on Product 2", price: 19.99, location: "Store B", date: "2024-10-14", commentIDs: ["comment3", "comment4"], upvote: 2, downvote: 25, dateTime: Timestamp())
         ]
         self.initializeCollection(collectionName: FirestoreCollections.deals, initialData: dealsData) { error in
             if let error = error {
@@ -267,10 +267,10 @@ class FirestoreService {
     private func initializeUserCommentsCollection(group: DispatchGroup) {
         group.enter()
         let userCommentsData: [UserComments] = [
-            UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", commentType: .deal, upvote: 50, downvote: 2),
-            UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", commentType: .barcodeItem, upvote: 25, downvote: 5),
-            UserComments(id: "comment3", userID: "user1", commentText: "Nice product!", commentType: .deal, upvote: 12, downvote: 3),
-            UserComments(id: "comment4", userID: "user2", commentText: "Poor quality!", commentType: .barcodeItem, upvote: 2, downvote: 10)
+            UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", commentType: .deal, upvote: 50, downvote: 2, dateTime: Timestamp()),
+            UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", commentType: .barcodeItem, upvote: 25, downvote: 5, dateTime: Timestamp()),
+            UserComments(id: "comment3", userID: "user1", commentText: "Nice product!", commentType: .deal, upvote: 12, downvote: 3, dateTime: Timestamp()),
+            UserComments(id: "comment4", userID: "user2", commentText: "Poor quality!", commentType: .barcodeItem, upvote: 2, downvote: 10, dateTime: Timestamp())
         ]
         self.initializeCollection(collectionName: FirestoreCollections.userComm, initialData: userCommentsData) { error in
             if let error = error {

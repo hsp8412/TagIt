@@ -45,12 +45,16 @@ class DealService {
     
     // Add a new deal to Firestore
     func addDeal(newDeal: Deal, completion: @escaping (Result<Void, Error>) -> Void) {
+        var updatedDeal = newDeal
+        updatedDeal.dateTime = nil // Ensure Firestore sets the timestamp
+        
         do {
-            let _ = try db.collection(FirestoreCollections.deals).addDocument(from: newDeal)
+            let _ = try db.collection(FirestoreCollections.deals).addDocument(from: updatedDeal)
             completion(.success(()))
         } catch let error {
             completion(.failure(error))
         }
     }
+
 }
 
