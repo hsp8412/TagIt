@@ -37,6 +37,41 @@ struct HomeView: View {
                     print("Searching \"\(search)\"")
                 }
                 
+                // Filter
+                // New to create a new view
+                ScrollView(.horizontal) {
+                    HStack(spacing: 10) {
+                        Button(action: {
+                            print("Filter Tapped")
+                        }) {
+                            Text("Today's Deals")
+                                .padding(.horizontal,10)
+                                .background(.white)
+                                .foregroundColor(.green)
+                                .overlay() {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.green, lineWidth: 1)
+                                }
+                        }
+                        
+                        Button(action: {
+                            print("Filter Tapped")
+                        }) {
+                            Text("Hottest Deals")
+                                .padding(.horizontal,10)
+                                .background(.white)
+                                .foregroundColor(.green)
+                                .overlay() {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.green, lineWidth: 1)
+                                }
+                            
+                        }
+                    }
+                }
+                .frame(height: 30)
+                .padding(.horizontal)
+                
                 // Title
                 HStack {
                     Image(systemName: "sun.max.fill")
@@ -51,7 +86,7 @@ struct HomeView: View {
                         .bold()
                         .padding(.vertical)
                 }
-
+                
                 if isLoading {
                     ProgressView("Loading deals...")
                 } else if let errorMessage = errorMessage {
