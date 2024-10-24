@@ -5,6 +5,9 @@
 //  Created by Peter Tran on 2024-10-16.
 //
 
+// Error handling (.success, .failure) of completion
+// What are the outputs? Structure?
+
 
 import FirebaseFirestore
 
@@ -29,6 +32,8 @@ class FirestoreService {
         - data: The `Codable` object to store in the document.
         - completion: A closure that returns an optional error if something goes wrong.
      */
+    
+    // use case? Should be in concrete services?
     func createDocumentIfNotExists<T: Codable>(collectionName: String, documentID: String, data: T, completion: @escaping (Error?) -> Void) {
         db.collection(collectionName).document(documentID).getDocument { (documentSnapshot, error) in
             // Sets completion to nil if document doesnt exist, otherwise create document
