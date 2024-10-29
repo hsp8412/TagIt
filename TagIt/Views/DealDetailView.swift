@@ -9,20 +9,43 @@ import SwiftUI
 
 struct DealDetailView: View {
     @State var deal: Deal
+    @State private var comments: [UserComments] = []
+    @State private var isLoading: Bool = true
     @State var new_comment: String = ""
 
-    let comments: [UserComments] = [
-        UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7),
-        UserComments(id: "CommentID2", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 8, downvote: 9),
-        UserComments(id: "CommentID3", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 10, downvote: 11)
-    ]
+    // let comments: [UserComments] = [
+    //     UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7),
+    //     UserComments(id: "CommentID2", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 8, downvote: 9),
+    //     UserComments(id: "CommentID3", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 10, downvote: 11)
+    // ]
 
     var body: some View {
         VStack {
             DealInfoView(deal: deal)
             
-            CommentsView(comments: comments)
-                .padding(.top)
+            // CommentsView(comments: comments)
+            //     .padding(.top)
+            
+            if isLoading {
+                ProgressView("Loading comments...")
+            } else if let errorMessage = errorMessage {
+                Text("Error: \(errorMessage)")
+            } else {
+                // comments
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 30) {
+                        ForEach(comments) { comment in
+                            CommentCardView(deal: comment)
+                                .background(.white)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .refreshable {
+                    // Refresh the comments list
+                    fetchComments()
+                }
+            }
             
             // New comment bar
             HStack {
@@ -45,8 +68,27 @@ struct DealDetailView: View {
             }
         }
         .padding(.vertical)
+        .onAppear {
+            // Fetch comments when the view appears
+            fetchComments()
+        }
         
         
+    }
+
+    // Function to fetch comments
+    private func fetchComments() {
+        isLoading = true
+        CommentService.shared.getComments { result in
+            switch result {
+            case .success(let fetchedComments):
+                self.comments = fetchedComments
+                self.isLoading = false
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
+            }
+        }
     }
 }
 
