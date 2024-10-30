@@ -44,8 +44,8 @@ var body: some View {
 
 #Preview {
     CommentsView(comments: [
-        UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7),
-        UserComments(id: "CommentID2", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 8, downvote: 9),
-        UserComments(id: "CommentID3", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 10, downvote: 11)
+        UserComments(id: "CommentID1", userID: "2", itemID: "DealID1",  commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7),
+        UserComments(id: "CommentID2", userID: "2", itemID: "DealID1", commentText: "Comments.", commentType: .deal, upvote: 8, downvote: 9),
+        UserComments(id: "CommentID3", userID: "2", itemID: "DealID1", commentText: "Comments.", commentType: .deal, upvote: 10, downvote: 11)
     ])
 }

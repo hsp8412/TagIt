@@ -26,6 +26,14 @@ class AuthService {
         }
     }
     
+    /// Retrieves the current authenticated user's ID.
+    ///
+    /// - Returns: The user's ID as a `String`, or `nil` if the user is not authenticated.
+    func getCurrentUserID() -> String? {
+        return Auth.auth().currentUser?.uid
+    }
+
+    
     // Function to add an Auth state change listener
     func addAuthStateChangeListener(completion: @escaping (_ userId: String?) -> Void) -> AuthStateDidChangeListenerHandle {
         return Auth.auth().addStateDidChangeListener { _, user in
