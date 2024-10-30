@@ -42,7 +42,8 @@ class AuthService {
     
     
     func loginUser(withEmail email: String, password: String, completion: @escaping (Result<String, AuthError>) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+        Auth.auth().signIn(withEmail: email,
+                           password: password) { authResult, error in
             if let error = error {
                 let authError = AuthError.from(error: error)
                 completion(.failure(authError))
