@@ -55,6 +55,22 @@ class CommentService {
             }
     }
     
+    func getCommentsForItem(itemID: String, commentType: UserComments.CommentType, completion: @escaping (Result<[UserComments], Error>) -> Void) {
+        db.collection(FirestoreCollections.userComm)
+            .whereField("itemID", isEqualTo: itemID)
+            .whereField("commentType", isEqualTo: commentType.rawValue)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                } else if let snapshot = snapshot {
+                    let comments = snapshot.documents.compactMap { doc -> UserComments? in
+                        try? doc.data(as: UserComments.self)
+                    }
+                    completion(.success(comments))
+                }
+            }
+    }
+    
     /**
      Adds a new comment to Firestore.
      
@@ -63,15 +79,22 @@ class CommentService {
         - completion: A closure that returns a `Result<Void, Error>` indicating success or failure.
      */
     func addComment(newComment: UserComments, completion: @escaping (Result<Void, Error>) -> Void) {
-        var updatedComment = newComment
-        updatedComment.dateTime = nil  // Set dateTime to nil, so Firestore sets the timestamp
-        
         do {
-            let _ = try db.collection(FirestoreCollections.userComm).addDocument(from: updatedComment)
-            completion(.success(())) // Successfully added the comment
+            let _ = try db.collection(FirestoreCollections.userComm).addDocument(from: newComment) { error in
+                if let error = error {
+                    print("Error adding document: \(error.localizedDescription)")
+                    completion(.failure(error))
+                } else {
+                    print("Document added successfully")
+                    completion(.success(()))
+                }
+            }
         } catch let error {
-            completion(.failure(error)) // Return failure if an error occurs during the addition
+            print("Error serializing comment: \(error.localizedDescription)")
+            completion(.failure(error))
         }
     }
+
+
 
 }
