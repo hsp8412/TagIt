@@ -17,26 +17,29 @@ struct DealDetailView: View {
 
     var body: some View {
         VStack {
-            DealInfoView(deal: deal)
-            
-            if isLoading {
-                ProgressView("Loading comments...")
-            } else if let errorMessage = errorMessage {
-                Text("Error: \(errorMessage)")
-            } else {
-                // comments
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 30) {
-                        ForEach(comments) { comment in
-                            CommentCardView(comment: comment)
-                                .background(.white)
+            ScrollView {
+                DealInfoView(deal: deal)
+                
+                Text("Comments")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                
+                // Load comments
+                if isLoading {
+                    ProgressView("Loading comments...")
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)")
+                } else {
+                    if (comments.isEmpty) {
+                        Text("No Comment Yet")
+                    } else {
+                        VStack(alignment: .leading, spacing: 30) {
+                            ForEach(comments) { comment in
+                                CommentCardView(comment: comment)
+                                    .background(.white)
+                            }
                         }
                     }
-                }
-                .padding(.horizontal)
-                .refreshable {
-                    // Refresh the comments list
-                    fetchComments()
                 }
             }
             
@@ -52,12 +55,14 @@ struct DealDetailView: View {
                         // Submit comment and clear the text field
                         postComment(comment: new_comment)
                         new_comment = "" // Clear the text field
+                        
+                        // Fetch comments when the view appears
+                        fetchComments()
                     }
             }
             .overlay() {
                 RoundedRectangle(cornerRadius: 20)
                     .stroke(Color.gray, lineWidth: 1)
-//                    .fill(Color.gray.opacity(0.3))
                     .frame(height: 40)
             }
             .padding()
