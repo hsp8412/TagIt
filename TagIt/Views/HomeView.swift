@@ -5,8 +5,6 @@
 //  Created by Chenghou Si on 2024-10-21.
 //
 
-
-// NEED GETUSERBYID TO RETURN USERPROFILE
 import SwiftUI
 
 struct HomeView: View {
@@ -87,12 +85,12 @@ struct HomeView: View {
                         .padding(.vertical)
                 }
                 
+                // Deals
                 if isLoading {
                     ProgressView("Loading deals...")
                 } else if let errorMessage = errorMessage {
                     Text("Error: \(errorMessage)")
                 } else {
-                    // Deals
                     ScrollView {
                         VStack(alignment: .leading, spacing: 30) {
                             ForEach(deals) { deal in

@@ -5,16 +5,21 @@
 //  Created by Chenghou Si on 2024-10-16.
 //
 
-// NEED GETUSERBYID TO RETURN USERPROFILE
-
 import SwiftUI
 
 struct DealInfoView: View {
     @State var deal: Deal
-    let user: UserProfile = UserProfile(userId: "UID1", email: "user@example.com", displayName: "User Name", avatarURL: "https://i.imgur.com/8ciNZcY.jpeg")
+    @State var isLoading: Bool
+    @State var user: UserProfile
+    @State private var errorMessage: String?
     
     init(deal: Deal) {
         self.deal = deal
+        isLoading = true
+        
+        self.user = UserProfile(userId: "", email: "", displayName: "", avatarURL: "")
+        
+        fetchUserProfilebyID(id: deal.userID)
     }
 
     var body: some View {
@@ -24,35 +29,43 @@ struct DealInfoView: View {
                 .frame(height: 250)
                 .shadow(radius: 5)
             
-            // Product Detail
             VStack (alignment: .leading) {
                 HStack {
                     VStack (alignment: .leading) {
-                        HStack {
-                            if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                                AsyncImage(url: url) { phase in
-                                    if let image = phase.image {
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 40, height: 40)
-                                            .clipShape(Circle())
-                                    } else {
-                                        ProgressView()
-                                            .frame(width: 40, height: 40)
-                                            .clipShape(Circle())
+
+                        // Load User Profile
+                        if (isLoading) {
+                            ProgressView()
+                        } else if let errorMessage = errorMessage {
+                            Text("Error: \(errorMessage)")
+                        } else {
+                            HStack {
+                                if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
+                                    AsyncImage(url: url) { phase in
+                                        if let image = phase.image {
+                                            image
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 40, height: 40)
+                                                .clipShape(Circle())
+                                        } else {
+                                            ProgressView()
+                                                .frame(width: 40, height: 40)
+                                                .clipShape(Circle())
+                                        }
                                     }
                                 }
-                            }
-                            
-                            VStack (alignment: .leading) {
-                                Text(user.displayName)
-                                    .lineLimit(1)
                                 
-                                Text(deal.date)
+                                VStack (alignment: .leading) {
+                                    Text(user.displayName)
+                                        .lineLimit(1)
+                                    
+                                    Text(deal.date)
+                                }
                             }
                         }
                         
+                        // Product Detail
                         Text(deal.productText)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
@@ -78,61 +91,34 @@ struct DealInfoView: View {
                     Text(deal.location)
                         .foregroundStyle(Color.green)
                     
-                    HStack {
-                        
-                        // Upvote and downvote button
-                        // Need to be fully implemented
-                        Button(action: {
-                            print("Thumbsup Tapped")
-                            deal.upvote = deal.upvote + 1
-                        }) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(Color.green)
-                                    .frame(width: 100, height: 30)
-                                
-                                HStack {
-                                    Image(systemName: "hand.thumbsup.fill")
-                                        .foregroundStyle(Color.white)
-                                    
-                                    Text("\(deal.upvote)")
-                                        .padding(.horizontal)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                        }
-                        
-                        Button(action: {
-                            print("Thumbsdown Tapped")
-                            deal.downvote = deal.downvote + 1
-                        }) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(Color.red)
-                                    .frame(width: 100, height: 30)
-                                
-                                HStack {
-                                    Image(systemName: "hand.thumbsdown.fill")
-                                        .foregroundStyle(Color.white)
-                                    
-                                    Text("\(deal.downvote)")
-                                        .padding(.horizontal)
-                                        .foregroundColor(.white)
-                                }
-                                
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    // UpVote DownVote Button
+                    // TAP STATUS NEED TO BE IMPLEMENTED
+                    UpDownVoteView(type: .deal, id: deal.id!, upVote: deal.upvote, downVote: deal.downvote, upVoteTap: false, downVoteTap: false)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding(.horizontal)
         }
     }
+    
+    // Function to fetch user profile
+    private func fetchUserProfilebyID(id: String) {
+        isLoading = true
+        UserService.shared.getUserById(id: id) { result in
+            switch result {
+            case .success(let fetchUserProfilebyID):
+                self.user = fetchUserProfilebyID
+                self.isLoading = false
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
+            }
+        }
+    }
 }
 
 #Preview {
-    DealDetailView(
+    DealInfoView(
         deal: Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
     )
     
