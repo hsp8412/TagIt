@@ -5,13 +5,21 @@
 //  Created by Chenghou Si on 2024-10-16.
 //
 
-// NEED GETUSERBYID TO RETURN USERPROFILE
-
 import SwiftUI
 
 struct DealCardView: View {
     let deal: Deal
-    let user: UserProfile = UserProfile(userId: "UID1", email: "user@example.com", displayName: "User Name", avatarURL: "https://i.imgur.com/8ciNZcY.jpeg")
+    @State var isLoading: Bool
+    @State var user: UserProfile
+    @State private var errorMessage: String?
+    
+    init(deal: Deal) {
+        self.deal = deal
+        self.isLoading = true
+        self.user = UserProfile(userId: "", email: "", displayName: "", avatarURL: "")
+        
+        fetchUserProfilebyID(id: deal.userID)
+    }
     
     var body: some View {
         NavigationLink(destination: DealDetailView(deal: deal)) {
@@ -22,33 +30,42 @@ struct DealCardView: View {
                 
                 HStack {
                     VStack(alignment: .leading) {
-                        HStack {
-                            if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                                AsyncImage(url: url) { phase in
-                                    if let image = phase.image {
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 40, height: 40)
-                                            .clipShape(Circle())
-                                    } else {
-                                        ProgressView()
-                                            .frame(width: 40, height: 40)
-                                            .clipShape(Circle())
+                        
+                        // Load User Profile
+                        if (isLoading) {
+                            ProgressView()
+                        } else if let errorMessage = errorMessage {
+                            Text("Error: \(errorMessage)")
+                        } else {
+                            HStack {
+                                if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
+                                    AsyncImage(url: url) { phase in
+                                        if let image = phase.image {
+                                            image
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 40, height: 40)
+                                                .clipShape(Circle())
+                                        } else {
+                                            ProgressView()
+                                                .frame(width: 40, height: 40)
+                                                .clipShape(Circle())
+                                        }
                                     }
                                 }
-                            }
-                            
-                            VStack(alignment: .leading) {
-                                Text(user.displayName)
-                                    .lineLimit(1)
-                                    .foregroundColor(.black)
                                 
-                                Text(deal.date)
-                                    .foregroundStyle(.black)
+                                VStack(alignment: .leading) {
+                                    Text(user.displayName)
+                                        .lineLimit(1)
+                                        .foregroundColor(.black)
+                                    
+                                    Text(deal.date)
+                                        .foregroundStyle(.black)
+                                }
                             }
                         }
                         
+                        // Product Details
                         Text(deal.productText)
                             .font(.system(size: 20))
                             .foregroundStyle(.black)
@@ -94,6 +111,21 @@ struct DealCardView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    // Function to fetch user profile
+    private func fetchUserProfilebyID(id: String) {
+        isLoading = true
+        UserService.shared.getUserById(id: id) { result in
+            switch result {
+            case .success(let fetchUserProfilebyID):
+                self.user = fetchUserProfilebyID
+                self.isLoading = false
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
             }
         }
     }

@@ -28,11 +28,13 @@ struct TopNavView: View {
             
             // Navigation items
             HStack(spacing: 10) {
-                Image(systemName: "barcode.viewfinder") // Replace "applelogo" with your desired SF Symbol
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .foregroundStyle(.gray)
+                NavigationLink(destination: BarcodeScannerView()) {
+                    Image(systemName: "barcode.viewfinder") // Replace "applelogo" with your desired SF Symbol
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                        .foregroundStyle(.gray)
+                }
                 NavigationLink(destination: ProfileView()) {
                     Image(systemName: "person.circle.fill")
                         .resizable()

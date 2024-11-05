@@ -53,52 +53,10 @@ struct CommentCardView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 5)
                 
-                HStack {
-                    // Upvote and downvote button
-                    // Need to be fully implemented
-                    Button(action: {
-                        print("Thumbsup Tapped")
-                        handleVote(voteType: .upvote);
-                    }) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.green)
-                                .frame(width: 100, height: 30)
-                            
-                            HStack {
-                                Image(systemName: "hand.thumbsup.fill")
-                                    .foregroundStyle(Color.white)
-                                
-                                Text("\(comment.upvote)")
-                                    .padding(.horizontal)
-                                    .foregroundColor(.white)
-                            }
-                            
-                        }
-                    }
-                    
-                    Button(action: {
-                        print("Thumbsdown Tapped")
-                        comment.downvote = comment.downvote + 1
-                    }) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.red)
-                                .frame(width: 100, height: 30)
-                            
-                            HStack {
-                                Image(systemName: "hand.thumbsdown.fill")
-                                    .foregroundStyle(Color.white)
-                                
-                                Text("\(comment.downvote)")
-                                    .padding(.horizontal)
-                                    .foregroundColor(.white)
-                            }
-                            
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                // UpVote DownVote Button
+                // TAP STATUS NEED TO BE IMPLEMENTED
+                UpDownVoteView(type: .comment, id: comment.id!, upVote: comment.upvote, downVote: comment.downvote, upVoteTap: false, downVoteTap: false)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding()
         }
@@ -120,5 +78,5 @@ struct CommentCardView: View {
 }
 
 #Preview {
-    CommentCardView(comment: UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7))
+    CommentCardView(comment: UserComments(id: "CommentID1", userID: "2", itemID: "DealID1", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7))
 }
