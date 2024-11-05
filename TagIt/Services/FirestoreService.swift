@@ -272,10 +272,10 @@ class FirestoreService {
     private func initializeUserCommentsCollection(group: DispatchGroup) {
         group.enter()
         let userCommentsData: [UserComments] = [
-            UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", commentType: .deal, upvote: 50, downvote: 2, dateTime: Timestamp()),
-            UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", commentType: .barcodeItem, upvote: 25, downvote: 5, dateTime: Timestamp()),
-            UserComments(id: "comment3", userID: "user1", commentText: "Nice product!", commentType: .deal, upvote: 12, downvote: 3, dateTime: Timestamp()),
-            UserComments(id: "comment4", userID: "user2", commentText: "Poor quality!", commentType: .barcodeItem, upvote: 2, downvote: 10, dateTime: Timestamp())
+            UserComments(id: "comment1", userID: "user1", itemID: "deal1", commentText: "Great deal!", commentType: .deal, upvote: 50, downvote: 2, dateTime: Timestamp()),
+            UserComments(id: "comment2", userID: "user2", itemID: "deal2", commentText: "Could be cheaper.", commentType: .deal, upvote: 25, downvote: 5, dateTime: Timestamp()),
+            UserComments(id: "comment3", userID: "user1", itemID: "deal1", commentText: "Nice product!", commentType: .deal, upvote: 12, downvote: 3, dateTime: Timestamp()),
+            UserComments(id: "comment4", userID: "user2", itemID: "review1", commentText: "Poor quality!", commentType: .barcodeItemReview, upvote: 2, downvote: 10, dateTime: Timestamp())
         ]
         self.initializeCollection(collectionName: FirestoreCollections.userComm, initialData: userCommentsData) { error in
             if let error = error {
@@ -286,6 +286,7 @@ class FirestoreService {
             group.leave()
         }
     }
+
 
     /**
      Initializes the Votes collection with predefined data.
