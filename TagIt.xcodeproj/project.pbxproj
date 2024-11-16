@@ -36,6 +36,7 @@
 		40F8B6002C9FAA7B0024C7EF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 40F8B5FF2C9FAA7B0024C7EF /* FirebaseAuth */; };
 		40F8B6022C9FAA7B0024C7EF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 40F8B6012C9FAA7B0024C7EF /* FirebaseFirestore */; };
 		5D1B36972CC5B2AE00552691 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1B36962CC5B2AE00552691 /* HomeView.swift */; };
+		5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */; };
 		5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */; };
 		5DA00C2E2CC5D8730057041E /* CommentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA00C2D2CC5D8730057041E /* CommentCardView.swift */; };
 		5DB364892CBED87500424571 /* DealModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB364882CBED87500424571 /* DealModel.swift */; };
@@ -83,6 +84,7 @@
 		40F8B5F02C9FA8B10024C7EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40F8B5F32C9FA8B10024C7EF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5D1B36962CC5B2AE00552691 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarView.swift; sourceTree = "<group>"; };
 		5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyboardViewModel.swift; sourceTree = "<group>"; };
 		5DA00C2D2CC5D8730057041E /* CommentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCardView.swift; sourceTree = "<group>"; };
 		5DB364882CBED87500424571 /* DealModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealModel.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				5DA00C2D2CC5D8730057041E /* CommentCardView.swift */,
 				403755732CD16D8E00C7D96C /* GradientTitle.swift */,
 				403755772CD1761000C7D96C /* DropdownView.swift */,
+				5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */,
 				5DF09DBA2CD337E0002B6A79 /* UpDownVote2View.swift in Sources */,
 				4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */,
+				5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */,
 				4086FCF82CB47DDD00EB6411 /* NewDealView.swift in Sources */,
 				40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */,
 				403755762CD1743700C7D96C /* SearchViewModel.swift in Sources */,
