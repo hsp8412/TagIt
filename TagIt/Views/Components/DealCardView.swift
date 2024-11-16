@@ -9,17 +9,9 @@ import SwiftUI
 
 struct DealCardView: View {
     let deal: Deal
-    @State var isLoading: Bool
-    @State var user: UserProfile
+    @State var isLoading = true
+    @State var user: UserProfile?
     @State private var errorMessage: String?
-    
-    init(deal: Deal) {
-        self.deal = deal
-        self.isLoading = true
-        self.user = UserProfile(userId: "", email: "", displayName: "", avatarURL: "")
-        
-        fetchUserProfilebyID(id: deal.userID)
-    }
     
     var body: some View {
         NavigationLink(destination: DealDetailView(deal: deal)) {
@@ -34,28 +26,16 @@ struct DealCardView: View {
                         // Load User Profile
                         if (isLoading) {
                             ProgressView()
+                                .frame(width: 40, height: 40)
                         } else if let errorMessage = errorMessage {
                             Text("Error: \(errorMessage)")
                         } else {
                             HStack {
-                                if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                                    AsyncImage(url: url) { phase in
-                                        if let image = phase.image {
-                                            image
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(Circle())
-                                        } else {
-                                            ProgressView()
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(Circle())
-                                        }
-                                    }
-                                }
+                                UserAvatarView(avatarURL: user?.avatarURL ?? "")
+                                    .frame(width: 40, height: 40)
                                 
                                 VStack(alignment: .leading) {
-                                    Text(user.displayName)
+                                    Text(user?.displayName ?? "")
                                         .lineLimit(1)
                                         .foregroundColor(.black)
                                     
@@ -112,20 +92,25 @@ struct DealCardView: View {
                     }
                 }
             }
+            .onAppear() {
+                fetchUserProfile()
+            }
         }
     }
     
     // Function to fetch user profile
-    private func fetchUserProfilebyID(id: String) {
+    private func fetchUserProfile() {
         isLoading = true
-        UserService.shared.getUserById(id: id) { result in
-            switch result {
-            case .success(let fetchUserProfilebyID):
-                self.user = fetchUserProfilebyID
-                self.isLoading = false
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
-                self.isLoading = false
+        if (deal.userID != "") {
+            UserService.shared.getUserById(id: deal.userID) { result in
+                switch result {
+                case .success(let fetchUserProfilebyID):
+                    self.user = fetchUserProfilebyID
+                    self.isLoading = false
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                    self.isLoading = false
+                }
             }
         }
     }
@@ -134,6 +119,6 @@ struct DealCardView: View {
 
 #Preview {
     DealCardView(
-        deal: Deal(id: nil, userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
+        deal: Deal(id: nil, userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
     )
 }

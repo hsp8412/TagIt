@@ -12,12 +12,17 @@ struct ProfileView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 100, height: 100)
-                    .foregroundColor(.gray)
-                    .padding(.leading, 50)
-                    .padding(.top, 50)
+                if viewModel.userProfile == nil{
+                    ProgressView()
+                        .frame(width: 100, height: 100)
+                        .padding(.leading, 50)
+                        .padding(.top, 50)
+                } else {
+                    UserAvatarView(avatarURL: viewModel.userProfile?.avatarURL ?? "")
+                        .frame(width: 100, height: 100)
+                        .padding(.leading, 50)
+                        .padding(.top, 50)
+                }
                 
                 Spacer()
             }
