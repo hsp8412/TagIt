@@ -32,12 +32,12 @@ struct ContentView: View {
                     RankingView()
                         .tabItem {
                             Label("Ranking", systemImage: "chart.bar.fill")
-                        }
+                        }.tag(3)
                     
                     ProductsView()
                         .tabItem {
                             Label("Products", systemImage: "bag.fill")
-                        }.tag(3)
+                        }.tag(4)
                 }
             }
         }

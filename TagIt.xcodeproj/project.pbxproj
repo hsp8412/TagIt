@@ -40,7 +40,11 @@
 		40FD1ED52CEAA6E800729291 /* SearchResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */; };
 		5D1B36972CC5B2AE00552691 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1B36962CC5B2AE00552691 /* HomeView.swift */; };
 		5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */; };
+		5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */; };
+		5D1D9B832CE96AE800698E2A /* UserRankingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B822CE96AE800698E2A /* UserRankingView.swift */; };
 		5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */; };
+		5D62B03F2CEAE2E6004A7E39 /* DealRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */; };
+		5D62B0412CEB0EBC004A7E39 /* DealRankingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */; };
 		5DA00C2E2CC5D8730057041E /* CommentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA00C2D2CC5D8730057041E /* CommentCardView.swift */; };
 		5DB364892CBED87500424571 /* DealModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB364882CBED87500424571 /* DealModel.swift */; };
 		5DB365362CBEDD0F00424571 /* UserProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB365352CBEDD0F00424571 /* UserProfileModel.swift */; };
@@ -91,7 +95,11 @@
 		40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewModel.swift; sourceTree = "<group>"; };
 		5D1B36962CC5B2AE00552691 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarView.swift; sourceTree = "<group>"; };
+		5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingCardView.swift; sourceTree = "<group>"; };
+		5D1D9B822CE96AE800698E2A /* UserRankingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingView.swift; sourceTree = "<group>"; };
 		5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyboardViewModel.swift; sourceTree = "<group>"; };
+		5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealRankingCardView.swift; sourceTree = "<group>"; };
+		5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealRankingView.swift; sourceTree = "<group>"; };
 		5DA00C2D2CC5D8730057041E /* CommentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCardView.swift; sourceTree = "<group>"; };
 		5DB364882CBED87500424571 /* DealModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealModel.swift; sourceTree = "<group>"; };
 		5DB365352CBEDD0F00424571 /* UserProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileModel.swift; sourceTree = "<group>"; };
@@ -184,6 +192,10 @@
 				403755732CD16D8E00C7D96C /* GradientTitle.swift */,
 				403755772CD1761000C7D96C /* DropdownView.swift */,
 				5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */,
+				5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */,
+				5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */,
+				5D1D9B822CE96AE800698E2A /* UserRankingView.swift */,
+				5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -328,6 +340,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DB3653E2CBEE01700424571 /* ReviewStarsModel.swift in Sources */,
+				5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */,
 				403755742CD16D8E00C7D96C /* GradientTitle.swift in Sources */,
 				5DF09DBC2CD337FB002B6A79 /* UpDownVoteView.swift in Sources */,
 				4086FD0A2CB5088800EB6411 /* RegisterView.swift in Sources */,
@@ -350,7 +363,9 @@
 				909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */,
 				5DF09DBA2CD337E0002B6A79 /* UpDownVote2View.swift in Sources */,
 				4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */,
+				5D62B0412CEB0EBC004A7E39 /* DealRankingView.swift in Sources */,
 				5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */,
+				5D62B03F2CEAE2E6004A7E39 /* DealRankingCardView.swift in Sources */,
 				4086FCF82CB47DDD00EB6411 /* NewDealView.swift in Sources */,
 				40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */,
 				403755762CD1743700C7D96C /* SearchViewModel.swift in Sources */,
@@ -361,6 +376,7 @@
 				BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */,
 				4017C4672CC610DC00D110AD /* ImageUploadView.swift in Sources */,
 				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
+				5D1D9B832CE96AE800698E2A /* UserRankingView.swift in Sources */,
 				40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				5DE8EE072CC5EB45008DF0B2 /* DealDetailView.swift in Sources */,

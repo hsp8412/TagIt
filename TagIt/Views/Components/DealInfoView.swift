@@ -51,12 +51,19 @@ struct DealInfoView: View {
                         Text(String(format: "$%.2f", deal.price))
                     }
                     
-                    AsyncImage(url: URL(string: deal.photoURL)) { image in
-                        image.image?.resizable()
+                    AsyncImage(url: URL(string: deal.photoURL)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .clipShape(.rect(cornerRadius: 25))
+                        } else {
+                            ProgressView()
+                                .frame(width: 100, height: 100)
+                                .cornerRadius(25)
+                        }
                     }
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .clipShape(.rect(cornerRadius: 25))
                 }
                 .padding(.top, 5)
                 
