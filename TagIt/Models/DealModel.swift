@@ -42,3 +42,19 @@ struct Deal: Identifiable, Codable {
         // Exclude 'store' from Firestore encoding
     }
 }
+
+struct DealHit: Codable {
+    let objectID: String // Corresponds to id in Deal
+    let productText: String
+    let commentIDs: [String]
+    let date: String
+    let downvote: Int
+    let photoURL: String
+    let postText: String
+    let price: Double
+    let upvote: Int
+    let userID: String
+    let dateTime: Int // Timestamp as Int
+    let location: String
+    let locationId: String
+}
