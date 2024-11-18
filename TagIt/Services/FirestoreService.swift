@@ -343,7 +343,7 @@ class FirestoreService {
             // Determine document ID based on the object type
             switch T.self {
             case is UserProfile.Type:
-                documentID = (data as! UserProfile).userId
+                documentID = (data as! UserProfile).id
             case is Deal.Type:
                 documentID = (data as! Deal).id
             case is UserComments.Type:
