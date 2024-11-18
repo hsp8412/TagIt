@@ -35,6 +35,9 @@
 		40F8B5FE2C9FAA7B0024C7EF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 40F8B5FD2C9FAA7B0024C7EF /* FirebaseAnalytics */; };
 		40F8B6002C9FAA7B0024C7EF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 40F8B5FF2C9FAA7B0024C7EF /* FirebaseAuth */; };
 		40F8B6022C9FAA7B0024C7EF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 40F8B6012C9FAA7B0024C7EF /* FirebaseFirestore */; };
+		40FD1EA92CE9808100729291 /* StoreModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1EA82CE9808100729291 /* StoreModel.swift */; };
+		40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */; };
+		40FD1ED52CEAA6E800729291 /* SearchResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */; };
 		5D1B36972CC5B2AE00552691 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1B36962CC5B2AE00552691 /* HomeView.swift */; };
 		5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */; };
 		5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */; };
@@ -87,6 +90,9 @@
 		40F8B5EE2C9FA8AF0024C7EF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		40F8B5F02C9FA8B10024C7EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40F8B5F32C9FA8B10024C7EF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		40FD1EA82CE9808100729291 /* StoreModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreModel.swift; sourceTree = "<group>"; };
+		40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultView.swift; sourceTree = "<group>"; };
+		40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewModel.swift; sourceTree = "<group>"; };
 		5D1B36962CC5B2AE00552691 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarView.swift; sourceTree = "<group>"; };
 		5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingCardView.swift; sourceTree = "<group>"; };
@@ -150,6 +156,7 @@
 				5D1B36962CC5B2AE00552691 /* HomeView.swift */,
 				909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */,
 				40BB0CDA2CC0C10F004D070B /* ProfileView.swift */,
+				40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -166,6 +173,7 @@
 				40BB0CDC2CC0C462004D070B /* ProfileViewModel.swift */,
 				4017C4562CC5E90000D110AD /* NewDealViewModel.swift */,
 				403755752CD1743700C7D96C /* SearchViewModel.swift */,
+				40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -242,6 +250,7 @@
 				5DB365372CBEDE5300424571 /* BarcodeItemReviewModel.swift */,
 				5DB3653B2CBEDF8500424571 /* UserCommentModel.swift */,
 				5DB3653D2CBEE01700424571 /* ReviewStarsModel.swift */,
+				40FD1EA82CE9808100729291 /* StoreModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -347,6 +356,7 @@
 				4017C4572CC5E90000D110AD /* NewDealViewModel.swift in Sources */,
 				4086FCF62CB47DB000EB6411 /* SearchView.swift in Sources */,
 				4086FCFA2CB47DF500EB6411 /* RankingView.swift in Sources */,
+				40FD1ED52CEAA6E800729291 /* SearchResultViewModel.swift in Sources */,
 				4086FD062CB48FE100EB6411 /* LoginView.swift in Sources */,
 				5DE8EE052CC5E59E008DF0B2 /* CommentsView.swift in Sources */,
 				4086FD082CB4AA5400EB6411 /* PasswordRecoveryView.swift in Sources */,
@@ -367,6 +377,7 @@
 				4017C4672CC610DC00D110AD /* ImageUploadView.swift in Sources */,
 				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
 				5D1D9B832CE96AE800698E2A /* UserRankingView.swift in Sources */,
+				40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				5DE8EE072CC5EB45008DF0B2 /* DealDetailView.swift in Sources */,
 				40F8B5EF2C9FA8AF0024C7EF /* ContentView.swift in Sources */,
@@ -374,6 +385,7 @@
 				4086FD042CB4838300EB6411 /* TopNavView.swift in Sources */,
 				5DB365442CBEECC500424571 /* DealInfoView.swift in Sources */,
 				5DB3653C2CBEDF8500424571 /* UserCommentModel.swift in Sources */,
+				40FD1EA92CE9808100729291 /* StoreModel.swift in Sources */,
 				40F8B5ED2C9FA8AF0024C7EF /* TagItApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -511,7 +523,9 @@
 				DEVELOPMENT_TEAM = 6BD4M5LM86;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TagIt/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs to use your location.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -541,7 +555,9 @@
 				DEVELOPMENT_TEAM = 6BD4M5LM86;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TagIt/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs to use your location.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
