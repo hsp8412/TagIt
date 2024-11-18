@@ -8,11 +8,11 @@
 import Foundation
 import FirebaseFirestore
 
-struct UserProfile: Codable {
-    let userId: String
-    let email: String
-    let displayName: String
-    let avatarURL: String?
+struct UserProfile: Identifiable, Codable {
+    @DocumentID var id: String?
+    var email: String
+    var displayName: String
+    var avatarURL: String?
     
 }
 
