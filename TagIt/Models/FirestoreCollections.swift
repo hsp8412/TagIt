@@ -12,5 +12,6 @@ struct FirestoreCollections {
     static let revItem = "BarcodeItemReview"
     static let revStars = "ReviewStars"
     static let userComm = "UserComments"
+    static let stores = "Stores"
 }
 

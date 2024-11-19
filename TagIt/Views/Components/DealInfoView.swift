@@ -9,18 +9,9 @@ import SwiftUI
 
 struct DealInfoView: View {
     @State var deal: Deal
-    @State var isLoading: Bool
-    @State var user: UserProfile
+    @State var isLoading = true
+    @State var user: UserProfile?
     @State private var errorMessage: String?
-    
-    init(deal: Deal) {
-        self.deal = deal
-        isLoading = true
-        
-        self.user = UserProfile(userId: "", email: "", displayName: "", avatarURL: "")
-        
-        fetchUserProfilebyID(id: deal.userID)
-    }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -36,28 +27,16 @@ struct DealInfoView: View {
                         // Load User Profile
                         if (isLoading) {
                             ProgressView()
+                                .frame(width: 40, height: 40)
                         } else if let errorMessage = errorMessage {
                             Text("Error: \(errorMessage)")
                         } else {
                             HStack {
-                                if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                                    AsyncImage(url: url) { phase in
-                                        if let image = phase.image {
-                                            image
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(Circle())
-                                        } else {
-                                            ProgressView()
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(Circle())
-                                        }
-                                    }
-                                }
+                                UserAvatarView(avatarURL: user?.avatarURL ?? "")
+                                    .frame(width: 40, height: 40)
                                 
                                 VStack (alignment: .leading) {
-                                    Text(user.displayName)
+                                    Text(user?.displayName ?? "")
                                         .lineLimit(1)
                                     
                                     Text(deal.date)
@@ -72,12 +51,19 @@ struct DealInfoView: View {
                         Text(String(format: "$%.2f", deal.price))
                     }
                     
-                    AsyncImage(url: URL(string: deal.photoURL)) { image in
-                        image.image?.resizable()
+                    AsyncImage(url: URL(string: deal.photoURL)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .clipShape(.rect(cornerRadius: 25))
+                        } else {
+                            ProgressView()
+                                .frame(width: 100, height: 100)
+                                .cornerRadius(25)
+                        }
                     }
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .clipShape(.rect(cornerRadius: 25))
                 }
                 .padding(.top, 5)
                 
@@ -98,20 +84,25 @@ struct DealInfoView: View {
                 }
             }
             .padding(.horizontal)
+            .onAppear() {
+                fetchUserProfile()
+            }
         }
     }
     
     // Function to fetch user profile
-    private func fetchUserProfilebyID(id: String) {
+    private func fetchUserProfile() {
         isLoading = true
-        UserService.shared.getUserById(id: id) { result in
-            switch result {
-            case .success(let fetchUserProfilebyID):
-                self.user = fetchUserProfilebyID
-                self.isLoading = false
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
-                self.isLoading = false
+        if (deal.userID != "") {
+            UserService.shared.getUserById(id: deal.userID) { result in
+                switch result {
+                case .success(let fetchUserProfilebyID):
+                    self.user = fetchUserProfilebyID
+                    self.isLoading = false
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                    self.isLoading = false
+                }
             }
         }
     }
@@ -119,7 +110,7 @@ struct DealInfoView: View {
 
 #Preview {
     DealInfoView(
-        deal: Deal(id: "DealID", userID: "UID1", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
+        deal: Deal(id: "DealID", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
     )
     
 }

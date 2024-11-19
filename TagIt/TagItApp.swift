@@ -30,6 +30,7 @@ struct TagItApp: App {
         WindowGroup {
 //            ContentView()
             MainView()
+//            SearchResultView()
         }
     }
 }
