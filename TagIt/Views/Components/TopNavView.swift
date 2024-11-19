@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct TopNavView: View {
+    @StateObject var viewModel = ProfileViewModel()
+
     var body: some View {
         HStack {
             // Logo as an SF Symbol
@@ -36,11 +38,13 @@ struct TopNavView: View {
                         .foregroundStyle(.gray)
                 }
                 NavigationLink(destination: ProfileView()) {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(.gray)
+                    if viewModel.userProfile == nil{
+                        ProgressView()
+                            .frame(width: 40, height: 40)
+                    } else {
+                        UserAvatarView(avatarURL: viewModel.userProfile?.avatarURL ?? "")
+                            .frame(width: 40, height: 40)
+                    }
                 }
             }
             .padding(.trailing, 16)
