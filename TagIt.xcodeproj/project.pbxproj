@@ -26,7 +26,6 @@
 		4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */; };
 		4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0D2CB50EF800EB6411 /* MainView.swift */; };
 		4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */; };
-		40A366982CEB4DDF00038754 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 40A366972CEB4DDF00038754 /* Config.xcconfig */; };
 		40A3669A2CEC71F100038754 /* SearchResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A366992CEC71F100038754 /* SearchResultDetailView.swift */; };
 		40A3669C2CEC721500038754 /* SearchResultDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */; };
 		40A9DF912CEB361500D15E51 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 40A9DF902CEB361500D15E51 /* Core */; };
@@ -69,7 +68,6 @@
 		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
 		90D774F92CDB5899005E2622 /* UpvotedPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F82CDB588C005E2622 /* UpvotedPostsView.swift */; };
 		90D774FB2CDB59B8005E2622 /* MyListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774FA2CDB59AF005E2622 /* MyListingsView.swift */; };
-		90D7754D2CED546E005E2622 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 90D7754C2CED546E005E2622 /* Config.xcconfig */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
@@ -331,7 +329,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					40F8B5E82C9FA8AF0024C7EF = {
 						CreatedOnToolsVersion = 15.4;
@@ -365,8 +363,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40A366982CEB4DDF00038754 /* Config.xcconfig in Resources */,
-				90D7754D2CED546E005E2622 /* Config.xcconfig in Resources */,
 				40F8B5F42C9FA8B10024C7EF /* Preview Assets.xcassets in Resources */,
 				40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */,
 				909DFE512CD17D1A00138D31 /* GoogleService-Info.plist in Resources */,
