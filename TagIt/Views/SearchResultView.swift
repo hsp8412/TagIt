@@ -12,21 +12,32 @@ struct SearchResultView: View {
     @StateObject var viewModel: SearchResultViewModel
     
     var body: some View {
-        Map(){
-            UserAnnotation()
-            if viewModel.mapAnnotations.count>0 {
-                ForEach(viewModel.mapAnnotations) { annotation in
-                    Marker(annotation.title, coordinate: annotation.coordinate)
+        NavigationStack {
+            Map(selection: $viewModel.selection) {
+                UserAnnotation()
+                if !viewModel.mapAnnotations.isEmpty {
+                    ForEach(viewModel.mapAnnotations) { annotation in
+                        Annotation(annotation.title, coordinate: annotation.coordinate){
+                            NavigationLink(destination: SearchResultDetailView(store: annotation.store!, deals: viewModel.deals)){
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(Color.teal)
+                                    Text("🥕")
+                                        .padding(5)
+                                }
+                            }
+                        }
+                    }
                 }
+                
             }
-        }
-        .task{
-            viewModel.requestLocationPermission()
-            viewModel.fetchDeals()
+            .task {
+                viewModel.requestLocationPermission()
+                viewModel.fetchDeals()
+            }
         }
     }
 }
-
 
 #Preview {
     SearchResultView(viewModel:SearchResultViewModel(searchText: "milk"))

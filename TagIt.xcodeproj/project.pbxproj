@@ -27,6 +27,8 @@
 		4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0D2CB50EF800EB6411 /* MainView.swift */; };
 		4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */; };
 		40A366982CEB4DDF00038754 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 40A366972CEB4DDF00038754 /* Config.xcconfig */; };
+		40A3669A2CEC71F100038754 /* SearchResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A366992CEC71F100038754 /* SearchResultDetailView.swift */; };
+		40A3669C2CEC721500038754 /* SearchResultDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */; };
 		40A9DF912CEB361500D15E51 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 40A9DF902CEB361500D15E51 /* Core */; };
 		40BB0C772CC07D1B004D070B /* PasswordRecoveryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */; };
 		40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BB0CDA2CC0C10F004D070B /* ProfileView.swift */; };
@@ -86,6 +88,8 @@
 		4086FD0D2CB50EF800EB6411 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		40A366972CEB4DDF00038754 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		40A366992CEC71F100038754 /* SearchResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultDetailView.swift; sourceTree = "<group>"; };
+		40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultDetailViewModel.swift; sourceTree = "<group>"; };
 		40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRecoveryViewModel.swift; sourceTree = "<group>"; };
 		40BB0CDA2CC0C10F004D070B /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		40BB0CDC2CC0C462004D070B /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
@@ -170,6 +174,7 @@
 				909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */,
 				40BB0CDA2CC0C10F004D070B /* ProfileView.swift */,
 				40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */,
+				40A366992CEC71F100038754 /* SearchResultDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -187,6 +192,7 @@
 				4017C4562CC5E90000D110AD /* NewDealViewModel.swift */,
 				403755752CD1743700C7D96C /* SearchViewModel.swift */,
 				40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */,
+				40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -361,6 +367,7 @@
 				5DB3653E2CBEE01700424571 /* ReviewStarsModel.swift in Sources */,
 				5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */,
 				403755742CD16D8E00C7D96C /* GradientTitle.swift in Sources */,
+				40A3669C2CEC721500038754 /* SearchResultDetailViewModel.swift in Sources */,
 				5DF09DBC2CD337FB002B6A79 /* UpDownVoteView.swift in Sources */,
 				4086FD0A2CB5088800EB6411 /* RegisterView.swift in Sources */,
 				5DB365362CBEDD0F00424571 /* UserProfileModel.swift in Sources */,
@@ -379,6 +386,7 @@
 				4086FD062CB48FE100EB6411 /* LoginView.swift in Sources */,
 				5DE8EE052CC5E59E008DF0B2 /* CommentsView.swift in Sources */,
 				4086FD082CB4AA5400EB6411 /* PasswordRecoveryView.swift in Sources */,
+				40A3669A2CEC71F100038754 /* SearchResultDetailView.swift in Sources */,
 				909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */,
 				5DF09DBA2CD337E0002B6A79 /* UpDownVote2View.swift in Sources */,
 				4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */,

@@ -8,7 +8,11 @@ import SwiftUI
 import MapKit
 import Combine
 
+
 class SearchResultViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
+//    @Published var mapSelection: MapSelection<MKMapItem>?
+    @Published var showDetails: Bool = false
+    @Published var selection: MKMapItem?
     @Published var searchText:String
     @Published var position: MapCameraPosition = .userLocation(followsHeading: false, fallback: .automatic)
     @Published var region = MKCoordinateRegion(
@@ -17,6 +21,7 @@ class SearchResultViewModel: NSObject, ObservableObject, CLLocationManagerDelega
     )
     
     @Published var mapAnnotations: [CustomAnnotation] = [] // For map annotations
+    var deals : [Deal] = []
     
     init(searchText:String){
         self.searchText = searchText
@@ -35,6 +40,7 @@ class SearchResultViewModel: NSObject, ObservableObject, CLLocationManagerDelega
         StoreService.shared.getDeals(query:searchText) { [weak self] result in
             switch result {
             case .success(let deals):
+                self?.deals = deals
                 for deal in deals {
                     if let store = deal.store {
                         print("Latitude: \(store.latitude)")
@@ -45,9 +51,11 @@ class SearchResultViewModel: NSObject, ObservableObject, CLLocationManagerDelega
                     self?.mapAnnotations = deals.compactMap { deal in
                         guard let store = deal.store else { return nil }
                         return CustomAnnotation(
+                            locationId:store.id ?? "",
                             title: store.name,
                             subtitle: deal.productText,
-                            coordinate: CLLocationCoordinate2D(latitude: store.latitude, longitude: store.longitude)
+                            coordinate: CLLocationCoordinate2D(latitude: store.latitude, longitude: store.longitude),
+                            store: deal.store ?? nil
                         )
                     }
                 }
@@ -78,7 +86,9 @@ class SearchResultViewModel: NSObject, ObservableObject, CLLocationManagerDelega
 
 struct CustomAnnotation: Identifiable {
     let id = UUID()
+    let locationId: String
     let title: String
     let subtitle: String
     let coordinate: CLLocationCoordinate2D
+    let store: Store?
 }

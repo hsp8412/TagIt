@@ -8,6 +8,7 @@
 import Foundation
 import Search
 import FirebaseCore
+import FirebaseFirestore
 
 class SearchService {
     private let client: SearchClient
@@ -15,9 +16,9 @@ class SearchService {
     
     init() {
         guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_API_KEY") as? String,
-                  let appID = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_APP_ID") as? String else {
-                      fatalError("Missing Algolia credentials in AppConfig.xcconfig")
-                  }
+        let appID = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_APP_ID") as? String else {
+            fatalError("Missing Algolia credentials in AppConfig.xcconfig")
+        }
         
         do {
             self.client = try SearchClient(appID: appID, apiKey: apiKey)
@@ -27,43 +28,51 @@ class SearchService {
     }
     
     func searchDeals(query: String) async throws -> [Deal] {
+        
         let response: SearchResponses<DealHit> = try await client
             .search(searchMethodParams: SearchMethodParams(requests: [SearchQuery.searchForHits(SearchForHits(
                 query: query,
                 indexName: self.indexName
             ))]))
+//        print("Raw Algolia response: \(response)")
         
-        // Step 1: Extract and map hits to Deal
-        let deals = response.results.compactMap { result in
+        // Step 1: Extract objectIDs from search hits
+        let objectIDs = response.results.compactMap { result in
             switch result {
             case .searchResponse(let searchResponse):
-                return searchResponse.hits.compactMap { dealHit in
-                    mapHitToDeal(hit: dealHit) // Transform DealHit to Deal
-                }
+                print(searchResponse.hits)
+                return searchResponse.hits.map { $0.objectID }
             case .searchForFacetValuesResponse:
-                return nil // Ignore facet value responses
+                return []
             }
-        }.flatMap { $0 } // Flatten nested arrays to a single [Deal]
+        }.flatMap { $0 } // Flatten nested arrays to a single [String]
         
-        return deals
+        // Step 2: Fetch corresponding deals from the database
+        return try await fetchDealsFromDatabase(objectIDs: objectIDs)
     }
     
-    func mapHitToDeal(hit: DealHit) -> Deal {
-        return Deal(
-            id: hit.objectID,
-            userID: hit.userID,
-            photoURL: hit.photoURL,
-            productText: hit.productText,
-            postText: hit.postText,
-            price: hit.price,
-            location: hit.location,
-            date: hit.date,
-            commentIDs: hit.commentIDs,
-            upvote: hit.upvote,
-            downvote: hit.downvote,
-            locationId: hit.locationId,
-            dateTime: Timestamp(seconds: Int64(hit.dateTime / 1000), nanoseconds: Int32((hit.dateTime % 1000) * 1_000_000))
-        )
+    
+    private func fetchDealsFromDatabase(objectIDs: [String]) async throws -> [Deal] {
+        // Replace this with your actual database fetching logic
+        
+        let firestore = Firestore.firestore()
+        
+        let deals = try await withThrowingTaskGroup(of: Deal?.self) { group in
+            for id in objectIDs {
+                group.addTask {
+                    let document = try await firestore.collection("Deals").document(id).getDocument()
+                    return try document.data(as: Deal.self)
+                }
+            }
+            
+            return try await group.reduce(into: [Deal]()) { result, deal in
+                if let deal = deal {
+                    result.append(deal)
+                }
+            }
+        }
+        
+        return deals
     }
 }
 
