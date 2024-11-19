@@ -11,29 +11,46 @@ struct UpDownVoteView: View {
     let type: Vote.ItemType
     let id: String
     var upVote, downVote: Int
-    @State var showUpVote: Int
-    @State var showDownVote: Int
+    // @State var showUpVote: Int
+    // @State var showDownVote: Int
     @State var upVoteTap: Bool
     @State var downVoteTap: Bool
     
-    init(type: Vote.ItemType, id: String, upVote: Int, downVote: Int, upVoteTap: Bool, downVoteTap: Bool) {
+    init(type: Vote.ItemType, id: String, upVote: Int, downVote: Int) {
         self.type = type
         self.id = id
         self.upVote = upVote
         self.downVote = downVote
-        self.upVoteTap = upVoteTap
-        self.downVoteTap = downVoteTap
-        self.showUpVote = upVote
-        self.showDownVote = downVote
+        // self.showUpVote = upVote
+        // self.showDownVote = downVote
+
+        if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType) != `nil`){
+            if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType).voteType == "upvote"){
+                self.upVoteTap = true
+                self.downVoteTap = false
+            }
+            if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType).voteType == "downvote"){
+                self.upVoteTap = false
+                self.downVoteTap = true
+            }
+            else{
+                print("get user vote with no upvote or down vote")
+            }
+        }
+        else{
+            self.upVoteTap = false
+            self.downVoteTap = false
+        }
         
-        if (upVoteTap) {
-            self.upVote = upVote - 1
+        
+        // if (upVoteTap) {
+        //     self.upVote = upVote - 1
     
-        }
+        // }
         
-        if (downVoteTap) {
-            self.downVote = downVote - 1
-        }
+        // if (downVoteTap) {
+        //     self.downVote = downVote - 1
+        // }
     }
 
     var body: some View {
@@ -41,15 +58,7 @@ struct UpDownVoteView: View {
             Button(action: {
                 print("Thumbsup Tapped")
 
-                if (upVoteTap) {
-                    showUpVote = upVote
-                } else {
-                    showUpVote = upVote + 1
-                    
-                }
-                
-                showDownVote = downVote
-                downVoteTap = false
+                handleVote(type: .upvote)
                 
                 upVoteTap.toggle()
             }) {
@@ -69,14 +78,14 @@ struct UpDownVoteView: View {
                             Image(systemName: "hand.thumbsup.fill")
                                 .foregroundStyle(Color.white)
                             
-                            Text("\(showUpVote)")
+                            Text("\(upVote)")
                                 .padding(.horizontal)
                                 .foregroundColor(.white)
                         } else {
                             Image(systemName: "hand.thumbsup.fill")
                                 .foregroundStyle(Color.green)
                             
-                            Text("\(showUpVote)")
+                            Text("\(upVote)")
                                 .padding(.horizontal)
                                 .foregroundColor(.green)
                         }
@@ -88,14 +97,7 @@ struct UpDownVoteView: View {
             Button(action: {
                 print("Thumbsdown Tapped")
 
-                if (downVoteTap) {
-                    showDownVote = downVote
-                } else {
-                    showDownVote = downVote + 1
-                }
-                
-                showUpVote = upVote
-                upVoteTap = false
+                handleVote(type: .downvote)
 
                 downVoteTap.toggle()
             }) {
@@ -115,20 +117,64 @@ struct UpDownVoteView: View {
                             Image(systemName: "hand.thumbsdown.fill")
                                 .foregroundStyle(Color.white)
                             
-                            Text("\(showDownVote)")
+                            Text("\(downVote)")
                                 .padding(.horizontal)
                                 .foregroundColor(.white)
                         } else {
                             Image(systemName: "hand.thumbsdown.fill")
                                 .foregroundStyle(Color.red)
                             
-                            Text("\(showDownVote)")
+                            Text("\(downVote)")
                                 .padding(.horizontal)
                                 .foregroundColor(.red)
                         }
                     }
                     
                 }
+            }
+        }
+    }
+
+    private func handleVote(voteType: Vote.VoteType) {
+        let voteService = VoteService.shared
+        
+        voteService.handleVote(userId: "currentUserId", itemId: id, itemType: type, voteType: voteType) { result in
+            switch result {
+            case .success:
+                if voteType == .upvote {
+                    if (upVoteTap){
+                        upVoteTap = false
+                        upVote -= 1
+                    }                    
+                    else if (downVoteTap) {
+                        downVoteTap = false
+                        upVoteTap = true
+                        downVote -= 1
+                        upVote += 1
+                    }
+                    else{
+                        upVoteTap = true
+                        upVote += 1
+                    }
+
+                } else {
+                    if (downVoteTap){
+                        downVoteTap = false
+                        downVote -= 1
+                    }                    
+                    else if (upVoteTap) {
+                        upVoteTap = false
+                        downVoteTap = true
+                        downVote += 1
+                        upVote -= 1
+                    }
+                    else{
+                        downVote = true
+                        downVote += 1
+                    }
+                }
+            case .failure(let error):
+                print("Error voting: \(error.localizedDescription)")
             }
         }
     }

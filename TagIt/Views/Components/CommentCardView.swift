@@ -55,7 +55,7 @@ struct CommentCardView: View {
                 
                 // UpVote DownVote Button
                 // TAP STATUS NEED TO BE IMPLEMENTED
-                UpDownVoteView(type: .comment, id: comment.id!, upVote: comment.upvote, downVote: comment.downvote, upVoteTap: false, downVoteTap: false)
+                UpDownVoteView(type: .comment, id: comment.id!, upVote: comment.upvote, downVote: comment.downvote)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding()
