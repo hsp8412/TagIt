@@ -7,11 +7,13 @@
 
 import Foundation
 import FirebaseAuth
+import UIKit
 
 class ProfileViewModel:ObservableObject{
     @Published var isLoading = false;
     @Published var errorMessage:String? = nil;
     @Published var userProfile: UserProfile? = nil;
+    @Published var image: UIImage?;
     
     init() {
         // Fetch the cached user from AuthService when the ViewModel is initialized
