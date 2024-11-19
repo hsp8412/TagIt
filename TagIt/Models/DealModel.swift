@@ -44,17 +44,17 @@ struct Deal: Identifiable, Codable {
 }
 
 struct DealHit: Codable {
-    let objectID: String // Corresponds to id in Deal
-    let productText: String
-    let commentIDs: [String]
-    let date: String
-    let downvote: Int
-    let photoURL: String
-    let postText: String
-    let price: Double
-    let upvote: Int
-    let userID: String
-    let dateTime: Int // Timestamp as Int
-    let location: String
-    let locationId: String
+    let objectID: String
+    let productText: String?
+    let commentIDs: [String]?
+    let date: String?
+    let downvote: Int?
+    let photoURL: String?
+    let postText: String?
+    let price: Double?
+    let upvote: Int?
+    let userID: String?
+    let dateTime: Int?
+    let location: String?
+    let locationId: String?
 }
