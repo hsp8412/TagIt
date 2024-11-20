@@ -114,6 +114,45 @@ class FirestoreService {
         }
     }
     
+    func readCollection(collectionName: String, completion: @escaping (Result<[QueryDocumentSnapshot], Error>) -> Void) {
+        db.collection(collectionName).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else if let documents = querySnapshot?.documents {
+                completion(.success(documents))
+            } else {
+                completion(.failure(NSError(domain: "FirestoreError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No documents found"])))
+            }
+        }
+    }
+    
+    /**
+     Updates an entire document in a Firestore collection with the provided data.
+     
+     - Parameters:
+        - collectionName: The name of the Firestore collection.
+        - documentID: The ID of the document to update.
+        - data: A dictionary or `Codable` object containing the data to update.
+        - completion: A closure that returns an optional error if something goes wrong during the update.
+     */
+    func updateDocument<T: Codable>(collectionName: String, documentID: String, data: T, completion: @escaping (Error?) -> Void) {
+        do {
+            let dataDict = try Firestore.Encoder().encode(data)
+            db.collection(collectionName).document(documentID).setData(dataDict, merge: true) { error in
+                if let error = error {
+                    print("Error updating document \(documentID): \(error.localizedDescription)")
+                    completion(error)
+                } else {
+                    print("Successfully updated document \(documentID) in \(collectionName)")
+                    completion(nil)
+                }
+            }
+        } catch {
+            print("Error encoding data for update: \(error.localizedDescription)")
+            completion(error)
+        }
+    }
+    
     /**
      Deletes a Firestore document from a collection.
      
