@@ -82,9 +82,11 @@ class VoteService {
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.votes, documentID: voteId, modelType: Vote.self) { result in
             switch result {
             case .success(let vote):
-                completion(.success(vote)) // Successfully fetched the vote
+                completion(.success(vote))
+            case .failure(let error) where (error as NSError).code == FirestoreErrorCode.notFound.rawValue:
+                completion(.success(nil)) // No vote exists
             case .failure(let error):
-                completion(.failure(error)) // Failed to fetch the vote
+                completion(.failure(error))
             }
         }
     }

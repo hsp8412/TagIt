@@ -11,7 +11,7 @@ struct UpDownVoteView: View {
     let type: Vote.ItemType
     let itemId: String
     let userId: String
-    @State var upVote Int
+    @State var upVote: Int
     @State var downVote: Int
     // @State var showUpVote: Int
     // @State var showDownVote: Int
@@ -27,7 +27,7 @@ struct UpDownVoteView: View {
         // self.showUpVote = upVote
         // self.showDownVote = downVote
 
-        if (VoteService.getUserVote(userId: userId, itemId: itemId, itemType: type) != `nil`){
+        if VoteService.getUserVote(userId: userId, itemId: itemId, itemType: type) != nil {
             if (VoteService.getUserVote(userId: userId, itemId: itemId, itemType: type).voteType == "upvote"){
                 self.upVoteTap = true
                 self.downVoteTap = false
@@ -163,7 +163,7 @@ struct UpDownVoteView: View {
                         upVote -= 1
                     }
                     else{
-                        downVote = true
+                        downVoteTap = true
                         downVote += 1
                     }
                 }
