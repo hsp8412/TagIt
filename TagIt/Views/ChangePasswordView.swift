@@ -19,18 +19,32 @@ struct ChangePasswordView: View {
             Text("Change Password")
                 .font(.title)
                 .padding(.top)
+                .padding(.bottom)
             
-            SecureField("Current Password", text: $currentPassword)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Old Password")
+                    .font(.body)
+                SecureField("Enter your current password", text: $currentPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+            .padding(.horizontal)
             
-            SecureField("New Password", text: $newPassword)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+            VStack(alignment: .leading, spacing: 5) {
+                Text("New Password")
+                    .font(.body)
+                SecureField("Enter your new password", text: $newPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+            .padding(.horizontal)
             
-            SecureField("Confirm New Password", text: $confirmPassword)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Confirm New Password")
+                    .font(.body)
+                SecureField("Re-enter your new password", text: $confirmPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 20)
             
             if let errorMessage = errorMessage {
                 Text(errorMessage)
@@ -43,11 +57,13 @@ struct ChangePasswordView: View {
                     ProgressView()
                 } else {
                     Text("Submit")
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(Color.blue)
+                        .font(.headline)
                         .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
                 }
             }
             .padding(.top)

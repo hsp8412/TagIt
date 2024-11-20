@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-struct MyListingsView: View {
+struct MyReviewsView: View {
     var body: some View {
         VStack {
-            Text("My Listings")
+            Text("My Reviews")
                 .font(.title)
                 .padding()
         }
-        .navigationTitle("My Listings")
+        .navigationTitle("My Reviews")
     }
 }
 
 #Preview {
-    MyListingsView()
+    MyReviewsView()
 }
