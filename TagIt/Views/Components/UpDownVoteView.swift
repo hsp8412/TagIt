@@ -8,62 +8,29 @@
 import SwiftUI
 
 struct UpDownVoteView: View {
+    let userId: String
     let type: Vote.ItemType
     let id: String
-    var upVote, downVote: Int
-    // @State var showUpVote: Int
-    // @State var showDownVote: Int
-    @State var upVoteTap: Bool
-    @State var downVoteTap: Bool
+    @State var upVote: Int
+    @State var downVote: Int
+    @State var upVoteTap: Bool = false
+    @State var downVoteTap: Bool = false
     
-    init(type: Vote.ItemType, id: String, upVote: Int, downVote: Int) {
+    init(userId: String, type: Vote.ItemType, id: String, upVote: Int, downVote: Int) {
+        self.userId = userId
         self.type = type
         self.id = id
-        self.upVote = upVote
-        self.downVote = downVote
-        // self.showUpVote = upVote
-        // self.showDownVote = downVote
-
-        if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType) != `nil`){
-            if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType).voteType == "upvote"){
-                self.upVoteTap = true
-                self.downVoteTap = false
-            }
-            if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType).voteType == "downvote"){
-                self.upVoteTap = false
-                self.downVoteTap = true
-            }
-            else{
-                print("get user vote with no upvote or down vote")
-            }
-        }
-        else{
-            self.upVoteTap = false
-            self.downVoteTap = false
-        }
-        
-        
-        // if (upVoteTap) {
-        //     self.upVote = upVote - 1
-    
-        // }
-        
-        // if (downVoteTap) {
-        //     self.downVote = downVote - 1
-        // }
+        self._upVote = State(initialValue: upVote)
+        self._downVote = State(initialValue: downVote)
     }
-
+    
     var body: some View {
         HStack {
             Button(action: {
-                print("Thumbsup Tapped")
-
-                handleVote(type: .upvote)
-                
-                upVoteTap.toggle()
+                handleVote(voteType: .upvote)
             }) {
                 ZStack {
-                    if (upVoteTap) {
+                    if upVoteTap {
                         RoundedRectangle(cornerRadius: 15)
                             .fill(Color.green)
                             .frame(width: 100, height: 30)
@@ -74,35 +41,20 @@ struct UpDownVoteView: View {
                     }
                     
                     HStack {
-                        if (upVoteTap) {
-                            Image(systemName: "hand.thumbsup.fill")
-                                .foregroundStyle(Color.white)
-                            
-                            Text("\(upVote)")
-                                .padding(.horizontal)
-                                .foregroundColor(.white)
-                        } else {
-                            Image(systemName: "hand.thumbsup.fill")
-                                .foregroundStyle(Color.green)
-                            
-                            Text("\(upVote)")
-                                .padding(.horizontal)
-                                .foregroundColor(.green)
-                        }
+                        Image(systemName: "hand.thumbsup.fill")
+                            .foregroundStyle(upVoteTap ? .white : .green)
+                        Text("\(upVote)")
+                            .foregroundColor(upVoteTap ? .white : .green)
+                            .padding(.horizontal)
                     }
-                    
                 }
             }
             
             Button(action: {
-                print("Thumbsdown Tapped")
-
-                handleVote(type: .downvote)
-
-                downVoteTap.toggle()
+                handleVote(voteType: .downvote)
             }) {
                 ZStack {
-                    if (downVoteTap) {
+                    if downVoteTap {
                         RoundedRectangle(cornerRadius: 15)
                             .fill(Color.red)
                             .frame(width: 100, height: 30)
@@ -113,73 +65,62 @@ struct UpDownVoteView: View {
                     }
                     
                     HStack {
-                        if (downVoteTap) {
-                            Image(systemName: "hand.thumbsdown.fill")
-                                .foregroundStyle(Color.white)
-                            
-                            Text("\(downVote)")
-                                .padding(.horizontal)
-                                .foregroundColor(.white)
-                        } else {
-                            Image(systemName: "hand.thumbsdown.fill")
-                                .foregroundStyle(Color.red)
-                            
-                            Text("\(downVote)")
-                                .padding(.horizontal)
-                                .foregroundColor(.red)
-                        }
+                        Image(systemName: "hand.thumbsdown.fill")
+                            .foregroundStyle(downVoteTap ? .white : .red)
+                        Text("\(downVote)")
+                            .foregroundColor(downVoteTap ? .white : .red)
+                            .padding(.horizontal)
                     }
-                    
+                }
+            }
+        }
+        .onAppear {
+            fetchUserVoteState()
+        }
+    }
+    
+    private func fetchUserVoteState() {
+        VoteService.shared.getUserVote(userId: userId, itemId: id, itemType: type) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let vote):
+                    if let vote = vote {
+                        upVoteTap = (vote.voteType == .upvote)
+                        downVoteTap = (vote.voteType == .downvote)
+                    } else {
+                        upVoteTap = false
+                        downVoteTap = false
+                    }
+                case .failure(let error):
+                    print("Error fetching vote: \(error.localizedDescription)")
                 }
             }
         }
     }
-
+    private func fetchUpdatedVotes() {
+        VoteService.shared.getVoteCounts(itemId: id, itemType: type) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let counts):
+                    upVote = counts.upvotes
+                    downVote = counts.downvotes
+                case .failure(let error):
+                    print("Error fetching updated vote counts: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     private func handleVote(voteType: Vote.VoteType) {
-        let voteService = VoteService.shared
-        
-        voteService.handleVote(userId: "currentUserId", itemId: id, itemType: type, voteType: voteType) { result in
-            switch result {
-            case .success:
-                if voteType == .upvote {
-                    if (upVoteTap){
-                        upVoteTap = false
-                        upVote -= 1
-                    }                    
-                    else if (downVoteTap) {
-                        downVoteTap = false
-                        upVoteTap = true
-                        downVote -= 1
-                        upVote += 1
-                    }
-                    else{
-                        upVoteTap = true
-                        upVote += 1
-                    }
-
-                } else {
-                    if (downVoteTap){
-                        downVoteTap = false
-                        downVote -= 1
-                    }                    
-                    else if (upVoteTap) {
-                        upVoteTap = false
-                        downVoteTap = true
-                        downVote += 1
-                        upVote -= 1
-                    }
-                    else{
-                        downVote = true
-                        downVote += 1
-                    }
+        VoteService.shared.handleVote(userId: userId, itemId: id, itemType: type, voteType: voteType) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    fetchUpdatedVotes() // Fetch updated vote counts after interaction
+                case .failure(let error):
+                    print("Error updating vote: \(error.localizedDescription)")
                 }
-            case .failure(let error):
-                print("Error voting: \(error.localizedDescription)")
             }
         }
     }
-}
-
-#Preview {
-    UpDownVoteView(type: .comment, id: "", upVote: 10, downVote: 21, upVoteTap: false, downVoteTap: true)
 }

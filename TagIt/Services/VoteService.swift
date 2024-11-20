@@ -18,53 +18,50 @@ class VoteService {
         - completion: A completion handler that returns a `Result<Void, Error>` indicating success or failure.
      */
     func handleVote(userId: String, itemId: String, itemType: Vote.ItemType, voteType: Vote.VoteType, completion: @escaping (Result<Void, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)_\(itemType)" // Unique identifier for each vote (userId + itemId + itemType)
+        let voteId = "\(userId)_\(itemId)_\(itemType)"
         
-        // Check if the user has already voted on this item
+        // Fetch the vote first
         getUserVote(userId: userId, itemId: itemId, itemType: itemType) { result in
             switch result {
             case .success(let existingVote):
                 if let existingVote = existingVote {
                     if existingVote.voteType == voteType {
-                        // If the user clicks the same vote type again, undo the vote (delete it)
+                        // Undo vote
                         FirestoreService.shared.deleteDocument(collectionName: FirestoreCollections.votes, documentID: voteId) { error in
                             if let error = error {
                                 completion(.failure(error))
                             } else {
-                                print("Vote removed successfully")
                                 completion(.success(()))
                             }
                         }
                     } else {
-                        // If the user clicks the opposite vote, update the vote to the new type
+                        // Update vote
                         let updatedVote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
                         FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: updatedVote) { error in
                             if let error = error {
                                 completion(.failure(error))
                             } else {
-                                print("Vote updated successfully")
                                 completion(.success(()))
                             }
                         }
                     }
                 } else {
-                    // If no vote exists, create a new vote
+                    // Create new vote
                     let newVote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
                     FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: newVote) { error in
                         if let error = error {
                             completion(.failure(error))
                         } else {
-                            print("Vote created successfully")
                             completion(.success(()))
                         }
                     }
                 }
-                
             case .failure(let error):
                 completion(.failure(error))
             }
         }
     }
+
     
     /**
      Fetches the user's vote for a specific item from Firestore.
@@ -76,19 +73,27 @@ class VoteService {
         - completion: A completion handler that returns a `Result<Vote?, Error>`. The result is `nil` if no vote exists.
      */
     func getUserVote(userId: String, itemId: String, itemType: Vote.ItemType, completion: @escaping (Result<Vote?, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)_\(itemType)"
+        let voteId = "\(userId)_\(itemId)_\(itemType.rawValue)"
         
-        // Read the user's vote document from the "Votes" collection
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.votes, documentID: voteId, modelType: Vote.self) { result in
             switch result {
             case .success(let vote):
-                completion(.success(vote)) // Successfully fetched the vote
+                completion(.success(vote))
             case .failure(let error):
-                completion(.failure(error)) // Failed to fetch the vote
+                let nsError = error as NSError
+                if nsError.domain == "FirestoreError" && nsError.code == -1 {
+                    // Document does not exist; return nil to indicate no existing vote
+                    completion(.success(nil))
+                } else {
+                    print("Error decoding vote document: \(error.localizedDescription)")
+                    print("Vote ID: \(voteId)")
+                    completion(.failure(error))
+                }
             }
         }
     }
-    
+
+
     /**
      Removes a user's vote for a specific item from Firestore.
      
@@ -110,4 +115,36 @@ class VoteService {
             }
         }
     }
+    
+    func getVoteCounts(itemId: String, itemType: Vote.ItemType, completion: @escaping (Result<(upvotes: Int, downvotes: Int), Error>) -> Void) {
+        FirestoreService.shared.readCollection(collectionName: FirestoreCollections.votes) { result in
+            switch result {
+            case .success(let documents):
+                // Decode documents into Vote objects
+                let votes = documents.compactMap { document -> Vote? in
+                    let data = document.data()
+                    do {
+                        return try Firestore.Decoder().decode(Vote.self, from: data)
+                    } catch {
+                        print("Error decoding vote document: \(error.localizedDescription)")
+                        print("Document Data: \(data)")  // Add debugging for document data
+                        return nil // Skip this document
+                    }
+                }
+
+                // Filter votes by itemId and itemType
+                let filteredVotes = votes.filter { $0.itemId == itemId && $0.itemType == itemType }
+                
+                // Count upvotes and downvotes
+                let upvotes = filteredVotes.filter { $0.voteType == .upvote }.count
+                let downvotes = filteredVotes.filter { $0.voteType == .downvote }.count
+                
+                completion(.success((upvotes: upvotes, downvotes: downvotes)))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+
 }
