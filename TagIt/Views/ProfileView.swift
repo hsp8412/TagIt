@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
+    @State private var isEditingUsername = false
+    @State private var newUsername = ""
+    
     var body: some View {
         ScrollView {
             VStack {
@@ -23,6 +26,9 @@ struct ProfileView: View {
                 
                 VStack(alignment: .leading, spacing: 15) {
                     Group {
+                        Text("Profile Information")
+                            .fontWeight(.heavy)
+                        
                         Divider()
                         
                         // Username
@@ -55,36 +61,8 @@ struct ProfileView: View {
                         
                         Divider()
                         
-                        // User ID
-                        HStack {
-                            Text("UserID")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            if let userID = viewModel.userProfile?.id {
-                                Text(userID)
-                                    .foregroundColor(.gray)
-                            } else {
-                                ProgressView()
-                            }
-                        }
-                        
-                        Divider()
-                        
-                        // Upvoted Posts
-                        NavigationLink(destination: UpvotedPostsView()) {
-                            HStack {
-                                Text("Upvoted Posts")
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.black)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        Divider()
-                        
-                        // My Listings
-                        NavigationLink(destination: MyListingsView()) {
+                        // My Reviews
+                        NavigationLink(destination: MyReviewsView()) {
                             HStack {
                                 Text("My Listings")
                                     .fontWeight(.semibold)
@@ -94,6 +72,23 @@ struct ProfileView: View {
                                     .foregroundColor(.gray)
                             }
                         }
+                        Divider()
+                        .padding(.bottom, 20)
+                        
+                        Text("Account Settings")
+                            .fontWeight(.heavy)
+                        
+                        Divider()
+                        // Edit Username
+                        NavigationLink(destination: EditUsernameView()) {
+                                HStack {
+                                    Text("Edit Username")
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.black)
+                                    Spacer()
+                                }
+                            }
+                        
                         Divider()
                         
                         // Change Password
@@ -108,12 +103,18 @@ struct ProfileView: View {
                         
                         Divider()
                         
-                        Text("Log Out")
-                            .foregroundColor(.red)
-                            .onTapGesture {
-                                viewModel.logout()
-                            }
-                        Divider()
+                        Button(action: {
+                            viewModel.logout()
+                        }) {
+                            Text("Log Out")
+                                .foregroundColor(.red)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color(.systemGray5))
+                                .cornerRadius(8)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
                     }
                 }
                 .padding()
