@@ -12,7 +12,9 @@ struct CommentCardView: View {
         id: "UID1",
         email: "user@example.com",
         displayName: "User Name",
-        avatarURL: "https://i.imgur.com/8ciNZcY.jpeg"
+        avatarURL: "https://i.imgur.com/8ciNZcY.jpeg",
+        score: 0,
+        savedDeals: []
     )
     let time = "1h"
     
