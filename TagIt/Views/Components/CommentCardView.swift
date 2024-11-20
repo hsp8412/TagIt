@@ -55,26 +55,13 @@ struct CommentCardView: View {
                 
                 // UpVote DownVote Button
                 // TAP STATUS NEED TO BE IMPLEMENTED
-                UpDownVoteView(type: .comment, id: comment.id!, upVote: comment.upvote, downVote: comment.downvote)
+                UpDownVoteView(type: .comment, id: comment.id!, userId: user.id, upVote: comment.upvote, downVote: comment.downvote)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding()
         }
     }
 
-    private func handleVote(voteType: Vote.voteType) {
-        let itemType = .comment // Assuming we are voting on comments
-        
-        VoteService.shared.handleVote(userId: user.userId, itemId: comment.id, itemType: comment.commentType, voteType: voteType) { result in
-            switch result {
-            case .success:
-                print("\(voteType.rawValue.capitalized) successful")
-                self.userVote = voteType // Update user's current vote
-            case .failure(let error):
-                print("Error handling vote: \(error.localizedDescription)")
-            }
-        }
-    }
 }
 
 #Preview {
