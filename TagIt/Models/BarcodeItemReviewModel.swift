@@ -14,6 +14,5 @@ struct BarcodeItemReview: Identifiable, Codable {
     var photoURL: String
     var reviewStars: Double
     var productName: String
-    var commentIDs: [String]
     var barcodeNumber: String
 }

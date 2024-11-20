@@ -9,53 +9,128 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
+    @State private var isEditingUsername = false
+    @State private var newUsername = ""
+    
     var body: some View {
-        VStack {
-            HStack {
-                if viewModel.userProfile == nil{
-                    ProgressView()
-                        .frame(width: 100, height: 100)
-                        .padding(.leading, 50)
-                        .padding(.top, 50)
-                } else {
-                    UserAvatarView(avatarURL: viewModel.userProfile?.avatarURL ?? "")
-                        .frame(width: 100, height: 100)
-                        .padding(.leading, 50)
-                        .padding(.top, 50)
+        ScrollView {
+            VStack {
+                ImageUploadView(
+                    imageToUpload: $viewModel.image,
+                    placeholderImage: UIImage(named: "uploadProfileIcon")!,
+                    width: 120,
+                    height: 120
+                )
+                .padding(.top, 20)
+                .padding(.bottom, 40)
+                
+                VStack(alignment: .leading, spacing: 15) {
+                    Group {
+                        Text("Profile Information")
+                            .fontWeight(.heavy)
+                        
+                        Divider()
+                        
+                        // Username
+                        HStack {
+                            Text("Username")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            if let username = viewModel.userProfile?.displayName {
+                                Text(username)
+                                    .foregroundColor(.gray)
+                            } else {
+                                ProgressView()
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        // Email
+                        HStack {
+                            Text("Email")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            if let email = viewModel.userProfile?.email {
+                                Text(email)
+                                    .foregroundColor(.gray)
+                            } else {
+                                ProgressView()
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        // My Reviews
+                        NavigationLink(destination: MyReviewsView()) {
+                            HStack {
+                                Text("My Listings")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.black)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        Divider()
+                        .padding(.bottom, 20)
+                        
+                        Text("Account Settings")
+                            .fontWeight(.heavy)
+                        
+                        Divider()
+                        // Edit Username
+                        NavigationLink(destination: EditUsernameView()) {
+                                HStack {
+                                    Text("Edit Username")
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.black)
+                                    Spacer()
+                                }
+                            }
+                        
+                        Divider()
+                        
+                        // Change Password
+                        NavigationLink(destination: ChangePasswordView()) {
+                                HStack {
+                                    Text("Change Password")
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.black)
+                                    Spacer()
+                                }
+                            }
+                        
+                        Divider()
+                        
+                        Button(action: {
+                            viewModel.logout()
+                        }) {
+                            Text("Log Out")
+                                .foregroundColor(.red)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color(.systemGray5))
+                                .cornerRadius(8)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+                
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding(.horizontal)
                 }
                 
                 Spacer()
             }
-            
-            if viewModel.userProfile == nil{
-                ProgressView()
-            }else{
-                Text(viewModel.userProfile?.displayName ?? "error")
-            }
-            
-            Button(action: {
-                viewModel.logout()
-            }) {
-                if viewModel.isLoading {
-                    ProgressView()
-                }
-                else{
-                    Text("Log Out")
-                        .padding(.horizontal,20)
-                        .padding(.vertical, 15)
-                        .background(.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(25)
-                }
-            }.padding(.top, 20)
-            if let errorMessage = viewModel.errorMessage{
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding(.horizontal)
-            }
-            
-            Spacer()
         }
+        .background(Color(.systemGray6))
     }
 }
 
