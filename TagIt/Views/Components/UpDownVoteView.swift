@@ -6,23 +6,14 @@
 //
 
 import SwiftUI
-
 struct UpDownVoteView: View {
     let userId: String
     let type: Vote.ItemType
     let id: String
-    @State var upVote: Int
-    @State var downVote: Int
+    @Binding var upVote: Int
+    @Binding var downVote: Int
     @State var upVoteTap: Bool = false
     @State var downVoteTap: Bool = false
-    
-    init(userId: String, type: Vote.ItemType, id: String, upVote: Int, downVote: Int) {
-        self.userId = userId
-        self.type = type
-        self.id = id
-        self._upVote = State(initialValue: upVote)
-        self._downVote = State(initialValue: downVote)
-    }
     
     var body: some View {
         HStack {
@@ -97,28 +88,61 @@ struct UpDownVoteView: View {
             }
         }
     }
+
+    
+    private func handleVote(voteType: Vote.VoteType) {
+        // Determine if the user is undoing their current vote
+        let isUndoingVote = (voteType == .upvote && upVoteTap) || (voteType == .downvote && downVoteTap)
+        
+        if isUndoingVote {
+            // Undo the vote
+            VoteService.shared.removeVote(userId: userId, itemId: id, itemType: type) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        print("Vote removed successfully")
+                        // Reset highlight states
+                        upVoteTap = false
+                        downVoteTap = false
+                        fetchUpdatedVotes()
+                    case .failure(let error):
+                        print("Error removing vote: \(error.localizedDescription)")
+                    }
+                }
+            }
+        } else {
+            // Cast or change the vote
+            VoteService.shared.handleVote(userId: userId, itemId: id, itemType: type, voteType: voteType) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        print("Vote successfully updated for \(voteType.rawValue)")
+                        // Update highlight states
+                        upVoteTap = (voteType == .upvote)
+                        downVoteTap = (voteType == .downvote)
+                        fetchUpdatedVotes()
+                    case .failure(let error):
+                        print("Error updating vote: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+
+    
     private func fetchUpdatedVotes() {
         VoteService.shared.getVoteCounts(itemId: id, itemType: type) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let counts):
+                    print("Fetched updated vote counts: \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
                     upVote = counts.upvotes
                     downVote = counts.downvotes
+                    
+                    // Optionally synchronize tap states
+                    fetchUserVoteState() // Ensure highlight states are in sync
                 case .failure(let error):
                     print("Error fetching updated vote counts: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
-    
-    private func handleVote(voteType: Vote.VoteType) {
-        VoteService.shared.handleVote(userId: userId, itemId: id, itemType: type, voteType: voteType) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    fetchUpdatedVotes() // Fetch updated vote counts after interaction
-                case .failure(let error):
-                    print("Error updating vote: \(error.localizedDescription)")
                 }
             }
         }

@@ -8,7 +8,12 @@ import SwiftUI
 
 struct CommentCardView: View {
     @State var comment: UserComments
-    let user: UserProfile = UserProfile(id: "UID1", email: "user@example.com", displayName: "User Name", avatarURL: "https://i.imgur.com/8ciNZcY.jpeg")
+    let user: UserProfile = UserProfile(
+        id: "UID1",
+        email: "user@example.com",
+        displayName: "User Name",
+        avatarURL: "https://i.imgur.com/8ciNZcY.jpeg"
+    )
     let time = "1h"
     
     var body: some View {
@@ -51,8 +56,8 @@ struct CommentCardView: View {
                     userId: user.id ?? "", // Pass user ID dynamically
                     type: .comment,
                     id: comment.id ?? "", // Ensure `comment.id` is unwrapped
-                    upVote: comment.upvote,
-                    downVote: comment.downvote
+                    upVote: $comment.upvote, // Pass as a binding
+                    downVote: $comment.downvote // Pass as a binding
                 )
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -72,8 +77,10 @@ struct CommentCardView: View {
         VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
             switch result {
             case .success(let counts):
-                comment.upvote = counts.upvotes
-                comment.downvote = counts.downvotes
+                DispatchQueue.main.async {
+                    comment.upvote = counts.upvotes
+                    comment.downvote = counts.downvotes
+                }
             case .failure(let error):
                 print("Error fetching vote counts: \(error.localizedDescription)")
             }
