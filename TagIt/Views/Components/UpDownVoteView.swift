@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UpDownVoteView: View {
     let type: Vote.ItemType
-    let id: String
+    let itemId: String
     let userId: String
     @State var upVote Int
     @State var downVote: Int
@@ -132,7 +132,7 @@ struct UpDownVoteView: View {
     private func handleVote(voteType: Vote.VoteType) {
         let voteService = VoteService.shared
         
-        voteService.handleVote(userId: "currentUserId", itemId: id, itemType: type, voteType: voteType) { result in
+        voteService.handleVote(userId: userId, itemId: itemId, itemType: type, voteType: voteType) { result in
             switch result {
             case .success:
                 if voteType == .upvote {
