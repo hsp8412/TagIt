@@ -8,7 +8,7 @@ import SwiftUI
 import FirebaseAuth
 
 struct DealInfoView: View {
-    @State var deal: Deal
+    @Binding var deal: Deal
     @State var isLoading = true
     @State var user: UserProfile?
     @State private var errorMessage: String?
@@ -86,8 +86,8 @@ struct DealInfoView: View {
                             userId: userId,
                             type: .deal,
                             id: deal.id!,
-                            upVote: deal.upvote,
-                            downVote: deal.downvote
+                            upVote: $deal.upvote,  // Pass as a binding
+                            downVote: $deal.downvote // Pass as a binding
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     } else {
@@ -137,18 +137,20 @@ struct DealInfoView: View {
 
 #Preview {
     DealInfoView(
-        deal: Deal(
-            id: "DealID",
-            userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2",
-            photoURL: "https://i.imgur.com/8ciNZcY.jpeg",
-            productText: "Product Text",
-            postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.",
-            price: 1.23,
-            location: "Safeway",
-            date: "2d",
-            commentIDs: ["CommentID1", "CommentID2"],
-            upvote: 5,
-            downvote: 6
+        deal: .constant(
+            Deal(
+                id: "DealID",
+                userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2",
+                photoURL: "https://i.imgur.com/8ciNZcY.jpeg",
+                productText: "Product Text",
+                postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.",
+                price: 1.23,
+                location: "Safeway",
+                date: "2d",
+                commentIDs: ["CommentID1", "CommentID2"],
+                upvote: 5,
+                downvote: 6
+            )
         )
     )
 }

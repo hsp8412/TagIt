@@ -20,47 +20,46 @@ class VoteService {
     func handleVote(userId: String, itemId: String, itemType: Vote.ItemType, voteType: Vote.VoteType, completion: @escaping (Result<Void, Error>) -> Void) {
         let voteId = "\(userId)_\(itemId)_\(itemType)"
         
-        // Fetch the vote first
+        // Fetch the existing vote
         getUserVote(userId: userId, itemId: itemId, itemType: itemType) { result in
             switch result {
             case .success(let existingVote):
                 if let existingVote = existingVote {
                     if existingVote.voteType == voteType {
                         // Undo vote
-                        FirestoreService.shared.deleteDocument(collectionName: FirestoreCollections.votes, documentID: voteId) { error in
-                            if let error = error {
-                                completion(.failure(error))
-                            } else {
-                                completion(.success(()))
-                            }
-                        }
+                        print("User is undoing their vote: \(voteType.rawValue) for item: \(itemId)")
+                        self.removeVote(userId: userId, itemId: itemId, itemType: itemType, completion: completion)
                     } else {
                         // Update vote
-                        let updatedVote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
-                        FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: updatedVote) { error in
-                            if let error = error {
-                                completion(.failure(error))
-                            } else {
-                                completion(.success(()))
-                            }
-                        }
+                        print("User is changing their vote to: \(voteType.rawValue) for item: \(itemId)")
+                        self.saveVote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType, itemType: itemType, completion: completion)
                     }
                 } else {
                     // Create new vote
-                    let newVote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
-                    FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: newVote) { error in
-                        if let error = error {
-                            completion(.failure(error))
-                        } else {
-                            completion(.success(()))
-                        }
-                    }
+                    print("User is casting a new vote: \(voteType.rawValue) for item: \(itemId)")
+                    self.saveVote(voteId: voteId, userId: userId, itemId: itemId, voteType: voteType, itemType: itemType, completion: completion)
                 }
             case .failure(let error):
+                print("Error fetching user vote: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
     }
+    
+    private func saveVote(voteId: String, userId: String, itemId: String, voteType: Vote.VoteType, itemType: Vote.ItemType, completion: @escaping (Result<Void, Error>) -> Void) {
+        let vote = Vote(userId: userId, itemId: itemId, voteType: voteType, itemType: itemType)
+        FirestoreService.shared.createDocument(collectionName: FirestoreCollections.votes, documentID: voteId, data: vote) { error in
+            if let error = error {
+                print("Error saving vote: \(error.localizedDescription)")
+                completion(.failure(error))
+            } else {
+                print("Vote saved successfully: \(voteType.rawValue) for item: \(itemId)")
+                completion(.success(()))
+            }
+        }
+    }
+
+
 
     
     /**
@@ -73,25 +72,18 @@ class VoteService {
         - completion: A completion handler that returns a `Result<Vote?, Error>`. The result is `nil` if no vote exists.
      */
     func getUserVote(userId: String, itemId: String, itemType: Vote.ItemType, completion: @escaping (Result<Vote?, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)_\(itemType.rawValue)"
+        let voteId = "\(userId)_\(itemId)_\(itemType)"
         
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.votes, documentID: voteId, modelType: Vote.self) { result in
             switch result {
             case .success(let vote):
                 completion(.success(vote))
             case .failure(let error):
-                let nsError = error as NSError
-                if nsError.domain == "FirestoreError" && nsError.code == -1 {
-                    // Document does not exist; return nil to indicate no existing vote
-                    completion(.success(nil))
-                } else {
-                    print("Error decoding vote document: \(error.localizedDescription)")
-                    print("Vote ID: \(voteId)")
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
             }
         }
     }
+
 
 
     /**
@@ -120,31 +112,34 @@ class VoteService {
         FirestoreService.shared.readCollection(collectionName: FirestoreCollections.votes) { result in
             switch result {
             case .success(let documents):
-                // Decode documents into Vote objects
-                let votes = documents.compactMap { document -> Vote? in
-                    let data = document.data()
+                var upvotes = 0
+                var downvotes = 0
+
+                // Decode votes and count
+                for document in documents {
                     do {
-                        return try Firestore.Decoder().decode(Vote.self, from: data)
+                        let vote = try Firestore.Decoder().decode(Vote.self, from: document.data())
+                        if vote.itemId == itemId && vote.itemType == itemType {
+                            if vote.voteType == .upvote {
+                                upvotes += 1
+                            } else if vote.voteType == .downvote {
+                                downvotes += 1
+                            }
+                        }
                     } catch {
                         print("Error decoding vote document: \(error.localizedDescription)")
-                        print("Document Data: \(data)")  // Add debugging for document data
-                        return nil // Skip this document
                     }
                 }
-
-                // Filter votes by itemId and itemType
-                let filteredVotes = votes.filter { $0.itemId == itemId && $0.itemType == itemType }
                 
-                // Count upvotes and downvotes
-                let upvotes = filteredVotes.filter { $0.voteType == .upvote }.count
-                let downvotes = filteredVotes.filter { $0.voteType == .downvote }.count
-                
+                print("Vote counts for item \(itemId): \(upvotes) upvotes, \(downvotes) downvotes")
                 completion(.success((upvotes: upvotes, downvotes: downvotes)))
             case .failure(let error):
+                print("Error fetching votes: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
     }
+
 
 
 }

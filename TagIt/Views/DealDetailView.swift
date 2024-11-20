@@ -5,7 +5,7 @@
 //  Created by Chenghou Si on 2024-10-21.
 //
 import SwiftUI
-import SwiftUI
+import FirebaseAuth
 
 struct DealDetailView: View {
     @State var deal: Deal
@@ -17,7 +17,7 @@ struct DealDetailView: View {
     var body: some View {
         VStack {
             ScrollView {
-                DealInfoView(deal: deal)
+                DealInfoView(deal: $deal)
                 
                 Text("Comments")
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -35,6 +35,7 @@ struct DealDetailView: View {
                             CommentCardView(comment: comment)
                                 .background(Color.white)
                                 .onAppear {
+                                    print("Fetching votes for comment: \(comment.id ?? "unknown")")
                                     fetchVotesForComment(comment)
                                 }
                         }
@@ -51,6 +52,7 @@ struct DealDetailView: View {
                 TextField("New Comment", text: $newComment)
                     .autocapitalization(.none)
                     .onSubmit {
+                        print("Submitting new comment: \(newComment)")
                         postComment()
                     }
             }
@@ -63,7 +65,8 @@ struct DealDetailView: View {
         }
         .padding(.vertical)
         .onAppear {
-            updateVoteCounts() // Use updateVoteCounts instead of fetchDealVotes
+            print("DealDetailView appeared, fetching votes and comments for deal ID: \(deal.id ?? "unknown")")
+            updateVoteCounts()
             fetchComments()
         }
     }
@@ -75,13 +78,16 @@ struct DealDetailView: View {
         }
 
         isLoading = true
+        print("Fetching comments for deal ID: \(dealId)")
         CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedComments):
+                    print("Fetched \(fetchedComments.count) comments for deal ID: \(dealId)")
                     self.comments = fetchedComments
                     self.isLoading = false
                 case .failure(let error):
+                    print("Error fetching comments for deal ID \(dealId): \(error.localizedDescription)")
                     self.errorMessage = error.localizedDescription
                     self.isLoading = false
                 }
@@ -95,10 +101,12 @@ struct DealDetailView: View {
             return
         }
 
+        print("Fetching votes for comment ID: \(commentId)")
         VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let counts):
+                    print("Fetched votes for comment ID \(commentId): \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
                     if let index = self.comments.firstIndex(where: { $0.id == comment.id }) {
                         var updatedComment = self.comments[index]
                         updatedComment.upvote = counts.upvotes
@@ -106,14 +114,17 @@ struct DealDetailView: View {
                         self.comments[index] = updatedComment
                     }
                 case .failure(let error):
-                    print("Error fetching votes for comment \(comment.id ?? "unknown"): \(error.localizedDescription)")
+                    print("Error fetching votes for comment ID \(commentId): \(error.localizedDescription)")
                 }
             }
         }
     }
     
     private func postComment() {
-        guard !newComment.isEmpty else { return }
+        guard !newComment.isEmpty else {
+            print("Error: New comment text is empty")
+            return
+        }
 
         let commentToPost = UserComments(
             id: nil,
@@ -125,6 +136,7 @@ struct DealDetailView: View {
             downvote: 0
         )
 
+        print("Posting comment: \(commentToPost.commentText)")
         CommentService.shared.addComment(newComment: commentToPost) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -145,16 +157,18 @@ struct DealDetailView: View {
             return
         }
 
+        print("Fetching votes for deal ID: \(dealId)")
         VoteService.shared.getVoteCounts(itemId: dealId, itemType: .deal) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let counts):
+                    print("Fetched votes for deal ID \(dealId): \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
                     var updatedDeal = self.deal
                     updatedDeal.upvote = counts.upvotes
                     updatedDeal.downvote = counts.downvotes
                     self.deal = updatedDeal
                 case .failure(let error):
-                    print("Error fetching updated vote counts: \(error.localizedDescription)")
+                    print("Error fetching votes for deal ID \(dealId): \(error.localizedDescription)")
                 }
             }
         }
