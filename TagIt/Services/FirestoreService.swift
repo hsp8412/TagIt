@@ -228,8 +228,8 @@ class FirestoreService {
     private func initializeBarcodeItemReviewCollection(group: DispatchGroup) {
         group.enter()
         let barcodeItemReviewData: [BarcodeItemReview] = [
-            BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", commentIDs: ["comment1", "comment3"], barcodeNumber: "1234567890123"),
-            BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", commentIDs: ["comment2", "comment4"], barcodeNumber: "9876543210987")
+            BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", barcodeNumber: "1234567890123"),
+            BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", barcodeNumber: "9876543210987")
         ]
         self.initializeCollection(collectionName: FirestoreCollections.revItem, initialData: barcodeItemReviewData) { error in
             if let error = error {
