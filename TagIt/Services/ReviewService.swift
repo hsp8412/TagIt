@@ -40,7 +40,7 @@ class ReviewService {
                         }
                     } else {
                         // If the user updates their review, replace it with the new stars
-                        let updatedReview = BarcodeItemReview(userID: userId, photoURL: "", reviewStars: reviewStars, productName: productName, commentIDs: [], barcodeNumber: barcodeNumber)
+                        let updatedReview = BarcodeItemReview(userID: userId, photoURL: "", reviewStars: reviewStars, productName: productName, barcodeNumber: barcodeNumber)
                         FirestoreService.shared.createDocument(collectionName: FirestoreCollections.revItem, documentID: reviewId, data: updatedReview) { error in
                             if let error = error {
                                 completion(.failure(error))
@@ -52,7 +52,7 @@ class ReviewService {
                     }
                 } else {
                     // If no review exists, create a new one
-                    let newReview = BarcodeItemReview(userID: userId, photoURL: "", reviewStars: reviewStars, productName: productName, commentIDs: [], barcodeNumber: barcodeNumber)
+                    let newReview = BarcodeItemReview(userID: userId, photoURL: "", reviewStars: reviewStars, productName: productName, barcodeNumber: barcodeNumber)
                     FirestoreService.shared.createDocument(collectionName: FirestoreCollections.revItem, documentID: reviewId, data: newReview) { error in
                         if let error = error {
                             completion(.failure(error))
