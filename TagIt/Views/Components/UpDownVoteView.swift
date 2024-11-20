@@ -10,26 +10,29 @@ import SwiftUI
 struct UpDownVoteView: View {
     let type: Vote.ItemType
     let id: String
-    var upVote, downVote: Int
+    let userId: String
+    @State var upVote Int
+    @State var downVote: Int
     // @State var showUpVote: Int
     // @State var showDownVote: Int
     @State var upVoteTap: Bool
     @State var downVoteTap: Bool
     
-    init(type: Vote.ItemType, id: String, upVote: Int, downVote: Int) {
+    init(type: Vote.ItemType, itemId: String, userId: String, upVote: Int, downVote: Int) {
         self.type = type
-        self.id = id
+        self.itemId = itemId
         self.upVote = upVote
         self.downVote = downVote
+        self.userId = userId
         // self.showUpVote = upVote
         // self.showDownVote = downVote
 
-        if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType) != `nil`){
-            if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType).voteType == "upvote"){
+        if (VoteService.getUserVote(userId: userId, itemId: itemId, itemType: type) != `nil`){
+            if (VoteService.getUserVote(userId: userId, itemId: itemId, itemType: type).voteType == "upvote"){
                 self.upVoteTap = true
                 self.downVoteTap = false
             }
-            if (getUserVote(userId: String, itemId: String, itemType: Vote.ItemType).voteType == "downvote"){
+            if (VoteService.getUserVote(userId: userId, itemId: itemId, itemType: type).voteType == "downvote"){
                 self.upVoteTap = false
                 self.downVoteTap = true
             }
@@ -42,15 +45,6 @@ struct UpDownVoteView: View {
             self.downVoteTap = false
         }
         
-        
-        // if (upVoteTap) {
-        //     self.upVote = upVote - 1
-    
-        // }
-        
-        // if (downVoteTap) {
-        //     self.downVote = downVote - 1
-        // }
     }
 
     var body: some View {
@@ -180,6 +174,3 @@ struct UpDownVoteView: View {
     }
 }
 
-#Preview {
-    UpDownVoteView(type: .comment, id: "", upVote: 10, downVote: 21, upVoteTap: false, downVoteTap: true)
-}
