@@ -13,6 +13,7 @@ struct UserProfile: Identifiable, Codable {
     var email: String
     var displayName: String
     var avatarURL: String?
-    
+    var score: Int
+    var savedDeals: [String]
 }
 
