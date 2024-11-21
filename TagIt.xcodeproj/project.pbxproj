@@ -26,7 +26,6 @@
 		4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */; };
 		4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0D2CB50EF800EB6411 /* MainView.swift */; };
 		4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */; };
-		40A366982CEB4DDF00038754 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 40A366972CEB4DDF00038754 /* Config.xcconfig */; };
 		40A3669A2CEC71F100038754 /* SearchResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A366992CEC71F100038754 /* SearchResultDetailView.swift */; };
 		40A3669C2CEC721500038754 /* SearchResultDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */; };
 		40A9DF912CEB361500D15E51 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 40A9DF902CEB361500D15E51 /* Core */; };
@@ -65,6 +64,10 @@
 		909DFE512CD17D1A00138D31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 909DFE502CD17D1A00138D31 /* GoogleService-Info.plist */; };
 		909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */; };
 		909DFE552CD17E4100138D31 /* BarcodeScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */; };
+		90D774F32CDAB896005E2622 /* ScannedItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F22CDAB888005E2622 /* ScannedItemView.swift */; };
+		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
+		90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */; };
+		90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D7754E2CED6054005E2622 /* EditUsernameView.swift */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
@@ -123,6 +126,11 @@
 		909DFE502CD17D1A00138D31 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
 		909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerViewModel.swift; sourceTree = "<group>"; };
+		90D774F22CDAB888005E2622 /* ScannedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemView.swift; sourceTree = "<group>"; };
+		90D774F42CDAD186005E2622 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
+		90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyReviewsView.swift; sourceTree = "<group>"; };
+		90D7754C2CED546E005E2622 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -172,9 +180,13 @@
 				4086FD0D2CB50EF800EB6411 /* MainView.swift */,
 				5D1B36962CC5B2AE00552691 /* HomeView.swift */,
 				909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */,
+				90D774F22CDAB888005E2622 /* ScannedItemView.swift */,
 				40BB0CDA2CC0C10F004D070B /* ProfileView.swift */,
 				40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */,
 				40A366992CEC71F100038754 /* SearchResultDetailView.swift */,
+				90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */,
+				90D7754E2CED6054005E2622 /* EditUsernameView.swift */,
+				90D774F42CDAD186005E2622 /* ChangePasswordView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -239,6 +251,7 @@
 		40F8B5EB2C9FA8AF0024C7EF /* TagIt */ = {
 			isa = PBXGroup;
 			children = (
+				90D7754C2CED546E005E2622 /* Config.xcconfig */,
 				909DFE502CD17D1A00138D31 /* GoogleService-Info.plist */,
 				40851C7B2CC04CAC009AE166 /* Other */,
 				BF3FBB362CBF37EE00F026FC /* Services */,
@@ -316,7 +329,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					40F8B5E82C9FA8AF0024C7EF = {
 						CreatedOnToolsVersion = 15.4;
@@ -350,7 +363,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40A366982CEB4DDF00038754 /* Config.xcconfig in Resources */,
 				40F8B5F42C9FA8B10024C7EF /* Preview Assets.xcassets in Resources */,
 				40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */,
 				909DFE512CD17D1A00138D31 /* GoogleService-Info.plist in Resources */,
@@ -388,6 +400,8 @@
 				4086FD082CB4AA5400EB6411 /* PasswordRecoveryView.swift in Sources */,
 				40A3669A2CEC71F100038754 /* SearchResultDetailView.swift in Sources */,
 				909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */,
+				90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */,
+				90D774F32CDAB896005E2622 /* ScannedItemView.swift in Sources */,
 				5DF09DBA2CD337E0002B6A79 /* UpDownVote2View.swift in Sources */,
 				4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */,
 				5D62B0412CEB0EBC004A7E39 /* DealRankingView.swift in Sources */,
@@ -405,10 +419,12 @@
 				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
 				5D1D9B832CE96AE800698E2A /* UserRankingView.swift in Sources */,
 				40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */,
+				90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				5DE8EE072CC5EB45008DF0B2 /* DealDetailView.swift in Sources */,
 				40F8B5EF2C9FA8AF0024C7EF /* ContentView.swift in Sources */,
 				5DB364892CBED87500424571 /* DealModel.swift in Sources */,
+				90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */,
 				4086FD042CB4838300EB6411 /* TopNavView.swift in Sources */,
 				5DB365442CBEECC500424571 /* DealInfoView.swift in Sources */,
 				5DB3653C2CBEDF8500424571 /* UserCommentModel.swift in Sources */,

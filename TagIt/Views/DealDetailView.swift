@@ -4,40 +4,40 @@
 //
 //  Created by Chenghou Si on 2024-10-21.
 //
-
 import SwiftUI
+import FirebaseAuth
 
 struct DealDetailView: View {
     @State var deal: Deal
     @State private var comments: [UserComments] = []
     @State private var isLoading: Bool = true
-    @State var new_comment: String = ""
+    @State private var newComment: String = ""
     @State private var errorMessage: String?
-
-
+    
     var body: some View {
         VStack {
             ScrollView {
-                DealInfoView(deal: deal)
+                DealInfoView(deal: $deal)
                 
                 Text("Comments")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
                 
-                // Load comments
                 if isLoading {
                     ProgressView("Loading comments...")
                 } else if let errorMessage = errorMessage {
                     Text("Error: \(errorMessage)")
+                } else if comments.isEmpty {
+                    Text("No Comments Yet")
                 } else {
-                    if (comments.isEmpty) {
-                        Text("No Comment Yet")
-                    } else {
-                        VStack(alignment: .leading, spacing: 30) {
-                            ForEach(comments) { comment in
-                                CommentCardView(comment: comment)
-                                    .background(.white)
-                            }
+                    VStack(alignment: .leading, spacing: 30) {
+                        ForEach(comments) { comment in
+                            CommentCardView(comment: comment)
+                                .background(Color.white)
+                                .onAppear {
+                                    print("Fetching votes for comment: \(comment.id ?? "unknown")")
+                                    fetchVotesForComment(comment)
+                                }
                         }
                     }
                 }
@@ -49,18 +49,14 @@ struct DealDetailView: View {
                     .foregroundStyle(Color.gray)
                     .padding(.leading)
                 
-                TextField("New Comment", text: $new_comment)
+                TextField("New Comment", text: $newComment)
                     .autocapitalization(.none)
                     .onSubmit {
-                        // Submit comment and clear the text field
-                        postComment(comment: new_comment)
-                        new_comment = "" // Clear the text field
-                        
-                        // Fetch comments when the view appears
-                        fetchComments()
+                        print("Submitting new comment: \(newComment)")
+                        postComment()
                     }
             }
-            .overlay() {
+            .overlay {
                 RoundedRectangle(cornerRadius: 20)
                     .stroke(Color.gray, lineWidth: 1)
                     .frame(height: 40)
@@ -69,74 +65,112 @@ struct DealDetailView: View {
         }
         .padding(.vertical)
         .onAppear {
-            // Fetch comments when the view appears
+            print("DealDetailView appeared, fetching votes and comments for deal ID: \(deal.id ?? "unknown")")
+            updateVoteCounts()
             fetchComments()
         }
     }
-
-    /// Fetches comments for the current deal and updates the `comments` property.
-    /// Sets `isLoading` to `true` while loading and handles errors by updating `errorMessage`.
-    ///
-    /// - Parameters: None
-    /// - Returns: Void
+    
     private func fetchComments() {
-        isLoading = true
-        // Fetch comments specific to the current deal
-        CommentService.shared.getCommentsForItem(itemID: deal.id ?? "", commentType: .deal) { result in
-            switch result {
-            case .success(let fetchedComments):
-                // Update comments with fetched results and reset loading state
-                self.comments = fetchedComments
-                self.isLoading = false
-            case .failure(let error):
-                // Handle error by setting the error message and stopping the loading indicator
-                self.errorMessage = error.localizedDescription
-                self.isLoading = false
-            }
-        }
-    }
-
-    /// Posts a new comment associated with the current deal.
-    /// Checks if the user is authenticated before posting, then creates a `UserComments` object
-    /// and passes it to `CommentService` for adding to Firestore. Upon success, fetches updated comments.
-    ///
-    /// - Parameter comment: The text content of the new comment.
-    /// - Returns: Void
-    private func postComment(comment: String) {
-        // Retrieve current user ID to ensure user is authenticated
-        guard let userID = AuthService.shared.getCurrentUserID() else {
-            print("Error: User is not authenticated.")
+        guard let dealId = deal.id else {
+            print("Error: Deal ID is nil")
             return
         }
 
-        // Create a new comment for the current deal
-        let newComment = UserComments(
+        isLoading = true
+        print("Fetching comments for deal ID: \(dealId)")
+        CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let fetchedComments):
+                    print("Fetched \(fetchedComments.count) comments for deal ID: \(dealId)")
+                    self.comments = fetchedComments
+                    self.isLoading = false
+                case .failure(let error):
+                    print("Error fetching comments for deal ID \(dealId): \(error.localizedDescription)")
+                    self.errorMessage = error.localizedDescription
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func fetchVotesForComment(_ comment: UserComments) {
+        guard let commentId = comment.id else {
+            print("Error: Comment ID is nil")
+            return
+        }
+
+        print("Fetching votes for comment ID: \(commentId)")
+        VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let counts):
+                    print("Fetched votes for comment ID \(commentId): \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
+                    if let index = self.comments.firstIndex(where: { $0.id == comment.id }) {
+                        var updatedComment = self.comments[index]
+                        updatedComment.upvote = counts.upvotes
+                        updatedComment.downvote = counts.downvotes
+                        self.comments[index] = updatedComment
+                    }
+                case .failure(let error):
+                    print("Error fetching votes for comment ID \(commentId): \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func postComment() {
+        guard !newComment.isEmpty else {
+            print("Error: New comment text is empty")
+            return
+        }
+
+        let commentToPost = UserComments(
             id: nil,
-            userID: userID,
-            itemID: deal.id ?? "",           // Associate comment with the current deal
-            commentText: comment,
-            commentType: .deal,              // Specify that the comment is for a deal
+            userID: AuthService.shared.getCurrentUserID() ?? "",
+            itemID: deal.id ?? "",
+            commentText: self.newComment,
+            commentType: .deal,
             upvote: 0,
             downvote: 0
         )
 
-        // Add the new comment to Firestore and handle result
-        CommentService.shared.addComment(newComment: newComment) { result in
-            switch result {
-            case .success:
-                // Refresh comments after posting a new one
-                self.fetchComments()
-                print("Comment posted successfully!")
-            case .failure(let error):
-                // Handle error if posting fails
-                print("Error posting comment: \(error.localizedDescription)")
+        print("Posting comment: \(commentToPost.commentText)")
+        CommentService.shared.addComment(newComment: commentToPost) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("Comment posted successfully!")
+                    self.newComment = ""
+                    self.fetchComments()
+                case .failure(let error):
+                    print("Error posting comment: \(error.localizedDescription)")
+                }
             }
         }
     }
+    
+    private func updateVoteCounts() {
+        guard let dealId = deal.id else {
+            print("Error: Deal ID is nil")
+            return
+        }
 
-}
-
-#Preview {
-    DealDetailView(deal: Deal(id: "DealID", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
-    )
+        print("Fetching votes for deal ID: \(dealId)")
+        VoteService.shared.getVoteCounts(itemId: dealId, itemType: .deal) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let counts):
+                    print("Fetched votes for deal ID \(dealId): \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
+                    var updatedDeal = self.deal
+                    updatedDeal.upvote = counts.upvotes
+                    updatedDeal.downvote = counts.downvotes
+                    self.deal = updatedDeal
+                case .failure(let error):
+                    print("Error fetching votes for deal ID \(dealId): \(error.localizedDescription)")
+                }
+            }
+        }
+    }
 }
