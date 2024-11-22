@@ -42,6 +42,8 @@
 		40FD1EA92CE9808100729291 /* StoreModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1EA82CE9808100729291 /* StoreModel.swift */; };
 		40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */; };
 		40FD1ED52CEAA6E800729291 /* SearchResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */; };
+		5D118DCC2CF02E71004CF6AE /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5D118DCB2CF02E71004CF6AE /* Config.xcconfig */; };
+		5D118DCE2CF02F1A004CF6AE /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D118DCD2CF02F1A004CF6AE /* HomeViewModel.swift */; };
 		5D1B36972CC5B2AE00552691 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1B36962CC5B2AE00552691 /* HomeView.swift */; };
 		5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */; };
 		5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */; };
@@ -104,6 +106,8 @@
 		40FD1EA82CE9808100729291 /* StoreModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreModel.swift; sourceTree = "<group>"; };
 		40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultView.swift; sourceTree = "<group>"; };
 		40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewModel.swift; sourceTree = "<group>"; };
+		5D118DCB2CF02E71004CF6AE /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		5D118DCD2CF02F1A004CF6AE /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		5D1B36962CC5B2AE00552691 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarView.swift; sourceTree = "<group>"; };
 		5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingCardView.swift; sourceTree = "<group>"; };
@@ -205,6 +209,7 @@
 				403755752CD1743700C7D96C /* SearchViewModel.swift */,
 				40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */,
 				40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */,
+				5D118DCD2CF02F1A004CF6AE /* HomeViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 		40F8B5EB2C9FA8AF0024C7EF /* TagIt */ = {
 			isa = PBXGroup;
 			children = (
+				5D118DCB2CF02E71004CF6AE /* Config.xcconfig */,
 				90D7754C2CED546E005E2622 /* Config.xcconfig */,
 				909DFE502CD17D1A00138D31 /* GoogleService-Info.plist */,
 				40851C7B2CC04CAC009AE166 /* Other */,
@@ -363,6 +369,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D118DCC2CF02E71004CF6AE /* Config.xcconfig in Resources */,
 				40F8B5F42C9FA8B10024C7EF /* Preview Assets.xcassets in Resources */,
 				40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */,
 				909DFE512CD17D1A00138D31 /* GoogleService-Info.plist in Resources */,
@@ -391,6 +398,7 @@
 				5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */,
 				4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */,
 				4086FCFE2CB47EB300EB6411 /* ProductsView.swift in Sources */,
+				5D118DCE2CF02F1A004CF6AE /* HomeViewModel.swift in Sources */,
 				4017C4572CC5E90000D110AD /* NewDealViewModel.swift in Sources */,
 				4086FCF62CB47DB000EB6411 /* SearchView.swift in Sources */,
 				4086FCFA2CB47DF500EB6411 /* RankingView.swift in Sources */,

@@ -17,7 +17,7 @@ struct DealCardView: View {
         NavigationLink(destination: DealDetailView(deal: deal)) {
             ZStack {
                 Color.white
-                    .frame(height: 170)
+                    .frame(height: 220)
                     .shadow(radius: 5)
                 
                 HStack {
@@ -49,7 +49,10 @@ struct DealCardView: View {
                         Text(deal.productText)
                             .font(.system(size: 20))
                             .foregroundStyle(.black)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
                             .bold()
+                            .frame(height: 50)
                         
                         Text(String(format: "$%.2f", deal.price))
                             .font(.system(size: 20))
@@ -119,6 +122,6 @@ struct DealCardView: View {
 
 #Preview {
     DealCardView(
-        deal: Deal(id: nil, userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text", postText: "Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
+        deal: Deal(id: nil, userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Product Text~~~~~~~~~~~~~~~~~~~~~~~~", postText: "Post Text. Post Text. Post Text. Post Text.", price: 1.23, location: "Safeway", date: "2d", commentIDs: ["CommentID1", "CommentID2"], upvote: 5, downvote: 6)
     )
 }

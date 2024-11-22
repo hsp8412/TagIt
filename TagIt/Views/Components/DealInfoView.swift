@@ -10,15 +10,17 @@ import FirebaseAuth
 struct DealInfoView: View {
     @Binding var deal: Deal
     @State var isLoading = true
+    @State var isSaved = false
     @State var user: UserProfile?
-    @State private var errorMessage: String?
+    @State private var profileErrorMessage: String?
+    @State private var voteErrorMessage: String?
     @State private var currentUserId: String? = nil
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.white
                 .frame(maxWidth: .infinity)
-                .frame(height: 250)
+                .frame(height: 280)
                 .shadow(radius: 5)
             
             VStack(alignment: .leading) {
@@ -28,8 +30,8 @@ struct DealInfoView: View {
                         if isLoading {
                             ProgressView()
                                 .frame(width: 40, height: 40)
-                        } else if let errorMessage = errorMessage {
-                            Text("Error: \(errorMessage)")
+                        } else if let profileErrorMessage = profileErrorMessage {
+                            Text("Error: \(profileErrorMessage)")
                         } else {
                             HStack {
                                 UserAvatarView(avatarURL: user?.avatarURL ?? "")
@@ -47,22 +49,56 @@ struct DealInfoView: View {
                         // Product Details
                         Text(deal.productText)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(height: 50)
+                            .bold()
+                            .lineLimit(2)
                         
                         Text(String(format: "$%.2f", deal.price))
+                            .bold()
+                            .foregroundStyle(.red)
+                            .frame(height: 20)
                     }
                     
-                    AsyncImage(url: URL(string: deal.photoURL)) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Rectangle())
-                                .cornerRadius(25)
-                        } else {
-                            ProgressView()
-                                .frame(width: 100, height: 100)
-                                .cornerRadius(25)
+                    VStack {
+                        Button(action: {
+                            saveDeal()
+                        }) {
+                            Text("Save")
+                                .padding(.horizontal, 10)
+                                .background(.white)
+                                .foregroundColor(.green)
+                                .frame(width: 90, height: 20)
+                                .overlay() {
+                                    if (isSaved) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.green)
+                                            
+                                            Text("Saved")
+                                                .padding(.horizontal, 10)
+                                                .foregroundColor(.white)
+                                        }
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.green, lineWidth: 1)
+                                    }
+                                }
+                            
+                        }
+                        
+                        AsyncImage(url: URL(string: deal.photoURL)) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Rectangle())
+                                    .cornerRadius(25)
+                            } else {
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                                    .cornerRadius(25)
+                            }
                         }
                     }
                 }
@@ -74,7 +110,9 @@ struct DealInfoView: View {
                     .frame(height: 80, alignment: .top)
                 
                 HStack {
-                    Image(systemName: "mappin")
+                    Image(systemName: "paperplane.fill")
+                        .foregroundStyle(.green)
+                    
                     Text(deal.location)
                         .foregroundStyle(Color.green)
                     
@@ -116,7 +154,7 @@ struct DealInfoView: View {
                         self.user = fetchUserProfilebyID
                         self.isLoading = false
                     case .failure(let error):
-                        self.errorMessage = error.localizedDescription
+                        self.profileErrorMessage = error.localizedDescription
                         self.isLoading = false
                     }
                 }
@@ -130,8 +168,16 @@ struct DealInfoView: View {
             self.currentUserId = currentUser.uid
         } else {
             print("Error: User not authenticated")
-            self.errorMessage = "User not authenticated."
+            self.voteErrorMessage = "User not authenticated."
         }
+    }
+    
+    // Save deal
+    private func saveDeal() {
+        isSaved.toggle()
+        // Get saved status
+        
+        // Update saved db
     }
 }
 
@@ -140,10 +186,10 @@ struct DealInfoView: View {
         deal: .constant(
             Deal(
                 id: "DealID",
-                userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2",
+                userID: "PtMxESE6kEONluP2QtWTAh7tWax2",
                 photoURL: "https://i.imgur.com/8ciNZcY.jpeg",
-                productText: "Product Text",
-                postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.",
+                productText: "Product Text~~~~~~~~~~~~~~~~~~",
+                postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
                 price: 1.23,
                 location: "Safeway",
                 date: "2d",
