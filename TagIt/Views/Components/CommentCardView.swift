@@ -8,64 +8,104 @@ import SwiftUI
 struct CommentCardView: View {
     @State var comment: UserComments
     @State var user: UserProfile? // Dynamically loaded user
-    let time = "1h" // Placeholder for now, can be calculated dynamically based on comment's timestamp
-    
+    @State private var isExpanded: Bool = false // Tracks whether the card is expanded
+    let time = "1h" // Placeholder for now, can be dynamically calculated from the comment timestamp
+
+    private let maxTextLength: Int = 255 // Maximum visible characters before truncation
+
     var body: some View {
-        ZStack {
-            Color.white
-                .frame(height: 170)
-                .shadow(radius: 5)
-            
-            VStack(alignment: .leading) {
-                HStack {
-                    if let user = user, let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                        AsyncImage(url: url) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                            } else {
-                                ProgressView()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                            }
+        VStack(alignment: .leading, spacing: 10) {
+            // User Info Row
+            HStack(spacing: 10) {
+                // User Avatar
+                if let user = user, let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                        } else {
+                            ProgressView()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
                         }
                     }
-                    
-                    VStack(alignment: .leading) {
-                        Text(user?.displayName ?? "Loading...")
-                            .lineLimit(1)
-                        
-                        Text(time)
-                    }
+                } else {
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 40, height: 40) // Placeholder avatar
                 }
-                
+
+                // User Name and Timestamp
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(user?.displayName ?? "Loading...")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+
+                    Text(time)
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
+                }
+
+                Spacer()
+            }
+
+            // Comment Text
+            if isExpanded || comment.commentText.count <= maxTextLength {
                 Text(comment.commentText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 5)
-                
+                    .font(.system(size: 16))
+                    .foregroundColor(.black)
+                    .lineLimit(nil)
+            } else {
+                Text(String(comment.commentText.prefix(maxTextLength)) + "...")
+                    .font(.system(size: 16))
+                    .foregroundColor(.black)
+                    .lineLimit(3)
+            }
+
+            // "More" Button
+            if comment.commentText.count > maxTextLength {
+                Button(action: {
+                    isExpanded.toggle()
+                }) {
+                    Text(isExpanded ? "Show Less" : "Show More")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.blue)
+                }
+            }
+
+            // Voting Controls (aligned to bottom-right)
+            HStack {
+                Spacer() // Push voting controls to the right
+
                 UpDownVoteView(
-                    userId: user?.id ?? "", // Pass user ID dynamically
+                    userId: user?.id ?? "", // Use the fetched user ID
                     type: .comment,
                     id: comment.id ?? "", // Ensure `comment.id` is unwrapped
-                    upVote: $comment.upvote, // Pass as a binding
-                    downVote: $comment.downvote // Pass as a binding
+                    upVote: $comment.upvote, // Binding for upvotes
+                    downVote: $comment.downvote // Binding for downvotes
                 )
-                .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .padding()
         }
+        .padding(12) // Reduced padding for a compact design
+        .background(
+            Color.white
+                .cornerRadius(12)
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+        )
+        .padding(.horizontal)
         .onAppear {
             fetchUserForComment()
             fetchVotesForComment()
         }
     }
-    
+
     private func fetchUserForComment() {
-        let userId = comment.userID // Directly use `comment.userID` since it's not optional
-        
+        let userId = comment.userID
+
         UserService.shared.getUserById(id: userId) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -77,7 +117,6 @@ struct CommentCardView: View {
             }
         }
     }
-
 
     private func fetchVotesForComment() {
         guard let commentId = comment.id else {
@@ -97,4 +136,18 @@ struct CommentCardView: View {
             }
         }
     }
+}
+
+#Preview {
+    CommentCardView(
+        comment: UserComments(
+            id: "CommentID1",
+            userID: "2",
+            itemID: "DealID1",
+            commentText: "This is a sample comment. It can be multiline and styled appropriately. If the text is too long, it will be truncated and expandable with a 'Show More' option.",
+            commentType: .deal,
+            upvote: 6,
+            downvote: 7
+        )
+    )
 }

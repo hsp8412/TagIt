@@ -10,49 +10,75 @@ import FirebaseAuth
 struct DealDetailView: View {
     @State var deal: Deal
     @State private var comments: [UserComments] = []
-    @State private var isLoading: Bool = true
+    @State private var isLoading: Bool = false
     @State private var newComment: String = ""
     @State private var errorMessage: String?
-    
+    @State private var showAllComments: Bool = false // Toggles showing all comments
+    @State private var totalComments: Int = 0 // Tracks the total number of comments
+
     var body: some View {
         VStack {
             ScrollView {
+                // Deal Information
                 DealInfoView(deal: $deal)
-                
-                Text("Comments")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                
-                if isLoading {
-                    ProgressView("Loading comments...")
-                } else if let errorMessage = errorMessage {
-                    Text("Error: \(errorMessage)")
-                } else if comments.isEmpty {
-                    Text("No Comments Yet")
-                } else {
-                    VStack(alignment: .leading, spacing: 30) {
-                        ForEach(comments) { comment in
-                            CommentCardView(comment: comment)
-                                .background(Color.white)
-                                .onAppear {
-                                    print("Fetching votes for comment: \(comment.id ?? "unknown")")
-                                    fetchVotesForComment(comment)
+
+                // Comments Section Header
+                HStack {
+                    Text(showAllComments ? "Hide Comments" : "View all \(totalComments) comments")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.blue)
+                        .onTapGesture {
+                            withAnimation {
+                                showAllComments.toggle()
+                                if showAllComments && comments.isEmpty {
+                                    fetchComments() // Load comments only when "View all" is selected
                                 }
+                            }
                         }
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+
+                // Comments List
+                if isLoading && showAllComments {
+                    ProgressView("Loading comments...")
+                        .padding(.top, 10)
+                        .frame(maxWidth: .infinity)
+                } else if let errorMessage = errorMessage, showAllComments {
+                    Text("Error: \(errorMessage)")
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity)
+                } else if showAllComments {
+                    if comments.isEmpty {
+                        Text("No Comments Yet")
+                            .padding(.horizontal)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        VStack(alignment: .leading, spacing: 20) {
+                            ForEach(comments) { comment in
+                                CommentCardView(comment: comment)
+                                    .frame(maxWidth: .infinity) // Expand to fill horizontally
+                                    .onAppear {
+                                        fetchVotesForComment(comment)
+                                    }
+                            }
+                        }
+                        .padding(.horizontal)
                     }
                 }
             }
-            
-            // New comment bar
+
+            // New Comment Bar
             HStack {
                 Image(systemName: "lasso.and.sparkles")
-                    .foregroundStyle(Color.gray)
+                    .foregroundColor(.gray)
                     .padding(.leading)
-                
+
                 TextField("New Comment", text: $newComment)
                     .autocapitalization(.none)
                     .onSubmit {
-                        print("Submitting new comment: \(newComment)")
                         postComment()
                     }
             }
@@ -65,12 +91,30 @@ struct DealDetailView: View {
         }
         .padding(.vertical)
         .onAppear {
-            print("DealDetailView appeared, fetching votes and comments for deal ID: \(deal.id ?? "unknown")")
             updateVoteCounts()
-            fetchComments()
+            fetchCommentCount() // Fetch total comment count when the view appears
         }
     }
-    
+
+    private func fetchCommentCount() {
+        guard let dealId = deal.id else {
+            print("Error: Deal ID is nil")
+            return
+        }
+
+        print("Fetching comment count for deal ID: \(dealId)")
+        CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let fetchedComments):
+                    self.totalComments = fetchedComments.count
+                case .failure(let error):
+                    print("Error fetching comment count: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
     private func fetchComments() {
         guard let dealId = deal.id else {
             print("Error: Deal ID is nil")
@@ -78,35 +122,30 @@ struct DealDetailView: View {
         }
 
         isLoading = true
-        print("Fetching comments for deal ID: \(dealId)")
         CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedComments):
-                    print("Fetched \(fetchedComments.count) comments for deal ID: \(dealId)")
                     self.comments = fetchedComments
+                    self.totalComments = fetchedComments.count
                     self.isLoading = false
                 case .failure(let error):
-                    print("Error fetching comments for deal ID \(dealId): \(error.localizedDescription)")
                     self.errorMessage = error.localizedDescription
                     self.isLoading = false
                 }
             }
         }
     }
-    
+
     private func fetchVotesForComment(_ comment: UserComments) {
         guard let commentId = comment.id else {
-            print("Error: Comment ID is nil")
             return
         }
 
-        print("Fetching votes for comment ID: \(commentId)")
         VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let counts):
-                    print("Fetched votes for comment ID \(commentId): \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
                     if let index = self.comments.firstIndex(where: { $0.id == comment.id }) {
                         var updatedComment = self.comments[index]
                         updatedComment.upvote = counts.upvotes
@@ -119,10 +158,9 @@ struct DealDetailView: View {
             }
         }
     }
-    
+
     private func postComment() {
         guard !newComment.isEmpty else {
-            print("Error: New comment text is empty")
             return
         }
 
@@ -136,12 +174,10 @@ struct DealDetailView: View {
             downvote: 0
         )
 
-        print("Posting comment: \(commentToPost.commentText)")
         CommentService.shared.addComment(newComment: commentToPost) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
-                    print("Comment posted successfully!")
                     self.newComment = ""
                     self.fetchComments()
                 case .failure(let error):
@@ -150,19 +186,16 @@ struct DealDetailView: View {
             }
         }
     }
-    
+
     private func updateVoteCounts() {
         guard let dealId = deal.id else {
-            print("Error: Deal ID is nil")
             return
         }
 
-        print("Fetching votes for deal ID: \(dealId)")
         VoteService.shared.getVoteCounts(itemId: dealId, itemType: .deal) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let counts):
-                    print("Fetched votes for deal ID \(dealId): \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
                     var updatedDeal = self.deal
                     updatedDeal.upvote = counts.upvotes
                     updatedDeal.downvote = counts.downvotes
