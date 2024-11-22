@@ -47,7 +47,7 @@ struct DealRankingCardView: View {
                         
                         // Location
                         HStack {
-                            Image(systemName: "paperplane.fill")
+                            Image(systemName: "mappin")
                                 .foregroundStyle(.green)
                             
                             Text(deal.location)

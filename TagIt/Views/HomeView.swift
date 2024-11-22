@@ -7,12 +7,10 @@
 
 import SwiftUI
 struct HomeView: View {
-    @StateObject var viewModel = HomeViewModel()
+    @State private var deals: [Deal] = []  // Empty deals array
     @State private var search: String = ""
-    
-    @State var button1_tap: Bool = false
-    @State var button2_tap: Bool = false
-    @State var button3_tap: Bool = false
+    @State private var isLoading: Bool = true
+    @State private var errorMessage: String?
     
     var body: some View {
         NavigationStack {
@@ -33,7 +31,7 @@ struct HomeView: View {
                 }
                 .padding()
                 .onSubmit {
-                    viewModel.fetchSearchDeals(searchText: search)
+                    print("Searching \"\(search)\"")
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
@@ -57,7 +55,7 @@ struct HomeView: View {
                     .padding(.horizontal)
                 
                 // Deals
-                if viewModel.isLoading {
+                if isLoading {
                     ProgressView("Loading deals...")
                         .padding(.top, 20) // Added top padding for spacing
                 } else if let errorMessage = errorMessage {
