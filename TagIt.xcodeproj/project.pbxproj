@@ -92,7 +92,6 @@
 		4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		4086FD0D2CB50EF800EB6411 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
-		40A366972CEB4DDF00038754 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		40A366992CEC71F100038754 /* SearchResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultDetailView.swift; sourceTree = "<group>"; };
 		40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultDetailViewModel.swift; sourceTree = "<group>"; };
 		40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRecoveryViewModel.swift; sourceTree = "<group>"; };
@@ -133,7 +132,6 @@
 		90D774F22CDAB888005E2622 /* ScannedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemView.swift; sourceTree = "<group>"; };
 		90D774F42CDAD186005E2622 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
 		90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyReviewsView.swift; sourceTree = "<group>"; };
-		90D7754C2CED546E005E2622 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
@@ -257,7 +255,6 @@
 			isa = PBXGroup;
 			children = (
 				5D118DCB2CF02E71004CF6AE /* Config.xcconfig */,
-				90D7754C2CED546E005E2622 /* Config.xcconfig */,
 				909DFE502CD17D1A00138D31 /* GoogleService-Info.plist */,
 				40851C7B2CC04CAC009AE166 /* Other */,
 				BF3FBB362CBF37EE00F026FC /* Services */,
@@ -267,7 +264,6 @@
 				40F8B5EC2C9FA8AF0024C7EF /* TagItApp.swift */,
 				40F8B5F02C9FA8B10024C7EF /* Assets.xcassets */,
 				40F8B5F22C9FA8B10024C7EF /* Preview Content */,
-				40A366972CEB4DDF00038754 /* Config.xcconfig */,
 			);
 			path = TagIt;
 			sourceTree = "<group>";
@@ -446,7 +442,7 @@
 /* Begin XCBuildConfiguration section */
 		40F8B5F52C9FA8B10024C7EF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
+			baseConfigurationReference = 5D118DCB2CF02E71004CF6AE /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -510,7 +506,6 @@
 		};
 		40F8B5F62C9FA8B10024C7EF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -567,7 +562,7 @@
 		};
 		40F8B5F82C9FA8B10024C7EF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
+			baseConfigurationReference = 5D118DCB2CF02E71004CF6AE /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -600,7 +595,6 @@
 		};
 		40F8B5F92C9FA8B10024C7EF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
