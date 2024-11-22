@@ -8,15 +8,10 @@ import SwiftUI
 
 struct CommentCardView: View {
     @State var comment: UserComments
-    let user: UserProfile = UserProfile(
-        id: "UID1",
-        email: "user@example.com",
-        displayName: "User Name",
-        avatarURL: "https://i.imgur.com/8ciNZcY.jpeg",
-        score: 0,
-        savedDeals: []
-    )
-    let time = "1h"
+    @State var user: UserProfile?
+    @State var isLoading = true
+    @State private var errorMessage: String?
+//    let time = "1h"
     
     var body: some View {
         ZStack {
@@ -26,36 +21,25 @@ struct CommentCardView: View {
             
             VStack(alignment: .leading) {
                 HStack {
-                    if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                        AsyncImage(url: url) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                            } else {
-                                ProgressView()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                            }
-                        }
-                    }
+                    UserAvatarView(avatarURL: user?.avatarURL ?? "")
+                        .frame(width: 40, height: 40)
                     
                     VStack(alignment: .leading) {
-                        Text(user.displayName)
+                        Text(user?.displayName ?? "")
                             .lineLimit(1)
                         
-                        Text(time)
+//                        Text(time)
                     }
                 }
+                .frame(height: 40)
                 
                 Text(comment.commentText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 5)
+                    .lineLimit(3)
                 
                 UpDownVoteView(
-                    userId: user.id ?? "", // Pass user ID dynamically
+                    userId: user?.id ?? "", // Pass user ID dynamically
                     type: .comment,
                     id: comment.id ?? "", // Ensure `comment.id` is unwrapped
                     upVote: $comment.upvote, // Pass as a binding
@@ -66,7 +50,27 @@ struct CommentCardView: View {
             .padding()
         }
         .onAppear {
+            fetchUserProfile()
             fetchVotesForComment()
+        }
+    }
+    
+    // Fetch the current user's profile
+    private func fetchUserProfile() {
+        isLoading = true
+        if !comment.userID.isEmpty {
+            UserService.shared.getUserById(id: comment.userID) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let fetchUserProfilebyID):
+                        self.user = fetchUserProfilebyID
+                        self.isLoading = false
+                    case .failure(let error):
+                        self.errorMessage = error.localizedDescription
+                        self.isLoading = false
+                    }
+                }
+            }
         }
     }
     
@@ -88,4 +92,8 @@ struct CommentCardView: View {
             }
         }
     }
+}
+
+#Preview {
+    CommentCardView(comment: UserComments(userID: "PtMxESE6kEONluP2QtWTAh7tWax2", itemID: "", commentText: "Comment~!!~!~!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", commentType: .deal, upvote: 10, downvote: 20))
 }

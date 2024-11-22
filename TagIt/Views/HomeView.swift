@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var deals: [Deal] = []  // Empty deals array
+    @StateObject var viewModel = HomeViewModel()
     @State private var search: String = ""
-    @State private var isLoading: Bool = true
-    @State private var errorMessage: String?
+    
+    @State var button1_tap: Bool = false
+    @State var button2_tap: Bool = false
+    @State var button3_tap: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -32,36 +34,91 @@ struct HomeView: View {
                 }
                 .padding()
                 .onSubmit {
-                    print("Searching \"\(search)\"")
+                    viewModel.fetchSearchDeals(searchText: search)
                 }
                 
                 // Filter
-                // New to create a new view
                 ScrollView(.horizontal) {
                     HStack(spacing: 10) {
                         Button(action: {
-                            print("Filter Tapped")
+                            button1_tap.toggle()
+                            button2_tap = false
+                            button3_tap = false
+                            viewModel.fetchTodaysDeals()
                         }) {
                             Text("Today's Deals")
                                 .padding(.horizontal,10)
                                 .background(.white)
                                 .foregroundColor(.green)
                                 .overlay() {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.green, lineWidth: 1)
+                                    if (button1_tap) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.green)
+                                            
+                                            Text("Today's Deals")
+                                                .padding(.horizontal,10)
+                                                .foregroundColor(.white)
+                                        }
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.green, lineWidth: 1)
+                                    }
                                 }
                         }
                         
                         Button(action: {
-                            print("Filter Tapped")
+                            button1_tap = false
+                            button2_tap.toggle()
+                            button3_tap = false
+                            viewModel.fetchHottestDeals()
                         }) {
                             Text("Hottest Deals")
                                 .padding(.horizontal,10)
                                 .background(.white)
                                 .foregroundColor(.green)
                                 .overlay() {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.green, lineWidth: 1)
+                                    if (button2_tap) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.green)
+                                            
+                                            Text("Hottest Deals")
+                                                .padding(.horizontal,10)
+                                                .foregroundColor(.white)
+                                        }
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.green, lineWidth: 1)
+                                    }
+                                }
+                            
+                        }
+                        
+                        Button(action: {
+                            button1_tap = false
+                            button2_tap = false
+                            button3_tap.toggle()
+                            viewModel.fetchDealsClosedTo()
+                        }) {
+                            Text("Deals Closed to You")
+                                .padding(.horizontal,10)
+                                .background(.white)
+                                .foregroundColor(.green)
+                                .overlay() {
+                                    if (button3_tap) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.green)
+                                            
+                                            Text("Deals Closed to You")
+                                                .padding(.horizontal,10)
+                                                .foregroundColor(.white)
+                                        }
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.green, lineWidth: 1)
+                                    }
                                 }
                             
                         }
@@ -86,44 +143,35 @@ struct HomeView: View {
                 }
                 
                 // Deals
-                if isLoading {
+                if viewModel.isLoading {
                     ProgressView("Loading deals...")
-                } else if let errorMessage = errorMessage {
-                    Text("Error: \(errorMessage)")
+                        .frame(maxHeight: .infinity)
+                } else if viewModel.errorMessage != nil {
+                    Text("Error: \(viewModel.errorMessage!)")
                 } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 30) {
-                            ForEach(deals) { deal in
-                                DealCardView(deal: deal)
-                                    .background(.white)
+                    if (viewModel.shownDeals.isEmpty) {
+                        Text("Sorry, there is no deals...")
+                            .frame(maxHeight: .infinity)
+                    } else {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 30) {
+                                ForEach(viewModel.shownDeals) { deal in
+                                    DealCardView(deal: deal)
+                                        .background(.white)
+                                }
                             }
                         }
-                    }
-                    .padding(.horizontal)
-                    .refreshable {
-                        // Refresh the deal list
-                        fetchDeals()
+                        .padding(.horizontal)
+                        .refreshable {
+                            // Refresh the deal list
+                            viewModel.fetchAllDeals()
+                        }
                     }
                 }
             }
             .onAppear {
                 // Fetch deals when the view appears
-                fetchDeals()
-            }
-        }
-    }
-    
-    // Function to fetch deals
-    private func fetchDeals() {
-        isLoading = true
-        DealService.shared.getDeals { result in
-            switch result {
-            case .success(let fetchedDeals):
-                self.deals = fetchedDeals
-                self.isLoading = false
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
-                self.isLoading = false
+                viewModel.fetchAllDeals()
             }
         }
     }
