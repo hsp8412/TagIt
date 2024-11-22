@@ -4,8 +4,8 @@
 //
 //  Created by Chenghou Si on 2024-10-31.
 //
-import SwiftUI
 
+import SwiftUI
 struct UpDownVoteView: View {
     let userId: String
     let type: Vote.ItemType
@@ -14,44 +14,62 @@ struct UpDownVoteView: View {
     @Binding var downVote: Int
     @State var upVoteTap: Bool = false
     @State var downVoteTap: Bool = false
-
+    
     var body: some View {
-        HStack(spacing: 10) { // Horizontal layout with reduced spacing
-            // Upvote Button
+        HStack {
             Button(action: {
                 handleVote(voteType: .upvote)
             }) {
-                VStack(spacing: 5) {
-                    Image(systemName: "arrowtriangle.up.fill")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(upVoteTap ? .green : .gray) // Green when upvoted
-                    Text("\(upVote)")
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                ZStack {
+                    if upVoteTap {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.green)
+                            .frame(width: 100, height: 30)
+                    } else {
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(Color.green, lineWidth: 3)
+                            .frame(width: 100, height: 30)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "hand.thumbsup.fill")
+                            .foregroundStyle(upVoteTap ? .white : .green)
+                        Text("\(upVote)")
+                            .foregroundColor(upVoteTap ? .white : .green)
+                            .padding(.horizontal)
+                    }
                 }
-                .animation(.easeInOut(duration: 0.2), value: upVoteTap)
             }
-
-            // Downvote Button
+            
             Button(action: {
                 handleVote(voteType: .downvote)
             }) {
-                VStack(spacing: 5) {
-                    Image(systemName: "arrowtriangle.down.fill")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(downVoteTap ? .red : .gray) // Red when downvoted
-                    Text("\(downVote)")
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                ZStack {
+                    if downVoteTap {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.red)
+                            .frame(width: 100, height: 30)
+                    } else {
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(Color.red, lineWidth: 3)
+                            .frame(width: 100, height: 30)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "hand.thumbsdown.fill")
+                            .foregroundStyle(downVoteTap ? .white : .red)
+                        Text("\(downVote)")
+                            .foregroundColor(downVoteTap ? .white : .red)
+                            .padding(.horizontal)
+                    }
                 }
-                .animation(.easeInOut(duration: 0.2), value: downVoteTap)
             }
         }
         .onAppear {
             fetchUserVoteState()
         }
     }
-
+    
     private func fetchUserVoteState() {
         VoteService.shared.getUserVote(userId: userId, itemId: id, itemType: type) { result in
             DispatchQueue.main.async {
@@ -71,14 +89,19 @@ struct UpDownVoteView: View {
         }
     }
 
+    
     private func handleVote(voteType: Vote.VoteType) {
+        // Determine if the user is undoing their current vote
         let isUndoingVote = (voteType == .upvote && upVoteTap) || (voteType == .downvote && downVoteTap)
         
         if isUndoingVote {
+            // Undo the vote
             VoteService.shared.removeVote(userId: userId, itemId: id, itemType: type) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        print("Vote removed successfully")
+                        // Reset highlight states
                         upVoteTap = false
                         downVoteTap = false
                         fetchUpdatedVotes()
@@ -88,10 +111,13 @@ struct UpDownVoteView: View {
                 }
             }
         } else {
+            // Cast or change the vote
             VoteService.shared.handleVote(userId: userId, itemId: id, itemType: type, voteType: voteType) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        print("Vote successfully updated for \(voteType.rawValue)")
+                        // Update highlight states
                         upVoteTap = (voteType == .upvote)
                         downVoteTap = (voteType == .downvote)
                         fetchUpdatedVotes()
@@ -103,14 +129,18 @@ struct UpDownVoteView: View {
         }
     }
 
+    
     private func fetchUpdatedVotes() {
         VoteService.shared.getVoteCounts(itemId: id, itemType: type) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let counts):
+                    print("Fetched updated vote counts: \(counts.upvotes) upvotes, \(counts.downvotes) downvotes")
                     upVote = counts.upvotes
                     downVote = counts.downvotes
-                    fetchUserVoteState()
+                    
+                    // Optionally synchronize tap states
+                    fetchUserVoteState() // Ensure highlight states are in sync
                 case .failure(let error):
                     print("Error fetching updated vote counts: \(error.localizedDescription)")
                 }
