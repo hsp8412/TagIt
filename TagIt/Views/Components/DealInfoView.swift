@@ -10,8 +10,10 @@ import FirebaseAuth
 struct DealInfoView: View {
     @Binding var deal: Deal
     @State var isLoading = true
+    @State var isSaved = false
     @State var user: UserProfile?
-    @State private var errorMessage: String?
+    @State private var profileErrorMessage: String?
+    @State private var voteErrorMessage: String?
     @State private var currentUserId: String? = nil
     @State private var isPhotoExpanded: Bool = false // State to toggle photo expansion
 
@@ -96,7 +98,7 @@ struct DealInfoView: View {
                             .font(.system(size: 14))
                             .foregroundColor(.green)
                     }
-                    
+                  
                     Spacer()
                     
                     if let userId = currentUserId {
@@ -142,7 +144,7 @@ struct DealInfoView: View {
                         self.user = fetchUserProfilebyID
                         self.isLoading = false
                     case .failure(let error):
-                        self.errorMessage = error.localizedDescription
+                        self.profileErrorMessage = error.localizedDescription
                         self.isLoading = false
                     }
                 }
@@ -156,8 +158,16 @@ struct DealInfoView: View {
             self.currentUserId = currentUser.uid
         } else {
             print("Error: User not authenticated")
-            self.errorMessage = "User not authenticated."
+            self.voteErrorMessage = "User not authenticated."
         }
+    }
+    
+    // Save deal
+    private func saveDeal() {
+        isSaved.toggle()
+        // Get saved status
+        
+        // Update saved db
     }
 }
 
@@ -202,10 +212,10 @@ struct PhotoFullScreenView: View {
         deal: .constant(
             Deal(
                 id: "DealID",
-                userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2",
+                userID: "PtMxESE6kEONluP2QtWTAh7tWax2",
                 photoURL: "https://i.imgur.com/8ciNZcY.jpeg",
-                productText: "Product Text",
-                postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.",
+                productText: "Product Text~~~~~~~~~~~~~~~~~~",
+                postText: "Post Text. Post Text. Post Text. Post Text. Post Text. Post Text.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
                 price: 1.23,
                 location: "Safeway",
                 date: "2d",
