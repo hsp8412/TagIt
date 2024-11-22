@@ -68,6 +68,7 @@
 		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
 		90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */; };
 		90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D7754E2CED6054005E2622 /* EditUsernameView.swift */; };
+		BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF51F7E52CF0114600886C8F /* RankingModel.swift */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
@@ -131,6 +132,7 @@
 		90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyReviewsView.swift; sourceTree = "<group>"; };
 		90D7754C2CED546E005E2622 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
+		BF51F7E52CF0114600886C8F /* RankingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingModel.swift; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -277,6 +279,7 @@
 		90294B702CB60DF8006FAE3A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BF51F7E52CF0114600886C8F /* RankingModel.swift */,
 				BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */,
 				BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */,
 				5DB364882CBED87500424571 /* DealModel.swift */,
@@ -376,6 +379,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */,
 				5DB3653E2CBEE01700424571 /* ReviewStarsModel.swift in Sources */,
 				5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */,
 				403755742CD16D8E00C7D96C /* GradientTitle.swift in Sources */,

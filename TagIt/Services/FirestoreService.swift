@@ -101,8 +101,28 @@ class FirestoreService {
         db.collection(collectionName).document(documentID).getDocument { (documentSnapshot, error) in
             if let document = documentSnapshot, document.exists {
                 do {
-                    let decodedObject = try document.data(as: modelType)
-                    completion(.success(decodedObject))
+                    if modelType == UserProfile.self {
+                        let data = document.data() ?? [:]
+                        guard let userProfile = UserProfile(
+                            id: documentID,
+                            email: data["email"] as? String ?? "",
+                            displayName: data["displayName"] as? String ?? "Anonymous",
+                            avatarURL: data["avatarURL"] as? String,
+                            score: data["score"] as? Int ?? 0,
+                            savedDeals: data["savedDeals"] as? [String] ?? [],
+                            totalUpvotes: data["totalUpvotes"] as? Int ?? 0,
+                            totalDownvotes: data["totalDownvotes"] as? Int ?? 0,
+                            totalDeals: data["totalDeals"] as? Int ?? 0,
+                            totalComments: data["totalComments"] as? Int ?? 0,
+                            rankingPoints: data["rankingPoints"] as? Int ?? 0
+                        ) as? T else {
+                            throw NSError(domain: "FirestoreError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Type mismatch for UserProfile"])
+                        }
+                        completion(.success(userProfile))
+                    } else {
+                        let decodedObject = try document.data(as: modelType)
+                        completion(.success(decodedObject))
+                    }
                 } catch {
                     completion(.failure(error))
                 }
@@ -113,18 +133,47 @@ class FirestoreService {
             }
         }
     }
+
+
     
-    func readCollection(collectionName: String, completion: @escaping (Result<[QueryDocumentSnapshot], Error>) -> Void) {
+    func readCollection<T: Codable>(collectionName: String, modelType: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
         db.collection(collectionName).getDocuments { (querySnapshot, error) in
             if let error = error {
                 completion(.failure(error))
             } else if let documents = querySnapshot?.documents {
-                completion(.success(documents))
+                let results = documents.compactMap { document -> T? in
+                    do {
+                        if T.self == UserProfile.self {
+                            let data = document.data()
+                            return UserProfile(
+                                id: document.documentID,
+                                email: data["email"] as? String ?? "",
+                                displayName: data["displayName"] as? String ?? "Anonymous",
+                                avatarURL: data["avatarURL"] as? String,
+                                score: data["score"] as? Int ?? 0,
+                                savedDeals: data["savedDeals"] as? [String] ?? [],
+                                totalUpvotes: data["totalUpvotes"] as? Int ?? 0,
+                                totalDownvotes: data["totalDownvotes"] as? Int ?? 0,
+                                totalDeals: data["totalDeals"] as? Int ?? 0,
+                                totalComments: data["totalComments"] as? Int ?? 0,
+                                rankingPoints: data["rankingPoints"] as? Int ?? 0
+                            ) as? T
+                        } else {
+                            return try document.data(as: modelType)
+                        }
+                    } catch {
+                        print("Error decoding document \(document.documentID): \(error.localizedDescription)")
+                        return nil
+                    }
+                }
+                completion(.success(results))
             } else {
                 completion(.failure(NSError(domain: "FirestoreError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No documents found"])))
             }
         }
     }
+
+
     
     /**
      Updates an entire document in a Firestore collection with the provided data.

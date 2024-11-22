@@ -15,5 +15,11 @@ struct UserProfile: Identifiable, Codable {
     var avatarURL: String?
     var score: Int
     var savedDeals: [String]
+    var totalUpvotes: Int
+    var totalDownvotes: Int
+    var totalDeals: Int = 0
+    var totalComments: Int = 0
+    var rankingPoints: Int = 0
 }
+
 
