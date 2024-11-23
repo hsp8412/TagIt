@@ -68,21 +68,34 @@ struct HomeView: View {
                 } else {
                     ScrollView {
                         if viewModel.shownDeals.isEmpty {
-                            Text("No More Deals For Today!")
-                                .frame(maxHeight: .infinity)
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.gray)
+                            if deals.isEmpty {
+                                Text("Sorry, there are no deals...")
+                                    .frame(maxHeight: .infinity)
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.gray)
+                            } else {
+                                VStack(alignment: .leading, spacing: 30) {
+                                    ForEach(deals) { deal in
+                                        DealCardView(deal: deal)
+                                            .background(Color.white)
+                                            .cornerRadius(15)
+                                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                            .padding(.horizontal)
+                                    }
+                                }
+                            }
                         } else {
                             VStack(alignment: .leading, spacing: 30) {
                                 ForEach(viewModel.shownDeals) { deal in
                                     DealCardView(deal: deal)
                                         .background(Color.white)
-                                        .cornerRadius(15) // Added rounded corners for a cleaner look
-                                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2) // Subtle shadow
-                                        .padding(.horizontal) // Added padding to avoid touching screen edges
+                                        .cornerRadius(15)
+                                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                        .padding(.horizontal)
                                 }
                             }
                         }
+
                     }
                     .padding(.top, 10) // Added top padding for spacing
                     .refreshable {
@@ -105,14 +118,20 @@ struct HomeView: View {
         DealService.shared.getDeals { result in
             switch result {
             case .success(let fetchedDeals):
-                self.deals = fetchedDeals
-                self.isLoading = false
+                DispatchQueue.main.async {
+                    self.deals = fetchedDeals
+                    self.viewModel.shownDeals = fetchedDeals
+                    self.isLoading = false
+                }
             case .failure(let error):
-                self.errorMessage = error.localizedDescription
-                self.isLoading = false
+                DispatchQueue.main.async {
+                    self.errorMessage = error.localizedDescription
+                    self.isLoading = false
+                }
             }
         }
     }
+
 }
 
 struct FilterButton: View {
