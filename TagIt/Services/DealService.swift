@@ -43,18 +43,33 @@ class DealService {
             }
     }
     
-    // Add a new deal to Firestore
     func addDeal(newDeal: Deal, completion: @escaping (Result<Void, Error>) -> Void) {
-        var updatedDeal = newDeal
-        updatedDeal.dateTime = nil // Ensure Firestore sets the timestamp
-        
-        do {
-            let _ = try db.collection(FirestoreCollections.deals).addDocument(from: updatedDeal)
-            completion(.success(()))
-        } catch let error {
-            completion(.failure(error))
+        FirestoreService.shared.createDocument(
+            collectionName: FirestoreCollections.deals,
+            documentID: newDeal.id,
+            data: newDeal
+        ) { error in
+            if let error = error {
+                print("Error adding new deal: \(error.localizedDescription)")
+                completion(.failure(error))
+            } else {
+                // Increment the user's totalDeals
+                FirestoreService.shared.updateField(
+                    collectionName: FirestoreCollections.user,
+                    documentID: newDeal.userID,
+                    field: "totalDeals",
+                    value: FieldValue.increment(Int64(1))
+                ) { error in
+                    if let error = error {
+                        print("Error incrementing totalDeals for user: \(error.localizedDescription)")
+                    }
+                }
+                completion(.success(()))
+            }
         }
     }
+
+
 
 }
 

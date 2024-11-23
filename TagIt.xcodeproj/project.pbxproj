@@ -42,8 +42,6 @@
 		40FD1EA92CE9808100729291 /* StoreModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1EA82CE9808100729291 /* StoreModel.swift */; };
 		40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */; };
 		40FD1ED52CEAA6E800729291 /* SearchResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */; };
-		5D118DCC2CF02E71004CF6AE /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5D118DCB2CF02E71004CF6AE /* Config.xcconfig */; };
-		5D118DCE2CF02F1A004CF6AE /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D118DCD2CF02F1A004CF6AE /* HomeViewModel.swift */; };
 		5D1B36972CC5B2AE00552691 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1B36962CC5B2AE00552691 /* HomeView.swift */; };
 		5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */; };
 		5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */; };
@@ -70,6 +68,7 @@
 		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
 		90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */; };
 		90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D7754E2CED6054005E2622 /* EditUsernameView.swift */; };
+		BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF51F7E52CF0114600886C8F /* RankingModel.swift */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
@@ -92,6 +91,7 @@
 		4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		4086FD0D2CB50EF800EB6411 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		40A366972CEB4DDF00038754 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		40A366992CEC71F100038754 /* SearchResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultDetailView.swift; sourceTree = "<group>"; };
 		40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultDetailViewModel.swift; sourceTree = "<group>"; };
 		40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRecoveryViewModel.swift; sourceTree = "<group>"; };
@@ -105,8 +105,6 @@
 		40FD1EA82CE9808100729291 /* StoreModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreModel.swift; sourceTree = "<group>"; };
 		40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultView.swift; sourceTree = "<group>"; };
 		40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewModel.swift; sourceTree = "<group>"; };
-		5D118DCB2CF02E71004CF6AE /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
-		5D118DCD2CF02F1A004CF6AE /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		5D1B36962CC5B2AE00552691 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarView.swift; sourceTree = "<group>"; };
 		5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingCardView.swift; sourceTree = "<group>"; };
@@ -132,7 +130,9 @@
 		90D774F22CDAB888005E2622 /* ScannedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemView.swift; sourceTree = "<group>"; };
 		90D774F42CDAD186005E2622 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
 		90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyReviewsView.swift; sourceTree = "<group>"; };
+		90D7754C2CED546E005E2622 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
+		BF51F7E52CF0114600886C8F /* RankingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingModel.swift; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -207,7 +207,6 @@
 				403755752CD1743700C7D96C /* SearchViewModel.swift */,
 				40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */,
 				40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */,
-				5D118DCD2CF02F1A004CF6AE /* HomeViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -254,7 +253,7 @@
 		40F8B5EB2C9FA8AF0024C7EF /* TagIt */ = {
 			isa = PBXGroup;
 			children = (
-				5D118DCB2CF02E71004CF6AE /* Config.xcconfig */,
+				90D7754C2CED546E005E2622 /* Config.xcconfig */,
 				909DFE502CD17D1A00138D31 /* GoogleService-Info.plist */,
 				40851C7B2CC04CAC009AE166 /* Other */,
 				BF3FBB362CBF37EE00F026FC /* Services */,
@@ -264,6 +263,7 @@
 				40F8B5EC2C9FA8AF0024C7EF /* TagItApp.swift */,
 				40F8B5F02C9FA8B10024C7EF /* Assets.xcassets */,
 				40F8B5F22C9FA8B10024C7EF /* Preview Content */,
+				40A366972CEB4DDF00038754 /* Config.xcconfig */,
 			);
 			path = TagIt;
 			sourceTree = "<group>";
@@ -279,6 +279,7 @@
 		90294B702CB60DF8006FAE3A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BF51F7E52CF0114600886C8F /* RankingModel.swift */,
 				BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */,
 				BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */,
 				5DB364882CBED87500424571 /* DealModel.swift */,
@@ -365,7 +366,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D118DCC2CF02E71004CF6AE /* Config.xcconfig in Resources */,
 				40F8B5F42C9FA8B10024C7EF /* Preview Assets.xcassets in Resources */,
 				40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */,
 				909DFE512CD17D1A00138D31 /* GoogleService-Info.plist in Resources */,
@@ -379,6 +379,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */,
 				5DB3653E2CBEE01700424571 /* ReviewStarsModel.swift in Sources */,
 				5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */,
 				403755742CD16D8E00C7D96C /* GradientTitle.swift in Sources */,
@@ -394,7 +395,6 @@
 				5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */,
 				4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */,
 				4086FCFE2CB47EB300EB6411 /* ProductsView.swift in Sources */,
-				5D118DCE2CF02F1A004CF6AE /* HomeViewModel.swift in Sources */,
 				4017C4572CC5E90000D110AD /* NewDealViewModel.swift in Sources */,
 				4086FCF62CB47DB000EB6411 /* SearchView.swift in Sources */,
 				4086FCFA2CB47DF500EB6411 /* RankingView.swift in Sources */,
@@ -442,7 +442,7 @@
 /* Begin XCBuildConfiguration section */
 		40F8B5F52C9FA8B10024C7EF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D118DCB2CF02E71004CF6AE /* Config.xcconfig */;
+			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -506,6 +506,7 @@
 		};
 		40F8B5F62C9FA8B10024C7EF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -562,7 +563,7 @@
 		};
 		40F8B5F82C9FA8B10024C7EF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D118DCB2CF02E71004CF6AE /* Config.xcconfig */;
+			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -595,6 +596,7 @@
 		};
 		40F8B5F92C9FA8B10024C7EF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 40A366972CEB4DDF00038754 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
