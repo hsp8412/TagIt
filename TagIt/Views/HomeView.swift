@@ -1,13 +1,8 @@
-//
-//  DealThreadsView.swift
-//  TagIt
-//
-//  Created by Chenghou Si on 2024-10-21.
-//
-
 import SwiftUI
+
 struct HomeView: View {
     @State private var deals: [Deal] = []  // Empty deals array
+    @StateObject var viewModel = HomeViewModel()
     @State private var search: String = ""
     @State private var isLoading: Bool = true
     @State private var errorMessage: String?
@@ -32,6 +27,7 @@ struct HomeView: View {
                 .padding()
                 .onSubmit {
                     print("Searching \"\(search)\"")
+                    viewModel.fetchSearchDeals(searchText: search)
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
@@ -43,8 +39,16 @@ struct HomeView: View {
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
-                            FilterButton(icon: "sparkles", text: "Now")
-                            FilterButton(icon: "mappin", text: "Nearby")
+                            // Filter Buttons
+                            FilterButton(icon: "sparkles", text: "Now") {
+                                viewModel.fetchTodaysDeals()
+                            }
+                            FilterButton(icon: "mappin", text: "Nearby") {
+                                viewModel.fetchDealsClosedTo()
+                            }
+                            FilterButton(icon: "flame.fill", text: "Hot") {
+                                viewModel.fetchHottestDeals()
+                            }
                         }
                         .padding(.horizontal, 16) // Ensure this matches the leading padding of Text
                         .frame(height: 50)
@@ -63,13 +67,20 @@ struct HomeView: View {
                         .padding(.horizontal) // Added horizontal padding for better alignment
                 } else {
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 30) {
-                            ForEach(deals) { deal in
-                                DealCardView(deal: deal)
-                                    .background(Color.white)
-                                    .cornerRadius(15) // Added rounded corners for a cleaner look
-                                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2) // Subtle shadow
-                                    .padding(.horizontal) // Added padding to avoid touching screen edges
+                        if viewModel.shownDeals.isEmpty {
+                            Text("No More Deals For Today!")
+                                .frame(maxHeight: .infinity)
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.gray)
+                        } else {
+                            VStack(alignment: .leading, spacing: 30) {
+                                ForEach(viewModel.shownDeals) { deal in
+                                    DealCardView(deal: deal)
+                                        .background(Color.white)
+                                        .cornerRadius(15) // Added rounded corners for a cleaner look
+                                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2) // Subtle shadow
+                                        .padding(.horizontal) // Added padding to avoid touching screen edges
+                                }
                             }
                         }
                     }
@@ -88,7 +99,6 @@ struct HomeView: View {
         }
     }
 
-    
     // Function to fetch deals
     private func fetchDeals() {
         isLoading = true
@@ -105,34 +115,36 @@ struct HomeView: View {
     }
 }
 
-
 struct FilterButton: View {
     var icon: String
     var text: String
+    var action: () -> Void // Add action callback
     
     var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 18, height: 18)
-                .foregroundColor(.black)
-            
-            Text(text)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.black)
+        Button(action: action) { // Call the action when tapped
+            HStack {
+                Image(systemName: icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .foregroundColor(.black)
+                
+                Text(text)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.black)
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 15)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .stroke(Color.white.opacity(1.0), lineWidth: 2) // Soft white outline
+                    .background(
+                        RoundedRectangle(cornerRadius: 25)
+                            .fill(Color.white) // Consistent white background
+                    )
+                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2) // Subtle shadow
+            )
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 15)
-        .background(
-            RoundedRectangle(cornerRadius: 25)
-                .stroke(Color.white.opacity(1.0), lineWidth: 2) // Soft white outline
-                .background(
-                    RoundedRectangle(cornerRadius: 25)
-                        .fill(Color.white) // Consistent white background
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2) // Subtle shadow
-        )
     }
 }
 
