@@ -141,7 +141,7 @@ class SearchResultViewModel: NSObject, ObservableObject {
         if let location = locations.last {
             DispatchQueue.main.async {
                 self.currentLocation = location
-                self.updateMapRegion() 
+                self.updateMapRegion()
             }
         }
     }
@@ -153,7 +153,7 @@ class SearchResultViewModel: NSObject, ObservableObject {
     func updateMapRegion() {
         guard let currentLocation = currentLocation else { return }
 
-        let coordinates = allAnnotations.map { $0.coordinate } + [currentLocation.coordinate]
+        let coordinates = mapAnnotations.map { $0.coordinate } + [currentLocation.coordinate]
         let latitudeDelta = coordinates.map { $0.latitude }.max()! - coordinates.map { $0.latitude }.min()!
         let longitudeDelta = coordinates.map { $0.longitude }.max()! - coordinates.map { $0.longitude }.min()!
 
