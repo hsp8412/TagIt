@@ -12,23 +12,27 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager = CLLocationManager()
     
     @Published var userLocation: CLLocation? // Holds the current location
-    @Published var authorizationStatus: CLAuthorizationStatus // Holds the current authorization status
-    @Published var locationError: String? // Holds error message to display to the user
+    @Published var authorizationStatus: CLAuthorizationStatus? // Tracks the current authorization status
+    @Published var locationError: String? // Holds error messages for user feedback
 
+    private var isContinuousTracking = true // Set to true if continuous tracking is needed
+    
     override init() {
-        self.authorizationStatus = locationManager.authorizationStatus
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        requestLocationPermission()
+        // Do not request permissions here; let the app control when to do so
     }
     
     func requestLocationPermission() {
-        switch authorizationStatus {
+        let status = locationManager.authorizationStatus
+        switch status {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .restricted, .denied:
-            locationError = "Location services are disabled. Please enable them in Settings."
+            DispatchQueue.main.async {
+                self.locationError = "Location services are disabled. Please enable them in Settings."
+            }
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
         default:
@@ -37,27 +41,40 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        authorizationStatus = status
-        switch status {
-        case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.startUpdatingLocation()
-        case .denied:
-            locationError = "Location permission denied. Please enable location permissions in Settings."
-        case .restricted:
-            locationError = "Location services are restricted. Check your device's settings."
-        default:
-            break
+        DispatchQueue.main.async {
+            self.authorizationStatus = status
+            switch status {
+            case .authorizedWhenInUse, .authorizedAlways:
+                self.locationManager.startUpdatingLocation()
+            case .denied:
+                self.locationError = "Location permission denied. Please enable location permissions in Settings."
+            case .restricted:
+                self.locationError = "Location services are restricted. Check your device's settings."
+            default:
+                break
+            }
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let latestLocation = locations.last else { return }
-        userLocation = latestLocation
-        locationManager.stopUpdatingLocation() // Stop to conserve battery
-        locationError = nil // Clear any previous error
+        DispatchQueue.main.async {
+            self.userLocation = latestLocation
+            self.locationError = nil // Clear any previous error
+        }
+        if !isContinuousTracking {
+            locationManager.stopUpdatingLocation()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        locationError = "Failed to get location: \(error.localizedDescription)"
+        DispatchQueue.main.async {
+            self.locationError = "Failed to get location: \(error.localizedDescription)"
+        }
+        // Optionally retry for recoverable errors
+        if (error as NSError).code == CLError.network.rawValue {
+            locationManager.startUpdatingLocation()
+        }
     }
 }
+

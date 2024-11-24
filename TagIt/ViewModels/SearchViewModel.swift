@@ -9,4 +9,5 @@ import Foundation
 class SearchViewModel: ObservableObject{
     @Published var isLoading: Bool = false
     @Published var searchText: String = ""
+    
 }
