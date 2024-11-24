@@ -9,6 +9,9 @@ class HomeViewModel: ObservableObject {
     @Published var shownDeals: [Deal] = []
     @Published var isLoading: Bool = true
     @Published var errorMessage: String?
+    @Published var todaysDeal: Bool = false
+    @Published var hotDeal: Bool = false
+    @Published var nearbyDeal: Bool = false
     
     func fetchAllDeals() {
         isLoading = true
@@ -55,7 +58,7 @@ class HomeViewModel: ObservableObject {
     }
     
     // Fetch sorted deals by distance of stores
-    func fetchDealsClosedTo() {
+    func fetchNearbyDeals() {
         isLoading = true
         errorMessage = nil
     }
