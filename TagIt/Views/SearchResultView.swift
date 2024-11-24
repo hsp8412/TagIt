@@ -92,6 +92,8 @@ struct SearchResultView: View {
                     }
                 }
             }
+        }.onAppear{
+            viewModel.locationManager.requestLocationPermission()
         }
     }
 }

@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import FirebaseAuth
+import CoreLocation
 
 class NewDealViewModel: ObservableObject {
     
@@ -17,16 +18,72 @@ class NewDealViewModel: ObservableObject {
     @Published var productText: String = ""
     @Published var postText: String = ""
     @Published var price: String = ""
-    @Published var location: String = ""
+    @Published var location: Store? = nil
     @Published var submitted: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var stores: [Store] = []
+    @Published var isLoading: Bool = true
     
     // MARK: - Private Properties
     private var selectedTab: Binding<Int>
+    private let locationManager = LocationManager()
     
     // MARK: - Initializer
     init(selectedTab: Binding<Int>) {
         self.selectedTab = selectedTab
+        self.getStores()
+    }
+    
+    func getStores(){
+        StoreService.shared.getStores{
+            [weak self] result in
+            switch result {
+            case .success(let stores):
+                self?.stores = stores
+                self?.getClosestStore()
+                self?.isLoading = false
+            case .failure(let error):
+                print("Error fetching stores: \(error)")
+                self?.errorMessage = error.localizedDescription
+                self?.isLoading = false
+            }
+        }
+    }
+    
+    func getClosestStore() {
+        
+        locationManager.requestLocationPermission()
+        
+        // Check if stores are available
+        guard !stores.isEmpty else { return }
+        
+        guard locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways else {
+            
+            return
+        }
+        
+        // Check if user location is available
+        guard let userLocation = locationManager.userLocation else {
+            
+            return
+        }
+        print("123")
+        // Find the closest store
+        let closestStore = stores.min(by: { store1, store2 in
+            let distance1 = calculateDistance(from: userLocation, to: store1)
+            let distance2 = calculateDistance(from: userLocation, to: store2)
+            return distance1 < distance2
+        })
+        
+        // Set the closest store
+        location = closestStore
+    }
+    
+    private func calculateDistance(from userLocation: CLLocation, to store: Store) -> CLLocationDistance {
+        // Create a CLLocation instance for the store
+        let storeLocation = CLLocation(latitude: store.latitude, longitude: store.longitude)
+        // Calculate the distance
+        return userLocation.distance(from: storeLocation)
     }
     
     // MARK: - Form Submission
@@ -78,11 +135,12 @@ class NewDealViewModel: ObservableObject {
             productText: productText,
             postText: postText,
             price: Double(price) ?? 0,
-            location: location,
-            date: "",
+            location: location?.name ?? "",
+            date:"",
             commentIDs: [],
             upvote: 0,
-            downvote: 0
+            downvote: 0,
+            locationId: location?.id as? String
         )
         
         DealService.shared.addDeal(newDeal: newDeal) { [weak self] result in
@@ -104,7 +162,7 @@ class NewDealViewModel: ObservableObject {
         productText = ""
         postText = ""
         price = ""
-        location = ""
+        location = nil
         image = nil
         submitted = false
         errorMessage = nil
@@ -116,7 +174,7 @@ class NewDealViewModel: ObservableObject {
     private func validate() -> Bool {
         errorMessage = nil
         
-        guard !productText.isEmpty, !price.isEmpty, !location.isEmpty, !postText.isEmpty, image != nil else {
+        guard !productText.isEmpty, !price.isEmpty, location != nil, !postText.isEmpty, image != nil else {
             errorMessage = "Please fill in all fields and upload an image."
             return false
         }

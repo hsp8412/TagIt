@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import UIKit
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager = CLLocationManager()
@@ -14,7 +15,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocation: CLLocation? // Holds the current location
     @Published var authorizationStatus: CLAuthorizationStatus? // Tracks the current authorization status
     @Published var locationError: String? // Holds error messages for user feedback
-
+    
     private var isContinuousTracking = true // Set to true if continuous tracking is needed
     
     override init() {
@@ -26,6 +27,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func requestLocationPermission() {
         let status = locationManager.authorizationStatus
+        print(status)
         switch status {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
@@ -33,6 +35,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             DispatchQueue.main.async {
                 self.locationError = "Location services are disabled. Please enable them in Settings."
             }
+            self.promptToOpenSettings()
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
         default:
@@ -48,8 +51,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self.locationManager.startUpdatingLocation()
             case .denied:
                 self.locationError = "Location permission denied. Please enable location permissions in Settings."
+                self.promptToOpenSettings()
             case .restricted:
                 self.locationError = "Location services are restricted. Check your device's settings."
+                
             default:
                 break
             }
@@ -74,6 +79,31 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Optionally retry for recoverable errors
         if (error as NSError).code == CLError.network.rawValue {
             locationManager.startUpdatingLocation()
+        }
+    }
+    
+    private func promptToOpenSettings() {
+        DispatchQueue.main.async {
+            // Get the active UIWindowScene
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let rootViewController = windowScene.windows.first?.rootViewController else {
+                return
+            }
+            
+            let alert = UIAlertController(
+                title: "Location Permission Needed",
+                message: "To use this feature, please enable location permissions in Settings.",
+                preferredStyle: .alert
+            )
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsURL)
+                }
+            })
+            
+            rootViewController.present(alert, animated: true)
         }
     }
 }
