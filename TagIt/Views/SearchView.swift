@@ -8,18 +8,27 @@
 import SwiftUI
 
 struct SearchView: View {
-    @StateObject var viewModel: SearchViewModel = SearchViewModel();
-    @State private var navigateToResults = false
+    @StateObject var viewModel: SearchViewModel = SearchViewModel()
+    @State private var isPresent: Bool = false
+    @State private var showWarning: Bool = false
+
     var body: some View {
         NavigationStack {
-            VStack{
-                ZStack{
+            VStack {
+                ZStack {
                     Color(UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1))
-                    VStack{
-                        GradientTitle(icon: "magnifyingglass.circle.fill", text:"Search deals", fontSize: 40, color1:.green, color2:.purple)
+                    VStack {
+                        GradientTitle(
+                            icon: "magnifyingglass.circle.fill",
+                            text: "Search deals",
+                            fontSize: 40,
+                            color1: .green,
+                            color2: .purple
+                        )
+                        
                         // Form
-                        VStack(spacing:20){
-                            VStack(alignment:.leading){
+                        VStack(spacing: 20) {
+                            VStack(alignment: .leading) {
                                 Text("Item Name")
                                     .padding(.horizontal, 40)
                                     .foregroundStyle(.green)
@@ -30,19 +39,36 @@ struct SearchView: View {
                                     .padding(.horizontal, 40)
                                     .shadow(radius: 5)
                                     .autocapitalization(.none)
+                                if showWarning {
+                                    Text("Please enter the search text")
+                                        .foregroundColor(.red)
+                                        .padding(.horizontal, 40)
+                                        .multilineTextAlignment(.leading)
+                                }
                             }
-                            NavigationLink(destination: SearchResultView(viewModel: SearchResultViewModel(searchText: viewModel.searchText))){
-                                
+                            
+                            Button(action: {
+                                if !viewModel.searchText.isEmpty {
+                                    showWarning = false
+                                    isPresent = true
+                                } else {
+                                    showWarning = true
+                                }
+                            }) {
                                 Text("Search")
-                                    .padding(.horizontal,20)
+                                    .padding(.horizontal, 20)
                                     .padding(.vertical, 15)
                                     .background(.green)
                                     .foregroundColor(.white)
                                     .cornerRadius(25)
-                            }.padding(.top, 20)
+                            }
+                            .padding(.top, 20)
                         }
                     }
                 }
+            }
+            .navigationDestination(isPresented: $isPresent) {
+                SearchResultView(searchText: viewModel.searchText)
             }
         }
     }
