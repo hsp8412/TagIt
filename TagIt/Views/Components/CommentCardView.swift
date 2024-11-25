@@ -3,108 +3,151 @@
 //  TagIt
 //
 //  Created by Chenghou Si on 2024-10-21.
-//
-
 import SwiftUI
 
 struct CommentCardView: View {
     @State var comment: UserComments
-    let user: UserProfile = UserProfile(userId: "UID1", email: "user@example.com", displayName: "User Name", avatarURL: "https://i.imgur.com/8ciNZcY.jpeg")
-    let time = "1h"
+    @State var user: UserProfile? // Dynamically loaded user
+    @State private var isExpanded: Bool = false // Tracks whether the card is expanded
+    let time = "1h" // Placeholder for now, can be dynamically calculated from the comment timestamp
+
+    private let maxTextLength: Int = 255 // Maximum visible characters before truncation
 
     var body: some View {
-        ZStack {
-            Color.white
-                .frame(height: 170)
-                .shadow(radius: 5)
-            
-            // Comment
-            VStack (alignment: .leading) {
-                HStack {
-                    VStack (alignment: .leading) {
-                        HStack {
-                            if let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                                AsyncImage(url: url) { phase in
-                                    if let image = phase.image {
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 40, height: 40)
-                                            .clipShape(Circle())
-                                    } else {
-                                        ProgressView()
-                                            .frame(width: 40, height: 40)
-                                            .clipShape(Circle())
-                                    }
-                                }
-                            }
-                            
-                            VStack (alignment: .leading) {
-                                Text(user.displayName)
-                                    .lineLimit(1)
-                                
-                                Text(time)
-                            }
+        VStack(alignment: .leading, spacing: 10) {
+            // User Info Row
+            HStack(spacing: 10) {
+                // User Avatar
+                if let user = user, let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                        } else {
+                            ProgressView()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
                         }
                     }
+                } else {
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 40, height: 40) // Placeholder avatar
                 }
-                
-                Text(comment.commentText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 5)
-                
-                HStack {
-                    // Upvote and downvote button
-                    // Need to be fully implemented
-                    Button(action: {
-                        print("Thumbsup Tapped")
-                        comment.upvote = comment.upvote + 1
-                    }) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.green)
-                                .frame(width: 100, height: 30)
-                            
-                            HStack {
-                                Image(systemName: "hand.thumbsup.fill")
-                                    .foregroundStyle(Color.white)
-                                
-                                Text("\(comment.upvote)")
-                                    .padding(.horizontal)
-                                    .foregroundColor(.white)
-                            }
-                            
-                        }
-                    }
-                    
-                    Button(action: {
-                        print("Thumbsdown Tapped")
-                        comment.downvote = comment.downvote + 1
-                    }) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.red)
-                                .frame(width: 100, height: 30)
-                            
-                            HStack {
-                                Image(systemName: "hand.thumbsdown.fill")
-                                    .foregroundStyle(Color.white)
-                                
-                                Text("\(comment.downvote)")
-                                    .padding(.horizontal)
-                                    .foregroundColor(.white)
-                            }
-                            
-                        }
-                    }
+
+                // User Name and Timestamp
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(user?.displayName ?? "Loading...")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+
+                    Text(time)
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
                 }
-                .frame(maxWidth: .infinity, alignment: .trailing)
+
+                Spacer()
             }
-            .padding()
+
+            // Comment Text
+            if isExpanded || comment.commentText.count <= maxTextLength {
+                Text(comment.commentText)
+                    .font(.system(size: 16))
+                    .foregroundColor(.black)
+                    .lineLimit(nil)
+            } else {
+                Text(String(comment.commentText.prefix(maxTextLength)) + "...")
+                    .font(.system(size: 16))
+                    .foregroundColor(.black)
+                    .lineLimit(3)
+            }
+
+            // "More" Button
+            if comment.commentText.count > maxTextLength {
+                Button(action: {
+                    isExpanded.toggle()
+                }) {
+                    Text(isExpanded ? "Show Less" : "Show More")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.blue)
+                }
+            }
+
+            // Voting Controls (aligned to bottom-right)
+            HStack {
+                Spacer() // Push voting controls to the right
+
+                UpDownVoteView(
+                    userId: user?.id ?? "", // Use the fetched user ID
+                    type: .comment,
+                    id: comment.id ?? "", // Ensure `comment.id` is unwrapped
+                    upVote: $comment.upvote, // Binding for upvotes
+                    downVote: $comment.downvote // Binding for downvotes
+                )
+            }
+        }
+        .padding(12) // Reduced padding for a compact design
+        .background(
+            Color.white
+                .cornerRadius(12)
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+        )
+        .padding(.horizontal)
+        .onAppear {
+            fetchUserForComment()
+            fetchVotesForComment()
+        }
+    }
+
+    private func fetchUserForComment() {
+        let userId = comment.userID
+
+        UserService.shared.getUserById(id: userId) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let fetchedUser):
+                    self.user = fetchedUser
+                case .failure(let error):
+                    print("Error fetching user for comment: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+    private func fetchVotesForComment() {
+        guard let commentId = comment.id else {
+            print("Error: Comment ID is nil")
+            return
+        }
+
+        VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let counts):
+                    comment.upvote = counts.upvotes
+                    comment.downvote = counts.downvotes
+                case .failure(let error):
+                    print("Error fetching vote counts: \(error.localizedDescription)")
+                }
+            }
         }
     }
 }
 
 #Preview {
-    CommentCardView(comment: UserComments(id: "CommentID1", userID: "2", commentText: "Comments.", commentType: .deal, upvote: 6, downvote: 7))
+    CommentCardView(
+        comment: UserComments(
+            id: "CommentID1",
+            userID: "2",
+            itemID: "DealID1",
+            commentText: "This is a sample comment. It can be multiline and styled appropriately. If the text is too long, it will be truncated and expandable with a 'Show More' option.",
+            commentType: .deal,
+            upvote: 6,
+            downvote: 7
+        )
+    )
 }

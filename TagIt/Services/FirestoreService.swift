@@ -101,8 +101,28 @@ class FirestoreService {
         db.collection(collectionName).document(documentID).getDocument { (documentSnapshot, error) in
             if let document = documentSnapshot, document.exists {
                 do {
-                    let decodedObject = try document.data(as: modelType)
-                    completion(.success(decodedObject))
+                    if modelType == UserProfile.self {
+                        let data = document.data() ?? [:]
+                        guard let userProfile = UserProfile(
+                            id: documentID,
+                            email: data["email"] as? String ?? "",
+                            displayName: data["displayName"] as? String ?? "Anonymous",
+                            avatarURL: data["avatarURL"] as? String,
+                            score: data["score"] as? Int ?? 0,
+                            savedDeals: data["savedDeals"] as? [String] ?? [],
+                            totalUpvotes: data["totalUpvotes"] as? Int ?? 0,
+                            totalDownvotes: data["totalDownvotes"] as? Int ?? 0,
+                            totalDeals: data["totalDeals"] as? Int ?? 0,
+                            totalComments: data["totalComments"] as? Int ?? 0,
+                            rankingPoints: data["rankingPoints"] as? Int ?? 0
+                        ) as? T else {
+                            throw NSError(domain: "FirestoreError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Type mismatch for UserProfile"])
+                        }
+                        completion(.success(userProfile))
+                    } else {
+                        let decodedObject = try document.data(as: modelType)
+                        completion(.success(decodedObject))
+                    }
                 } catch {
                     completion(.failure(error))
                 }
@@ -111,6 +131,74 @@ class FirestoreService {
             } else {
                 completion(.failure(NSError(domain: "FirestoreError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Document does not exist"])))
             }
+        }
+    }
+
+
+    
+    func readCollection<T: Codable>(collectionName: String, modelType: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
+        db.collection(collectionName).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else if let documents = querySnapshot?.documents {
+                let results = documents.compactMap { document -> T? in
+                    do {
+                        if T.self == UserProfile.self {
+                            let data = document.data()
+                            return UserProfile(
+                                id: document.documentID,
+                                email: data["email"] as? String ?? "",
+                                displayName: data["displayName"] as? String ?? "Anonymous",
+                                avatarURL: data["avatarURL"] as? String,
+                                score: data["score"] as? Int ?? 0,
+                                savedDeals: data["savedDeals"] as? [String] ?? [],
+                                totalUpvotes: data["totalUpvotes"] as? Int ?? 0,
+                                totalDownvotes: data["totalDownvotes"] as? Int ?? 0,
+                                totalDeals: data["totalDeals"] as? Int ?? 0,
+                                totalComments: data["totalComments"] as? Int ?? 0,
+                                rankingPoints: data["rankingPoints"] as? Int ?? 0
+                            ) as? T
+                        } else {
+                            return try document.data(as: modelType)
+                        }
+                    } catch {
+                        print("Error decoding document \(document.documentID): \(error.localizedDescription)")
+                        return nil
+                    }
+                }
+                completion(.success(results))
+            } else {
+                completion(.failure(NSError(domain: "FirestoreError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No documents found"])))
+            }
+        }
+    }
+
+
+    
+    /**
+     Updates an entire document in a Firestore collection with the provided data.
+     
+     - Parameters:
+        - collectionName: The name of the Firestore collection.
+        - documentID: The ID of the document to update.
+        - data: A dictionary or `Codable` object containing the data to update.
+        - completion: A closure that returns an optional error if something goes wrong during the update.
+     */
+    func updateDocument<T: Codable>(collectionName: String, documentID: String, data: T, completion: @escaping (Error?) -> Void) {
+        do {
+            let dataDict = try Firestore.Encoder().encode(data)
+            db.collection(collectionName).document(documentID).setData(dataDict, merge: true) { error in
+                if let error = error {
+                    print("Error updating document \(documentID): \(error.localizedDescription)")
+                    completion(error)
+                } else {
+                    print("Successfully updated document \(documentID) in \(collectionName)")
+                    completion(nil)
+                }
+            }
+        } catch {
+            print("Error encoding data for update: \(error.localizedDescription)")
+            completion(error)
         }
     }
     
@@ -228,8 +316,8 @@ class FirestoreService {
     private func initializeBarcodeItemReviewCollection(group: DispatchGroup) {
         group.enter()
         let barcodeItemReviewData: [BarcodeItemReview] = [
-            BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", commentIDs: ["comment1", "comment3"], barcodeNumber: "1234567890123"),
-            BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", commentIDs: ["comment2", "comment4"], barcodeNumber: "9876543210987")
+            BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", barcodeNumber: "1234567890123"),
+            BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", barcodeNumber: "9876543210987")
         ]
         self.initializeCollection(collectionName: FirestoreCollections.revItem, initialData: barcodeItemReviewData) { error in
             if let error = error {
@@ -272,10 +360,10 @@ class FirestoreService {
     private func initializeUserCommentsCollection(group: DispatchGroup) {
         group.enter()
         let userCommentsData: [UserComments] = [
-            UserComments(id: "comment1", userID: "user1", commentText: "Great deal!", commentType: .deal, upvote: 50, downvote: 2, dateTime: Timestamp()),
-            UserComments(id: "comment2", userID: "user2", commentText: "Could be cheaper.", commentType: .barcodeItem, upvote: 25, downvote: 5, dateTime: Timestamp()),
-            UserComments(id: "comment3", userID: "user1", commentText: "Nice product!", commentType: .deal, upvote: 12, downvote: 3, dateTime: Timestamp()),
-            UserComments(id: "comment4", userID: "user2", commentText: "Poor quality!", commentType: .barcodeItem, upvote: 2, downvote: 10, dateTime: Timestamp())
+            UserComments(id: "comment1", userID: "user1", itemID: "deal1", commentText: "Great deal!", commentType: .deal, upvote: 50, downvote: 2, dateTime: Timestamp()),
+            UserComments(id: "comment2", userID: "user2", itemID: "deal2", commentText: "Could be cheaper.", commentType: .deal, upvote: 25, downvote: 5, dateTime: Timestamp()),
+            UserComments(id: "comment3", userID: "user1", itemID: "deal1", commentText: "Nice product!", commentType: .deal, upvote: 12, downvote: 3, dateTime: Timestamp()),
+            UserComments(id: "comment4", userID: "user2", itemID: "review1", commentText: "Poor quality!", commentType: .barcodeItemReview, upvote: 2, downvote: 10, dateTime: Timestamp())
         ]
         self.initializeCollection(collectionName: FirestoreCollections.userComm, initialData: userCommentsData) { error in
             if let error = error {
@@ -286,6 +374,7 @@ class FirestoreService {
             group.leave()
         }
     }
+
 
     /**
      Initializes the Votes collection with predefined data.
@@ -342,7 +431,7 @@ class FirestoreService {
             // Determine document ID based on the object type
             switch T.self {
             case is UserProfile.Type:
-                documentID = (data as! UserProfile).userId
+                documentID = (data as! UserProfile).id
             case is Deal.Type:
                 documentID = (data as! Deal).id
             case is UserComments.Type:

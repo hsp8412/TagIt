@@ -19,6 +19,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
       
     return true
   }
+
 }
 
 @main
@@ -30,6 +31,8 @@ struct TagItApp: App {
         WindowGroup {
 //            ContentView()
             MainView()
+//            SearchResultView()
         }
     }
 }
+
