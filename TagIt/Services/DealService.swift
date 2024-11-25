@@ -69,7 +69,23 @@ class DealService {
         }
     }
 
-
+    //Fetch a deal by userID
+    func getDealsByUserID(userID: String, completion: @escaping (Result<[Deal], Error>) -> Void) {
+        db.collection(FirestoreCollections.deals)
+            .whereField("userID", isEqualTo: userID)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                } else if let snapshot = snapshot {
+                    let deals = snapshot.documents.compactMap { doc -> Deal? in
+                        try? doc.data(as: Deal.self)
+                    }
+                    completion(.success(deals))
+                } else {
+                    completion(.failure(NSError(domain: "DealService", code: -1, userInfo: [NSLocalizedDescriptionKey: "No deals found for this user"])))
+                }
+            }
+    }
 
 }
 
