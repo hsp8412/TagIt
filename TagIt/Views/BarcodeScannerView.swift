@@ -27,7 +27,7 @@ struct BarcodeScannerView: View {
                             .foregroundColor(.white)
                             .padding()
                         
-                        NavigationLink(destination: ScannedItemView(barcode: barcode), isActive: $navigateToItem) {
+                        NavigationLink(destination: ScannedItemView(barcode: barcode, productName: "Item Name"), isActive: $navigateToItem) {
                             EmptyView()
                         }
                     } else {
