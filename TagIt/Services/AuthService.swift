@@ -26,6 +26,14 @@ class AuthService {
         }
     }
     
+    /// Retrieves the current authenticated user's ID.
+    ///
+    /// - Returns: The user's ID as a `String`, or `nil` if the user is not authenticated.
+    func getCurrentUserID() -> String? {
+        return Auth.auth().currentUser?.uid
+    }
+
+    
     // Function to add an Auth state change listener
     func addAuthStateChangeListener(completion: @escaping (_ userId: String?) -> Void) -> AuthStateDidChangeListenerHandle {
         return Auth.auth().addStateDidChangeListener { _, user in
@@ -42,7 +50,8 @@ class AuthService {
     
     
     func loginUser(withEmail email: String, password: String, completion: @escaping (Result<String, AuthError>) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+        Auth.auth().signIn(withEmail: email,
+                           password: password) { authResult, error in
             if let error = error {
                 let authError = AuthError.from(error: error)
                 completion(.failure(authError))
@@ -101,7 +110,19 @@ class AuthService {
     
     // Insert a new user record in Firestore
     private func insertUserRecord(id: String, displayName: String, email: String, avatarURL: String?) {
-        let newUser = UserProfile(userId: id, email: email, displayName: displayName, avatarURL: avatarURL )
+        let newUser = UserProfile(
+            id: id,
+            email: email,
+            displayName: displayName,
+            avatarURL: avatarURL,
+            score: 0,
+            savedDeals: [],
+            totalUpvotes: 0,
+            totalDownvotes: 0,
+            totalDeals: 0, // Default value for new users
+            totalComments: 0, // Default value for new users
+            rankingPoints: 0 // Default value for new users
+        )
         let db = Firestore.firestore()
         
         db.collection("UserProfile")
@@ -109,16 +130,15 @@ class AuthService {
             .setData(newUser.asDictionary())
     }
     
+    // Fetch user record from Firestore
     private func fetchUser(completion: @escaping (UserProfile?) -> Void) {
         let db = Firestore.firestore()
-        
         guard let userId = Auth.auth().currentUser?.uid else {
             completion(nil)
             return
         }
         
         let userDoc = db.collection("UserProfile").document(userId)
-        
         userDoc.getDocument { [weak self] snapshot, error in
             if let error = error {
                 print("Error fetching user profile: \(error.localizedDescription)")
@@ -127,19 +147,29 @@ class AuthService {
             }
             
             if let snapshot = snapshot, snapshot.exists {
-                do {
-                    self?.currentUserProfile = try snapshot.data(as: UserProfile.self)
-                    completion(self?.currentUserProfile)
-                } catch {
-                    print("Error decoding user profile: \(error.localizedDescription)")
-                    completion(nil)
-                }
+                let data = snapshot.data() ?? [:]
+                self?.currentUserProfile = UserProfile(
+                    id: data["id"] as? String ?? userId,
+                    email: data["email"] as? String ?? "",
+                    displayName: data["displayName"] as? String ?? "Anonymous",
+                    avatarURL: data["avatarURL"] as? String,
+                    score: data["score"] as? Int ?? 0,
+                    savedDeals: data["savedDeals"] as? [String] ?? [],
+                    totalUpvotes: data["totalUpvotes"] as? Int ?? 0,
+                    totalDownvotes: data["totalDownvotes"] as? Int ?? 0,
+                    totalDeals: data["totalDeals"] as? Int ?? 0, // Include new field
+                    totalComments: data["totalComments"] as? Int ?? 0, // Include new field
+                    rankingPoints: data["rankingPoints"] as? Int ?? 0 // Include new field
+                )
+                completion(self?.currentUserProfile)
             } else {
                 print("User profile does not exist.")
                 completion(nil)
             }
         }
     }
+
+
 }
 
 enum AuthError: Error {

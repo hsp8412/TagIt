@@ -10,28 +10,42 @@ import AVFoundation
 
 struct BarcodeScannerView: View {
     @StateObject var viewModel = BarcodeScannerViewModel()
+    @State private var navigateToItem = false
 
     var body: some View {
-        ZStack {
-            CameraPreview(viewModel: viewModel)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                Spacer()
-                if let barcode = viewModel.scannedBarcode {
-                    Text("Scanned Barcode: \(barcode)")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                } else {
-                    Text("No barcode detected")
-                        .foregroundColor(.white)
-                        .padding()
+        NavigationStack {
+            ZStack {
+                CameraPreview(viewModel: viewModel)
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack {
+                    Spacer()
+                    
+                    if let barcode = viewModel.scannedBarcode {
+                        Text("Scanned Barcode: \(barcode)")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                        
+                        NavigationLink(destination: ScannedItemView(barcode: barcode), isActive: $navigateToItem) {
+                            EmptyView()
+                        }
+                    } else {
+                        Text("No barcode detected")
+                            .foregroundColor(.white)
+                            .padding()
+                    }
                 }
             }
-        }
-        .onDisappear {
-            viewModel.scannedBarcode = nil
+            .onAppear {
+                viewModel.scannedBarcode = nil
+                navigateToItem = false
+            }
+            .onChange(of: viewModel.scannedBarcode) { newValue in
+                if newValue != nil {
+                    navigateToItem = true
+                }
+            }
         }
     }
 }

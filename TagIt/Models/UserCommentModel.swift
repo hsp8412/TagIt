@@ -11,17 +11,16 @@ import FirebaseFirestore
 struct UserComments: Identifiable, Codable {
     @DocumentID var id: String?
     var userID: String
+    var itemID: String          // Generalized field for any BarcodeItemReview ID or DealID
     var commentText: String
-    
-    var commentType: CommentType // Use enum for type instead of Int
+    var commentType: CommentType
     var upvote: Int
     var downvote: Int
-    
     @ServerTimestamp var dateTime: Timestamp?
     
-    
-    enum CommentType: Int, Codable {
-        case deal = 0
-        case barcodeItem = 1
+    enum CommentType: String, Codable {
+        case deal
+        case barcodeItemReview
     }
 }
+
