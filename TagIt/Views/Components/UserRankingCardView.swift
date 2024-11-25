@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UserRankingCardView: View {
     let rank: Int
-    let user: UserProfile_Score
+    let user: UserProfile
     let fontSize: CGFloat
     let highlight: Bool
     
@@ -45,15 +45,15 @@ struct UserRankingCardView: View {
                     .padding(.leading, 5)
                     .lineLimit(1)
                 
-                // Score
-                Text("\(user.score)")
+                // Ranking Points
+                Text("\(user.rankingPoints) pts")
                     .frame(width: 100, alignment: .trailing)
                     .font(.system(size: fontSize))
                     .foregroundStyle(.clear)
                     .overlay(
                         LinearGradient(colors: [.yellow, .green], startPoint: .top, endPoint: .bottom)
                             .mask(
-                                Text("\(user.score)")
+                                Text("\(user.rankingPoints) pts")
                                     .font(.system(size: fontSize, weight: .bold))
                                     .frame(width: 100, alignment: .trailing)
                             )
@@ -66,6 +66,25 @@ struct UserRankingCardView: View {
     }
 }
 
+
 #Preview {
-    UserRankingCardView(rank: 1, user: UserProfile_Score(id: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", email: "test1@example.com", displayName: "test1111111111111", avatarURL: "", score: 50000000), fontSize: 25, highlight: true)
+    UserRankingCardView(
+        rank: 1,
+        user: UserProfile(
+            id: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2",
+            email: "test1@example.com",
+            displayName: "test1111111111111",
+            avatarURL: "",
+            score: 0,
+            savedDeals: [],
+            totalUpvotes: 50000000,
+            totalDownvotes: 0,
+            totalDeals: 0,
+            totalComments: 0,
+            rankingPoints: 50000000
+        ),
+        fontSize: 25,
+        highlight: true
+    )
 }
+
