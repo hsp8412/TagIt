@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Store: Identifiable, Codable {
+struct Store: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var latitude: Double
     var longitude: Double

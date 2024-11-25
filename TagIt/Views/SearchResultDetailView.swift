@@ -24,15 +24,28 @@ struct SearchResultDetailView: View {
     }
     
     var body: some View {
-        ScrollView() {
-            VStack(alignment: .leading, spacing: 30) {
-                ForEach(viewModel.dealsFromStore) { deal in
-                    DealCardView(deal: deal)
-                        .background(.white)
+        ZStack{
+            Color(UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1))
+            VStack{
+                Text("Search Results from \"\(viewModel.store.name)\"")
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .foregroundColor(.black)
+                    .opacity(0.7)
+                    .padding(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top)
+                ScrollView() {
+                    VStack(alignment: .leading, spacing: 30) {
+                        ForEach(viewModel.dealsFromStore) { deal in
+                            DealCardView(deal: deal)
+                                .background(.white)
+                        }
+                    }
                 }
             }
+            .padding(.horizontal)
+            .padding(.top, 20)
         }
-        .padding(.horizontal)
     }
 }
 
