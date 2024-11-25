@@ -28,4 +28,130 @@ class UserService: ObservableObject {
     func getUserById(id: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.user, documentID: id, modelType: UserProfile.self, completion: completion)
     }
+
+    /**
+     Fetches all users from Firestore and sorts them by their score in descending order.
+     
+     - Parameters:
+        - completion: A closure that returns a `Result` containing the sorted users on success or an `Error` on failure.
+     */
+    func sortUsersOnScore(completion: @escaping (Result<[UserProfile], Error>) -> Void) {
+        let db = Firestore.firestore()
+
+        db.collection(FirestoreCollections.user)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+
+                guard let documents = snapshot?.documents else {
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No users found"])))
+                    return
+                }
+
+                do {
+                    var users: [UserProfile] = try documents.compactMap { doc in
+                        var user = try doc.data(as: UserProfile.self)
+                        user.id = doc.documentID
+                        return user
+                    }
+
+                    users.sort { $0.score > $1.score }
+
+                    completion(.success(users))
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+    }
+
+    /**
+     Fetches the top `count` users based on their score from the sorted list returned by `sortUsersOnScore`.
+     
+     - Parameters:
+        - count: The number of top users to fetch.
+        - completion: A closure that returns the top users or an `Error` on failure.
+     */
+    func fetchTopUsers(count: Int, completion: @escaping (Result<[UserProfile], Error>) -> Void) {
+        sortUsersOnScore { result in
+            switch result {
+            case .success(let users):
+                let topUsers = Array(users.prefix(count))
+                completion(.success(topUsers))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /**
+     Updates the username of the user in the Firestore database.
+     
+     - Parameters:
+        - userId: The ID of the user whose username needs to be updated.
+        - newUsername: The new username to be set.
+        - completion: A closure that returns a `Result` indicating whether the update was successful or an error.
+     */
+    func updateUsername(userId: String, newUsername: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let db = Firestore.firestore()
+        
+        let userRef = db.collection(FirestoreCollections.user).document(userId)
+
+        userRef.updateData([
+            "displayName": newUsername
+        ]) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+
+    /**
+     Updates the avatar of the user in the Firestore database.
+     
+     - Parameters:
+        - userId: The ID of the user whose avatar URL needs to be updated.
+        - avatarURL: The new avatar URL to be set.
+        - completion: A closure that returns a `Result` indicating whether the update was successful or an `Error` on failure.
+     */
+    func updateAvatar(userId: String, avatarURL: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let db = Firestore.firestore()
+        
+        let userRef = db.collection(FirestoreCollections.user).document(userId)
+
+        userRef.updateData([
+            "avatarURL": avatarURL
+        ]) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+
+    /**
+     Adds a deal ID to the user's savedDeals array in Firestore.
+     
+     - Parameters:
+        - userID: The ID of the user whose profile needs to be updated.
+        - dealID: The ID of the deal to be added to the savedDeals array.
+        - completion: A closure that returns a Result containing Void on success or an Error on failure.
+     */
+    func addSavedDealToUserProfile(userID: String, dealID: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        db.collection(FirestoreCollections.user)
+            .document(userID)
+            .updateData([
+                "savedDeals": FieldValue.arrayUnion([dealID])
+            ]) { error in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(()))
+                }
+            }
+    }
 }
