@@ -51,7 +51,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self.locationManager.startUpdatingLocation()
             case .denied:
                 self.locationError = "Location permission denied. Please enable location permissions in Settings."
-                self.promptToOpenSettings()
+//                self.promptToOpenSettings()
             case .restricted:
                 self.locationError = "Location services are restricted. Check your device's settings."
                 
