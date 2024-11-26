@@ -146,4 +146,28 @@ class ReviewService {
                 }
             }
     }
+    
+    /**
+     Fetches all existing reviews for a specific user, if it exists.
+     
+     - Parameters:
+        - userID: The ID of the user who reviewed the item.
+        - completion: A closure that returns a `Result<[BarcodeItemReview], Error>` indicating success or failure.
+     */
+    func getAllUserReviews(userID: String, completion: @escaping (Result<[BarcodeItemReview], Error>) -> Void) {
+        Firestore.firestore().collection(FirestoreCollections.revItem)
+            .whereField("userID", isEqualTo: userID)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                } else if let snapshot = snapshot {
+                    let reviews = snapshot.documents.compactMap { doc -> BarcodeItemReview? in
+                        try? doc.data(as: BarcodeItemReview.self)
+                    }
+                    completion(.success(reviews))
+                } else {
+                    completion(.failure(NSError(domain: "ReviewService", code: -1, userInfo: [NSLocalizedDescriptionKey: "No reviews found for this user"])))
+                }
+            }
+    }
 }
