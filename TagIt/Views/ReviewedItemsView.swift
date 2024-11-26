@@ -55,7 +55,7 @@ struct ReviewedItemsView: View {
             
             // Reviews
             if isLoading {
-                ProgressView("Loading deals...")
+                ProgressView("Loading reviewed items...")
                     .padding(.top, 20)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let errorMessage = errorMessage {
