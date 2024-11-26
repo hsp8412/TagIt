@@ -11,12 +11,14 @@ import SwiftUI
 import FirebaseAuth
 
 struct ProductsView: View {
+    @State var userID: String?
     @State var savedDeals: [Deal] = []
     @State var shownDeals: [Deal] = []
     @State var swipedDealID: String?
     @State var selectedDeal: Deal?
     @State var search: String = ""
-    @State var isLoading: Bool = true
+    @State var isProfileLoading: Bool = true
+    @State var isSavedDealsLoading: Bool = true
     @State var errorMessage: String?
 
     var body: some View {
@@ -58,7 +60,7 @@ struct ProductsView: View {
                 }
                 
                 // Show deals
-                if isLoading {
+                if (isProfileLoading || isSavedDealsLoading) {
                     ProgressView("Loading saved deal...")
                         .padding(.top, 20) // Added top padding for spacing
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -116,6 +118,7 @@ struct ProductsView: View {
                 }
             }
             .onAppear() {
+                fetchUserProfile()
                 // Fetch saved deal list
                 fetchSavedDeals()
             }
@@ -123,45 +126,61 @@ struct ProductsView: View {
     }
     
     private func searchSavedDeals(searchText: String) {
-        shownDeals = savedDeals.filter { $0.location.localizedCaseInsensitiveContains(searchText) ||
-            $0.productText.localizedCaseInsensitiveContains(searchText) ||
-            $0.postText.localizedCaseInsensitiveContains(searchText)
+        if (searchText == "") {
+            shownDeals = savedDeals
+        } else {
+            shownDeals = savedDeals.filter { $0.location.localizedCaseInsensitiveContains(searchText) ||
+                $0.productText.localizedCaseInsensitiveContains(searchText) ||
+                $0.postText.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+    
+    private func fetchUserProfile() {
+        self.isProfileLoading = true
+        if let currentUser = Auth.auth().currentUser {
+            self.userID = currentUser.uid
+            self.isProfileLoading = false
+        } else {
+            print("Error: User not authenticated")
+            self.errorMessage = "User not authenticated."
         }
     }
     
     private func fetchSavedDeals() {
-        // Dummy Data
-        self.savedDeals = [
-            Deal(id: "1", userID: "", photoURL: "", productText: "deal1", postText: "2131", price: 1.23, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6),
-            Deal(id: "2", userID: "", photoURL: "", productText: "deal2", postText: "2131", price: 1.23, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6),
-            Deal(id: "3", userID: "", photoURL: "", productText: "deal3", postText: "2131", price: 1.23, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6),
-            Deal(id: "4", userID: "", photoURL: "", productText: "deal4", postText: "2131", price: 1.23, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6)
-        ]
-        
-        // Service code
-        self.isLoading = true
-//        var userID = ""
-//        if let currentUser = Auth.auth().currentUser {
-//            userID = currentUser.uid
-//        } else {
-//            print("Error: User not authenticated")
-//            self.errorMessage = "User not authenticated."
-//        }
-//        
-//        // Services to fetch all saved deals by userID
-//        print("[DEBUG] Fetch saved deals for user \(userID)")
-        
-        
-        
-        
-        shownDeals = savedDeals
-        self.isLoading = false
+        isSavedDealsLoading = true
+
+        DealService.shared.getSavedDealsByUserID(userID: self.userID!) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let savedDeals):
+                    self.savedDeals = savedDeals
+                    print("[DEBUG] Fetch saved deals for user \(userID!)")
+                    shownDeals = savedDeals
+                    self.isSavedDealsLoading = false
+                case .failure(let error):
+                    print("[DEBUG] Error when fetching saved deals for user \(userID!) due to \(error.localizedDescription)")
+                    self.isSavedDealsLoading = false
+                }
+            }
+        }
     }
     
     
     private func delSavedDeal(deal: Deal) {
         withAnimation {
             shownDeals.removeAll { $0.id == deal.id }
+        }
+        
+        DealService.shared.removeSavedDeal(userID: userID!, dealID: deal.id!) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("[DEBUG] user \(userID!) successfully deleted saved deal \(deal.id!)")
+                case .failure(let error):
+                    print("[DEBUG] user \(userID!) fail to delete saved deal \(deal.id!) deu to error \(error.localizedDescription)")
+                }
+            }
         }
     }
 }

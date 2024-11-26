@@ -10,7 +10,7 @@ import FirebaseAuth
 struct DealDetailView: View {
     @State var deal: Deal
     @State private var comments: [UserComments] = []
-    @State private var isLoading: Bool = false
+    @State private var isLoading: Bool = true
     @State private var newComment: String = ""
     @State private var errorMessage: String?
     @State private var showAllComments: Bool = false // Toggles showing all comments
