@@ -46,17 +46,10 @@ struct HomeView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
                             // Filter Buttons
-                            FilterButton(icon: "tag.fill", text: "Now", isSelected: selectedFilter == .now) {
-                                selectedFilter = .now
-                                viewModel.fetchTodaysDeals()
-                            }
-                            FilterButton(icon: "flame.fill", text: "Hot", isSelected: selectedFilter == .hot) {
-                                selectedFilter = .hot
-                                viewModel.fetchHottestDeals()
-                            }
-                            FilterButton(icon: "mappin", text: "Nearby", isSelected: selectedFilter == .nearby) {
-                                selectedFilter = .nearby
-                                viewModel.fetchNearbyDeals()
+                            ForEach(viewModel.filters) { filter in
+                                FilterButton(icon: filter.icon, text: filter.label, isSelected: filter.isSelected) {
+                                    viewModel.toggleFilter(id: filter.id)
+                                }
                             }
                         }
                         .padding(.horizontal, 16)
@@ -94,7 +87,7 @@ struct HomeView: View {
                                 }
                             }
                         }
-
+                        
                     }
                     .padding(.top, 10)
                     .refreshable {
