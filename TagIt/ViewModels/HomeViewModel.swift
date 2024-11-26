@@ -16,9 +16,9 @@ class HomeViewModel: ObservableObject {
     //    @Published var nearbyDeal: Bool = false
     
     @Published var filters:[Filter] = [
-        Filter(id:"1", label: "Now", value: "todaysDeal", icon:"sparkles" ,isSelected:true),
-        Filter(id:"2", label: "Nearby", value: "nearbyDeal", icon:"mappin", isSelected:false),
-        Filter(id:"3",label: "Hot", value: "hotDeal", icon:"flame.fill",isSelected: false)
+        Filter(id:"1", label: "Latest", value: "todaysDeal", icon:"tag" ,isSelected:true),
+        Filter(id:"2",label: "Popular", value: "hotDeal", icon:"flame.fill",isSelected: false),
+        Filter(id:"3", label: "Nearby", value: "nearbyDeal", icon:"mappin", isSelected:false)
     ]
     
     var locationManager = LocationManager()
