@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 class UserService: ObservableObject {
     // Singleton instance
     static let shared = UserService()
+    private let db = Firestore.firestore()
 
     // Private initializer to prevent creating multiple instances
     private init() {}
@@ -29,61 +31,7 @@ class UserService: ObservableObject {
         FirestoreService.shared.readDocument(collectionName: FirestoreCollections.user, documentID: id, modelType: UserProfile.self, completion: completion)
     }
 
-    /**
-     Fetches all users from Firestore and sorts them by their score in descending order.
-     
-     - Parameters:
-        - completion: A closure that returns a `Result` containing the sorted users on success or an `Error` on failure.
-     */
-    func sortUsersOnScore(completion: @escaping (Result<[UserProfile], Error>) -> Void) {
-        let db = Firestore.firestore()
 
-        db.collection(FirestoreCollections.user)
-            .getDocuments { snapshot, error in
-                if let error = error {
-                    completion(.failure(error))
-                    return
-                }
-
-                guard let documents = snapshot?.documents else {
-                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No users found"])))
-                    return
-                }
-
-                do {
-                    var users: [UserProfile] = try documents.compactMap { doc in
-                        var user = try doc.data(as: UserProfile.self)
-                        user.id = doc.documentID
-                        return user
-                    }
-
-                    users.sort { $0.score > $1.score }
-
-                    completion(.success(users))
-                } catch {
-                    completion(.failure(error))
-                }
-            }
-    }
-
-    /**
-     Fetches the top `count` users based on their score from the sorted list returned by `sortUsersOnScore`.
-     
-     - Parameters:
-        - count: The number of top users to fetch.
-        - completion: A closure that returns the top users or an `Error` on failure.
-     */
-    func fetchTopUsers(count: Int, completion: @escaping (Result<[UserProfile], Error>) -> Void) {
-        sortUsersOnScore { result in
-            switch result {
-            case .success(let users):
-                let topUsers = Array(users.prefix(count))
-                completion(.success(topUsers))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
 
     /**
      Updates the username of the user in the Firestore database.
@@ -94,7 +42,7 @@ class UserService: ObservableObject {
         - completion: A closure that returns a `Result` indicating whether the update was successful or an error.
      */
     func updateUsername(userId: String, newUsername: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        let db = Firestore.firestore()
+
         
         let userRef = db.collection(FirestoreCollections.user).document(userId)
 
@@ -118,7 +66,7 @@ class UserService: ObservableObject {
         - completion: A closure that returns a `Result` indicating whether the update was successful or an `Error` on failure.
      */
     func updateAvatar(userId: String, avatarURL: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        let db = Firestore.firestore()
+
         
         let userRef = db.collection(FirestoreCollections.user).document(userId)
 
