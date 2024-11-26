@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct AddReviewView: View {
-    @StateObject var viewModel = AddReviewViewModel()
-    let barcode: String
+    @StateObject var viewModel: AddReviewViewModel
     let productName: String
+
+    init(barcode: String, productName: String) {
+        _viewModel = StateObject(wrappedValue: AddReviewViewModel(barcode: barcode))
+        self.productName = productName
+    }
+
 
     var body: some View {
         VStack {

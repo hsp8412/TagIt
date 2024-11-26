@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct ScannedItemView: View {
-    @StateObject var viewModel = ScannedItemViewModel()
-    let barcode: String
+    @StateObject var viewModel: ScannedItemViewModel
     let productName: String
     @State private var navigateToAddReview = false
+
+    init(barcode: String, productName: String) {
+        _viewModel = StateObject(wrappedValue: ScannedItemViewModel(barcode: barcode))
+        self.productName = productName
+    }
 
     var body: some View {
         VStack {
@@ -33,7 +37,7 @@ struct ScannedItemView: View {
                     .fontWeight(.semibold)
                     .multilineTextAlignment(.leading)
                     .padding(.bottom, 50)
-                
+
                 Text("No reviews found for this item.")
                     .foregroundColor(.gray)
                     .padding()
@@ -44,7 +48,7 @@ struct ScannedItemView: View {
                         .fontWeight(.semibold)
                         .multilineTextAlignment(.leading)
                         .padding()
-                    
+
                     VStack(spacing: 10) {
                         ForEach(viewModel.reviews) { review in
                             ReviewCardView(review: review)
@@ -53,9 +57,9 @@ struct ScannedItemView: View {
                     .padding()
                 }
             }
-            
+
             Spacer()
-            
+
             if !viewModel.isLoading {
                 Button(action: {
                     navigateToAddReview = true
@@ -64,7 +68,7 @@ struct ScannedItemView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
                             .foregroundColor(.white)
-                        
+
                         Text("Add a Review")
                             .font(.headline)
                             .foregroundColor(.white)
@@ -76,25 +80,23 @@ struct ScannedItemView: View {
                 }
                 .padding(.bottom, 10)
             }
-            
+
             NavigationLink(
-                destination: AddReviewView(barcode: barcode, productName: productName),
+                destination: AddReviewView(barcode: viewModel.barcode, productName: productName),
                 isActive: $navigateToAddReview
             ) {
                 EmptyView()
             }
         }
         .frame(maxWidth: .infinity)
-        .onAppear {
-            viewModel.fetchReviews(for: barcode)
-        }
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
         .background(Color(.systemGray6))
     }
 }
 
-
-#Preview {
-    ScannedItemView(barcode: "String", productName: "Item")
+struct ScannedItemView_Previews: PreviewProvider {
+    static var previews: some View {
+        ScannedItemView(barcode: "1234567890123", productName: "Sample Product")
+    }
 }
