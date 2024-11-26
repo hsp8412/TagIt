@@ -118,3 +118,9 @@ struct UpDownVoteView: View {
         }
     }
 }
+
+#Preview {
+    @Previewable @State var upVote = 5
+    @Previewable @State var downVote = 6
+    UpDownVoteView(userId: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", type: .deal, id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", upVote: $upVote, downVote: $downVote)
+}

@@ -1,10 +1,14 @@
+// BUG? SOMETIMES FULL SCREEN PIC SHOWS WHEN TAP BUTTON
+
 import SwiftUI
 import FirebaseAuth
 
 struct DealInfoView: View {
     @Binding var deal: Deal
-    @State var isLoading = true
+    @State var isProfileLoading = true
+    @State var isVoteLoading = true
     @State var isSaved = false
+    @State var curUserProfile: UserProfile?
     @State var user: UserProfile?
     @State private var profileErrorMessage: String?
     @State private var voteErrorMessage: String?
@@ -13,6 +17,26 @@ struct DealInfoView: View {
 
     var body: some View {
         VStack(spacing: 15) {
+            Button(action: {
+                isSaved.toggle()
+                saveDeal()
+            }) {
+                Text(isSaved ? "Saved" : "Save")
+                    .foregroundStyle(isSaved ? .white : .green)
+                    .bold()
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(isSaved ? .green : .white)
+                    .stroke(isSaved ? .white : .green, lineWidth: 1)
+                    .frame(width: 70, height: 30)
+            )
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing)
+            
+            Divider()
+                .background(Color.gray.opacity(0.5))
+            
             // Product Image Section
             AsyncImage(url: URL(string: deal.photoURL)) { phase in
                 if let image = phase.image {
@@ -27,6 +51,7 @@ struct DealInfoView: View {
                 } else {
                     ProgressView()
                         .frame(height: 150)
+                        .frame(maxWidth: .infinity)
                         .background(Color.gray.opacity(0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
@@ -39,7 +64,7 @@ struct DealInfoView: View {
             // User Info Section
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 10) {
-                    if isLoading {
+                    if (isProfileLoading || isVoteLoading) {
                         ProgressView()
                             .frame(width: 40, height: 40)
                             .clipShape(Circle())
@@ -105,9 +130,6 @@ struct DealInfoView: View {
                         )
                     } else {
                         ProgressView()
-                            .onAppear {
-                                fetchCurrentUserId()
-                            }
                     }
                 }
             }
@@ -120,6 +142,7 @@ struct DealInfoView: View {
         )
         .padding(.horizontal, 20)
         .onAppear {
+            fetchCurrentUserProfile()
             fetchUserProfile()
         }
         .fullScreenCover(isPresented: $isPhotoExpanded) {
@@ -164,17 +187,17 @@ struct DealInfoView: View {
 
     // Fetch the current user's profile
     private func fetchUserProfile() {
-        isLoading = true
+        isProfileLoading = true
         if !deal.userID.isEmpty {
             UserService.shared.getUserById(id: deal.userID) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let fetchedUser):
                         self.user = fetchedUser
-                        self.isLoading = false
+                        self.isProfileLoading = false
                     case .failure(let error):
                         self.profileErrorMessage = error.localizedDescription
-                        self.isLoading = false
+                        self.isProfileLoading = false
                     }
                 }
             }
@@ -182,12 +205,66 @@ struct DealInfoView: View {
     }
 
     // Fetch the current user ID using Firebase Authentication
-    private func fetchCurrentUserId() {
+    private func fetchCurrentUserProfile() {
+        isVoteLoading = true
+
         if let currentUser = Auth.auth().currentUser {
             self.currentUserId = currentUser.uid
+            
+            UserService.shared.getUserById(id: self.currentUserId!) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let fetchedUser):
+                        self.curUserProfile = fetchedUser
+                        
+                        if (self.curUserProfile?.savedDeals.firstIndex(of: self.deal.id!) != nil) {
+                            isSaved = true
+                        } else {
+                            isSaved = false
+                        }
+                        
+                        self.isVoteLoading = false
+                    case .failure(let error):
+                        self.voteErrorMessage = error.localizedDescription
+                        self.isVoteLoading = false
+                    }
+                }
+            }
         } else {
             print("Error: User not authenticated")
             self.voteErrorMessage = "User not authenticated."
         }
     }
+    
+    // Save deal
+    private func saveDeal() {
+        if (isSaved) {
+            DealService.shared.addSavedDeal(userID: currentUserId!, dealID: deal.id!) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        print("[DEBUG] user \(currentUserId!) successfully saved deal \(deal.id!)")
+                    case .failure(let error):
+                        print("[DEBUG] user \(currentUserId!) fail to saved deal \(deal.id!) due to error \(error.localizedDescription)")
+                    }
+                }
+            }
+        } else {
+            DealService.shared.removeSavedDeal(userID: currentUserId!, dealID: deal.id!) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        print("[DEBUG] user \(currentUserId!) successfully deleted saved deal \(deal.id!)")
+                    case .failure(let error):
+                        print("[DEBUG] user \(currentUserId!) fail to delete saved deal \(deal.id!) deu to error \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    @Previewable @State var deal = Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "", productText: "Prodcut~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", postText: "Product Text~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", price: 6.8, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6)
+    DealInfoView(deal: $deal)
 }

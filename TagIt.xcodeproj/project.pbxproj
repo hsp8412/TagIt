@@ -57,9 +57,10 @@
 		5DB3653E2CBEE01700424571 /* ReviewStarsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB3653D2CBEE01700424571 /* ReviewStarsModel.swift */; };
 		5DB365402CBEEC2000424571 /* DealCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB3653F2CBEEC2000424571 /* DealCardView.swift */; };
 		5DB365442CBEECC500424571 /* DealInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB365432CBEECC500424571 /* DealInfoView.swift */; };
+		5DD1EFE22CF5D34A0015D263 /* ReviewedItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD1EFE12CF5D34A0015D263 /* ReviewedItemsView.swift */; };
+		5DD1EFE42CF5D5CA0015D263 /* ReviewCardView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD1EFE32CF5D5CA0015D263 /* ReviewCardView1.swift */; };
 		5DE8EE052CC5E59E008DF0B2 /* CommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8EE042CC5E59E008DF0B2 /* CommentsView.swift */; };
 		5DE8EE072CC5EB45008DF0B2 /* DealDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8EE062CC5EB45008DF0B2 /* DealDetailView.swift */; };
-		5DF09DBA2CD337E0002B6A79 /* UpDownVote2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF09DB92CD337E0002B6A79 /* UpDownVote2View.swift */; };
 		5DF09DBC2CD337FB002B6A79 /* UpDownVoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF09DBB2CD337FB002B6A79 /* UpDownVoteView.swift */; };
 		909AC5222CF4FAE30012C9B0 /* ScannedItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AC5212CF4FAE30012C9B0 /* ScannedItemViewModel.swift */; };
 		909AC5232CF4FAE30012C9B0 /* AddReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AC5202CF4FAE30012C9B0 /* AddReviewViewModel.swift */; };
@@ -71,7 +72,6 @@
 		909DFE552CD17E4100138D31 /* BarcodeScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */; };
 		90D774F32CDAB896005E2622 /* ScannedItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F22CDAB888005E2622 /* ScannedItemView.swift */; };
 		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
-		90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */; };
 		90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D7754E2CED6054005E2622 /* EditUsernameView.swift */; };
 		BF255E8B2CF541360003C3A4 /* FilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF255E8A2CF541290003C3A4 /* FilterButton.swift */; };
 		BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF51F7E52CF0114600886C8F /* RankingModel.swift */; };
@@ -127,9 +127,10 @@
 		5DB3653D2CBEE01700424571 /* ReviewStarsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewStarsModel.swift; sourceTree = "<group>"; };
 		5DB3653F2CBEEC2000424571 /* DealCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealCardView.swift; sourceTree = "<group>"; };
 		5DB365432CBEECC500424571 /* DealInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealInfoView.swift; sourceTree = "<group>"; };
+		5DD1EFE12CF5D34A0015D263 /* ReviewedItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewedItemsView.swift; sourceTree = "<group>"; };
+		5DD1EFE32CF5D5CA0015D263 /* ReviewCardView1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCardView1.swift; sourceTree = "<group>"; };
 		5DE8EE042CC5E59E008DF0B2 /* CommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsView.swift; sourceTree = "<group>"; };
 		5DE8EE062CC5EB45008DF0B2 /* DealDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealDetailView.swift; sourceTree = "<group>"; };
-		5DF09DB92CD337E0002B6A79 /* UpDownVote2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpDownVote2View.swift; sourceTree = "<group>"; };
 		5DF09DBB2CD337FB002B6A79 /* UpDownVoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpDownVoteView.swift; sourceTree = "<group>"; };
 		909AC5202CF4FAE30012C9B0 /* AddReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReviewViewModel.swift; sourceTree = "<group>"; };
 		909AC5212CF4FAE30012C9B0 /* ScannedItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemViewModel.swift; sourceTree = "<group>"; };
@@ -141,7 +142,6 @@
 		909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerViewModel.swift; sourceTree = "<group>"; };
 		90D774F22CDAB888005E2622 /* ScannedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemView.swift; sourceTree = "<group>"; };
 		90D774F42CDAD186005E2622 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
-		90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyReviewsView.swift; sourceTree = "<group>"; };
 		90D7754C2CED546E005E2622 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
 		BF255E8A2CF541290003C3A4 /* FilterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterButton.swift; sourceTree = "<group>"; };
@@ -202,9 +202,9 @@
 				40BB0CDA2CC0C10F004D070B /* ProfileView.swift */,
 				40FD1ED22CEAA4AD00729291 /* SearchResultView.swift */,
 				40A366992CEC71F100038754 /* SearchResultDetailView.swift */,
-				90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */,
 				90D7754E2CED6054005E2622 /* EditUsernameView.swift */,
 				90D774F42CDAD186005E2622 /* ChangePasswordView.swift */,
+				5DD1EFE12CF5D34A0015D263 /* ReviewedItemsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -236,7 +236,6 @@
 				BF255E8A2CF541290003C3A4 /* FilterButton.swift */,
 				909AC5242CF4FB040012C9B0 /* ReviewCardView.swift */,
 				5DF09DBB2CD337FB002B6A79 /* UpDownVoteView.swift */,
-				5DF09DB92CD337E0002B6A79 /* UpDownVote2View.swift */,
 				4086FD032CB4838300EB6411 /* TopNavView.swift */,
 				4017C4662CC610DC00D110AD /* ImageUploadView.swift */,
 				5DB3653F2CBEEC2000424571 /* DealCardView.swift */,
@@ -250,6 +249,7 @@
 				5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */,
 				5D1D9B822CE96AE800698E2A /* UserRankingView.swift */,
 				5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */,
+				5DD1EFE32CF5D5CA0015D263 /* ReviewCardView1.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -413,6 +413,7 @@
 				5D1B36972CC5B2AE00552691 /* HomeView.swift in Sources */,
 				BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */,
 				5DB365382CBEDE5300424571 /* BarcodeItemReviewModel.swift in Sources */,
+				5DD1EFE22CF5D34A0015D263 /* ReviewedItemsView.swift in Sources */,
 				5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */,
 				4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */,
 				BF69F1F32CF193EC001E1F20 /* HomeViewModel.swift in Sources */,
@@ -430,9 +431,7 @@
 				40A3669A2CEC71F100038754 /* SearchResultDetailView.swift in Sources */,
 				909AC5252CF4FB040012C9B0 /* ReviewCardView.swift in Sources */,
 				909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */,
-				90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */,
 				90D774F32CDAB896005E2622 /* ScannedItemView.swift in Sources */,
-				5DF09DBA2CD337E0002B6A79 /* UpDownVote2View.swift in Sources */,
 				4086FD102CB50F5F00EB6411 /* MainViewModel.swift in Sources */,
 				5D62B0412CEB0EBC004A7E39 /* DealRankingView.swift in Sources */,
 				5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */,
@@ -450,6 +449,7 @@
 				40BB0CDB2CC0C10F004D070B /* ProfileView.swift in Sources */,
 				5D1D9B832CE96AE800698E2A /* UserRankingView.swift in Sources */,
 				40FD1ED32CEAA4AD00729291 /* SearchResultView.swift in Sources */,
+				5DD1EFE42CF5D5CA0015D263 /* ReviewCardView1.swift in Sources */,
 				90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */,
 				4086FD0C2CB50A0600EB6411 /* LoginViewModel.swift in Sources */,
 				5DE8EE072CC5EB45008DF0B2 /* DealDetailView.swift in Sources */,

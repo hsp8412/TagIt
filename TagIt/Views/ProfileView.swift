@@ -62,7 +62,7 @@ struct ProfileView: View {
                         Divider()
                         
                         // My Reviews
-                        NavigationLink(destination: MyReviewsView()) {
+                        NavigationLink(destination: ReviewedItemsView()) {
                             HStack {
                                 Text("Reviewed Posts")
                                     .fontWeight(.semibold)

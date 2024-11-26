@@ -10,7 +10,7 @@ import FirebaseAuth
 struct DealDetailView: View {
     @State var deal: Deal
     @State private var comments: [UserComments] = []
-    @State private var isLoading: Bool = false
+    @State private var isLoading: Bool = true
     @State private var newComment: String = ""
     @State private var errorMessage: String?
     @State private var showAllComments: Bool = false // Toggles showing all comments
@@ -206,4 +206,9 @@ struct DealDetailView: View {
             }
         }
     }
+}
+
+
+#Preview {
+    DealDetailView(deal: Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "OvG9dRB6BqSeVHqvwuN0CfHLYfp2", photoURL: "", productText: "", postText: "", price: 43, location: "", date: "", commentIDs: [], upvote: 5, downvote: 6))
 }
