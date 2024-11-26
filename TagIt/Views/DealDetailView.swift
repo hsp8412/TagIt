@@ -207,3 +207,8 @@ struct DealDetailView: View {
         }
     }
 }
+
+
+#Preview {
+    DealDetailView(deal: Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "OvG9dRB6BqSeVHqvwuN0CfHLYfp2", photoURL: "", productText: "", postText: "", price: 43, location: "", date: "", commentIDs: [], upvote: 5, downvote: 6))
+}

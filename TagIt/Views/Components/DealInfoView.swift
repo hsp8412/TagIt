@@ -13,6 +13,25 @@ struct DealInfoView: View {
 
     var body: some View {
         VStack(spacing: 15) {
+            Button(action: {
+                saveDeal()
+                isSaved = true
+            }) {
+                Text(isSaved ? "Saved" : "Save")
+                    .foregroundStyle(.white)
+                    .bold()
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(.green)
+                    .frame(width: 70, height: 30)
+            )
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing)
+            
+            Divider()
+                .background(Color.gray.opacity(0.5))
+            
             // Product Image Section
             AsyncImage(url: URL(string: deal.photoURL)) { phase in
                 if let image = phase.image {
@@ -27,6 +46,7 @@ struct DealInfoView: View {
                 } else {
                     ProgressView()
                         .frame(height: 150)
+                        .frame(maxWidth: .infinity)
                         .background(Color.gray.opacity(0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
@@ -190,4 +210,14 @@ struct DealInfoView: View {
             self.voteErrorMessage = "User not authenticated."
         }
     }
+    
+    // Save deal
+    private func saveDeal() {
+        
+    }
+}
+
+#Preview {
+    @Previewable @State var deal = Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "", productText: "Prodcut~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", postText: "Product Text~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", price: 6.8, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6)
+    DealInfoView(deal: $deal)
 }
