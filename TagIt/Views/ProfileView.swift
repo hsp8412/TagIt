@@ -64,7 +64,7 @@ struct ProfileView: View {
                         // My Reviews
                         NavigationLink(destination: MyReviewsView()) {
                             HStack {
-                                Text("My Listings")
+                                Text("Reviewed Posts")
                                     .fontWeight(.semibold)
                                     .foregroundColor(.black)
                                 Spacer()
