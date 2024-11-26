@@ -64,7 +64,7 @@ struct DealInfoView: View {
             // User Info Section
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 10) {
-                    if (isProfileLoading || isVoteLoading) {
+                    if (isProfileLoading) {
                         ProgressView()
                             .frame(width: 40, height: 40)
                             .clipShape(Circle())

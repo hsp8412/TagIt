@@ -72,11 +72,12 @@ struct DealRankingView: View {
         }
     }
     
+    // Sorted by upVote - downVote
     func fetchRanking() {
         DealService.shared.getDeals { result in
             switch result {
             case .success(let fetchedDeals):
-                topDeals = fetchedDeals.sorted { $0.upvote > $1.upvote }
+                topDeals = fetchedDeals.sorted { ($0.upvote - $0.downvote) > ($1.upvote - $1.downvote)}
                 self.isLoading = false
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
