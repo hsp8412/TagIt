@@ -73,6 +73,7 @@
 		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
 		90D774FB2CDB59B8005E2622 /* MyReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */; };
 		90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D7754E2CED6054005E2622 /* EditUsernameView.swift */; };
+		BF255E8B2CF541360003C3A4 /* FilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF255E8A2CF541290003C3A4 /* FilterButton.swift */; };
 		BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF51F7E52CF0114600886C8F /* RankingModel.swift */; };
 		BF69F1F32CF193EC001E1F20 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF69F1F22CF193EA001E1F20 /* HomeViewModel.swift */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
@@ -143,6 +144,7 @@
 		90D774FA2CDB59AF005E2622 /* MyReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyReviewsView.swift; sourceTree = "<group>"; };
 		90D7754C2CED546E005E2622 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
+		BF255E8A2CF541290003C3A4 /* FilterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterButton.swift; sourceTree = "<group>"; };
 		BF51F7E52CF0114600886C8F /* RankingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingModel.swift; sourceTree = "<group>"; };
 		BF69F1F22CF193EA001E1F20 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 		4086FD002CB4835A00EB6411 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				BF255E8A2CF541290003C3A4 /* FilterButton.swift */,
 				909AC5242CF4FB040012C9B0 /* ReviewCardView.swift */,
 				5DF09DBB2CD337FB002B6A79 /* UpDownVoteView.swift */,
 				5DF09DB92CD337E0002B6A79 /* UpDownVote2View.swift */,
@@ -455,6 +458,7 @@
 				90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */,
 				4086FD042CB4838300EB6411 /* TopNavView.swift in Sources */,
 				5DB365442CBEECC500424571 /* DealInfoView.swift in Sources */,
+				BF255E8B2CF541360003C3A4 /* FilterButton.swift in Sources */,
 				5DB3653C2CBEDF8500424571 /* UserCommentModel.swift in Sources */,
 				40FD1EA92CE9808100729291 /* StoreModel.swift in Sources */,
 				40F8B5ED2C9FA8AF0024C7EF /* TagItApp.swift in Sources */,
