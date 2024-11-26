@@ -78,4 +78,30 @@ class StoreService {
                 }
             }
     }
+    
+    func getStoreById(id:String, completion: @escaping (Result<Store, Error>) -> Void){
+        let db = Firestore.firestore()
+        db.collection(FirestoreCollections.stores)
+            .document(id).getDocument { document, error in
+                if let error = error {
+                    // Handle error
+                    completion(.failure(error))
+                    return
+                }
+                guard let document = document, document.exists else {
+                    // Handle case where document does not exist
+                    completion(.failure(NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found."])))
+                    return
+                }
+                
+                do {
+                    // Decode the document into the `Store` model
+                    let store = try document.data(as: Store.self)
+                    completion(.success(store))
+                } catch {
+                    // Handle decoding error
+                    completion(.failure(error))
+                }
+            }
+    }
 }
