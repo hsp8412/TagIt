@@ -7,9 +7,9 @@
 import FirebaseFirestore
 
 /// Service responsible for initializing Firestore collections with predefined data.
-class DatabaseInitializationService {
+class DummyService {
     /// Shared instance of DatabaseInitializationService for global access.
-    static let shared = DatabaseInitializationService()
+    static let shared = DummyService()
     
     private let firestore = Firestore.firestore()
 
