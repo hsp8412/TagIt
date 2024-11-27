@@ -161,23 +161,25 @@ class VoteService {
         - completion: A completion handler that returns a `Result<Vote?, Error>`. The result is `nil` if no vote exists.
      */
     func getUserVote(userId: String, itemId: String, itemType: Vote.ItemType, completion: @escaping (Result<Vote?, Error>) -> Void) {
-        let voteId = "\(userId)_\(itemId)_\(itemType.rawValue)"
-        print("[DEBUG] Fetching vote with voteId: \(voteId)")
+        print("[DEBUG] Fetching vote with userID: \(userId) and itemID: \(itemId)")
 
-        FirestoreService.shared.readDocument(
-            collectionName: FirestoreCollections.votes,
-            documentID: voteId,
-            modelType: Vote.self
-        ) { result in
-            switch result {
-            case .success(let vote):
-                print("[DEBUG] Successfully fetched vote: \(vote)")
-                completion(.success(vote))
-            case .failure(let error):
-                print("[DEBUG] Error fetching vote: \(error.localizedDescription)")
-                completion(.failure(error))
+        Firestore.firestore().collection(FirestoreCollections.votes)
+            .whereField("itemId", isEqualTo: itemId)
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("[DEBUG] Fetching vote fails")
+                    completion(.failure(error))
+                } else if let snapshot = snapshot {
+                    let vote = snapshot.documents.compactMap { doc in
+                        try? doc.data(as: Vote.self)
+                    }.first
+                    
+                    print("[DEBUG] Fetching vote successfully \(vote)")
+                    
+                    completion(.success(vote))
+                }
             }
-        }
     }
 
 

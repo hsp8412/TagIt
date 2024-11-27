@@ -265,6 +265,6 @@ struct DealInfoView: View {
 }
 
 #Preview {
-    @Previewable @State var deal = Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "", productText: "Prodcut~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", postText: "Product Text~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", price: 6.8, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6)
+    @Previewable @State var deal = Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Prodcut~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", postText: "Product Text~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", price: 6.8, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6)
     DealInfoView(deal: $deal)
 }
