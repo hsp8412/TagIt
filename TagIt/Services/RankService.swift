@@ -18,13 +18,14 @@ class RankService {
     private let rankingWeights = RankingWeights.defaultWeights
 
     /**
-     Fetches and calculates the top-ranked users.
+     Fetches and sorts all users by ranking points.
      
      - Parameters:
-        - limit: The maximum number of users to return.
-        - completion: A closure that returns a `Result` containing an array of `UserProfile` on success or an `Error` on failure.
+        - completion: A closure that returns a `Result` containing a sorted array of `UserProfile` on success or an `Error` on failure.
+     
+     This function retrieves all users from Firestore, calculates their ranking points, and returns a sorted list of users in descending order of ranking points.
      */
-    func fetchTopUsers(limit: Int, completion: @escaping (Result<[UserProfile], Error>) -> Void) {
+    func fetchAndSortAllUsers(completion: @escaping (Result<[UserProfile], Error>) -> Void) {
         FirestoreService.shared.readCollection(
             collectionName: FirestoreCollections.user,
             modelType: UserProfile.self
@@ -47,16 +48,8 @@ class RankService {
                 }
 
                 group.notify(queue: .main) {
-                    // Sort by rankingPoints and limit the number of users
                     let sortedUsers = usersWithUpdatedPoints.sorted { $0.rankingPoints > $1.rankingPoints }
-                    let topUsers = Array(sortedUsers.prefix(limit))
-                    
-                    print("Top \(limit) users by ranking points:")
-                    topUsers.forEach { user in
-                        print("\(user.displayName): \(user.rankingPoints) points")
-                    }
-
-                    completion(.success(topUsers))
+                    completion(.success(sortedUsers))
                 }
             case .failure(let error):
                 print("Error fetching users: \(error.localizedDescription)")
@@ -64,6 +57,57 @@ class RankService {
             }
         }
     }
+
+    /**
+    Fetches the top-ranked users based on a given limit.
+
+    - Parameters:
+        - limit: The maximum number of top users to return.
+        - completion: A closure that returns a `Result` containing an array of the top `UserProfile` objects on success or an `Error` on failure.
+
+    This function retrieves all users, sorts them by ranking points, and extracts the top users based on the given limit.
+    */
+    func getTopUsers(limit: Int, completion: @escaping (Result<[UserProfile], Error>) -> Void) {
+        fetchAndSortAllUsers { result in
+            switch result {
+            case .success(let sortedUsers):
+                let topUsers = Array(sortedUsers.prefix(limit))
+                print("Top \(limit) users by ranking points:")
+                topUsers.forEach { user in
+                    print("\(user.displayName): \(user.rankingPoints) points")
+                }
+                completion(.success(topUsers))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+
+    /**
+    Fetches the rank of a specific user based on their ID.
+
+    - Parameters:
+        - userId: The ID of the user whose rank needs to be fetched.
+        - completion: A closure that returns a `Result` containing the rank (as an `Int`) on success or an `Error` on failure.
+
+    This function fetches all users, sorts them by ranking points, and determines the rank of the specified user.
+    */
+    func getUserRank(userId: String, completion: @escaping (Result<Int, Error>) -> Void) {
+        fetchAndSortAllUsers { result in
+            switch result {
+            case .success(let sortedUsers):
+                if let rank = sortedUsers.firstIndex(where: { $0.id == userId }) {
+                    completion(.success(rank + 1))
+                } else {
+                    completion(.failure(NSError(domain: "RankService", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found in the list."])))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
 
 
     /**
