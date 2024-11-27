@@ -40,7 +40,7 @@ struct AddReviewView: View {
                         Text("Upload Image (Optional)")
                             .font(.headline)
                             .foregroundColor(.gray)
-                        
+
                         ImageUploadView(
                             imageToUpload: $viewModel.selectedImage,
                             placeholderImage: UIImage(named: "addImageIcon")!,
@@ -50,7 +50,7 @@ struct AddReviewView: View {
                         .padding(.vertical, 10)
                         .padding(.leading, 50)
                     }
-                    
+
                     VStack(alignment: .leading) {
                         Text("Title")
                             .font(.headline)
@@ -63,7 +63,7 @@ struct AddReviewView: View {
                             .shadow(radius: 5)
                     }
                     .padding(.bottom, 10)
-                    
+
                     VStack(alignment: .leading) {
                         Text("Your Rating")
                             .font(.headline)
@@ -134,7 +134,6 @@ struct AddReviewView: View {
             .padding()
             .disabled(viewModel.isLoading)
         }
-        .navigationBarBackButtonHidden(false) // Proper back navigation
         .background(Color(.systemGray6).ignoresSafeArea())
         .onTapGesture {
             hideKeyboard()

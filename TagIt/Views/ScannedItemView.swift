@@ -5,9 +5,8 @@
 //  Created by Angi Shi on 2024-11-05.
 //
 import SwiftUI
-
 struct ScannedItemView: View {
-    @State private var shouldRefreshReviews = false // State for refreshing reviews
+    @State private var shouldRefreshReviews = false
     @StateObject var viewModel: ScannedItemViewModel
     @State private var navigateToAddReview = false
 
@@ -92,7 +91,7 @@ struct ScannedItemView: View {
                     barcode: viewModel.barcode,
                     productName: viewModel.productName,
                     onReviewSubmitted: {
-                        shouldRefreshReviews = true // Trigger refresh after submission
+                        shouldRefreshReviews = true
                     }
                 ),
                 isActive: $navigateToAddReview
@@ -106,7 +105,6 @@ struct ScannedItemView: View {
                 shouldRefreshReviews = false
             }
         }
-        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Reviews for \(viewModel.productName)")
@@ -116,4 +114,3 @@ struct ScannedItemView: View {
         .background(Color(.systemGray6).ignoresSafeArea())
     }
 }
-
