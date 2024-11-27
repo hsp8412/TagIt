@@ -174,6 +174,7 @@ class DealService {
                                         return nil
                                     }
                                 }
+                                all_deals.append(contentsOf: deals)
                                 
                                 // Check if all chunks are processed
                                 pendingChunks -= 1
