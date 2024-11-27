@@ -14,6 +14,7 @@ struct ReviewCardView1: View {
     @State var isLoading = true
     @State var user: UserProfile?
     @State private var errorMessage: String?
+    @State private var isPhotoExpanded: Bool = false
 
     var body: some View {
         ZStack {
@@ -80,22 +81,26 @@ struct ReviewCardView1: View {
                     
                     Spacer()
                     
-                    // Product Image
+                    // Product Image Section
                     AsyncImage(url: URL(string: review.photoURL)) { phase in
                         if let image = phase.image {
                             image
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: 90, height: 90) // Slightly smaller image
+                                .frame(height: 150)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .onTapGesture {
+                                    isPhotoExpanded = true // Expand the photo on tap
+                                }
                         } else {
                             ProgressView()
-                                .frame(width: 90, height: 90)
+                                .frame(height: 150)
+                                .frame(maxWidth: .infinity)
                                 .background(Color.gray.opacity(0.2))
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
-                    .frame(width: 90, height: 90)
+                    .frame(maxWidth: .infinity)
                 }
                 
                 // Review Content
@@ -104,7 +109,6 @@ struct ReviewCardView1: View {
                         .font(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)
-                    
                 }
             }
             .padding(25) // Add consistent padding inside the card
@@ -133,6 +137,7 @@ struct ReviewCardView1: View {
         }
     }
 }
+
 
 #Preview {
     ReviewCardView1(
