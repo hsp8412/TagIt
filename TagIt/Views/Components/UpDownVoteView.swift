@@ -5,6 +5,7 @@
 //  Created by Chenghou Si on 2024-10-31.
 //
 import SwiftUI
+import FirebaseFirestore
 
 struct UpDownVoteView: View {
     let userId: String
@@ -111,19 +112,19 @@ struct UpDownVoteView: View {
                 case .success(let counts):
                     upVote = counts.upvotes
                     downVote = counts.downvotes
-                    if let dealId = self.id {
-                        DealService.shared.getDealById(id: dealId) { result in
-                            switch result {
-                            case .success(var deal):
-                                deal.upvote = self.upVote
-                                deal.downvote = self.downVote
-                                self.updateDealInFirestore(deal)
-                                
-                            case .failure(let error):
-                                print("Error fetching deal: \(error.localizedDescription)")
-                            }
+                    let dealId = self.id
+                    DealService.shared.getDealById(id: dealId) { result in
+                        switch result {
+                        case .success(var deal):
+                            deal.upvote = self.upVote
+                            deal.downvote = self.downVote
+                            self.updateDealInFirestore(deal)
+                            
+                        case .failure(let error):
+                            print("Error fetching deal: \(error.localizedDescription)")
                         }
                     }
+                    
                     fetchUserVoteState()
                 case .failure(let error):
                     print("Error fetching updated vote counts: \(error.localizedDescription)")
