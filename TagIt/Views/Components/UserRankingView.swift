@@ -82,31 +82,52 @@ struct UserRankingView: View {
             fetchRanking()
         }
     }
-    
+
     func fetchRanking() {
+        let limit = 20
         print("Fetching top users for User Ranking View...")
-        RankService.shared.fetchTopUsers(limit: 20) { result in
+
+        // Fetch top users
+        RankService.shared.getTopUsers(limit: limit) { result in
             switch result {
-            case .success(let fetchedUsers):
-                print("Fetched \(fetchedUsers.count) users for ranking.")
-                self.topUsers = fetchedUsers
+            case .success(let topUsers):
+                print("Fetched \(topUsers.count) top users.")
+                self.topUsers = topUsers
+
+                // Fetch current user rank
                 if let currentUserId = AuthService.shared.getCurrentUserID() {
-                    self.currentUser = fetchedUsers.first { $0.id == currentUserId }
-                    self.currentUserRank = (self.topUsers.firstIndex(where: { $0.id == self.currentUser?.id }) ?? -1) + 1
-                    if let currentUser = self.currentUser {
-                        print("Current user: \(currentUser.displayName), Rank: \(self.currentUserRank ?? 0), Points: \(currentUser.rankingPoints)")
-                    } else {
-                        print("Current user not found in top users.")
+                    RankService.shared.getUserRank(userId: currentUserId) { rankResult in
+                        switch rankResult {
+                        case .success(let rank):
+                            self.currentUserRank = rank
+                            AuthService.shared.getCurrentUser { result in
+                                self.currentUser = result
+                        }
+                            
+                            if let currentUser = self.currentUser {
+                                print("Current user: \(currentUser.displayName), Rank: \(rank), Points: \(currentUser.rankingPoints)")
+                            } else {
+                                print("Current user not found in top users.")
+                            }
+                        case .failure(let error):
+                            print("Error fetching user rank: \(error.localizedDescription)")
+                            self.errorMessage = error.localizedDescription
+                        }
+                        self.isLoading = false
                     }
+                } else {
+                    print("Current user ID not found.")
+                    self.isLoading = false
                 }
-                self.isLoading = false
+
             case .failure(let error):
-                print("Error fetching user ranking: \(error.localizedDescription)")
+                print("Error fetching top users: \(error.localizedDescription)")
                 self.errorMessage = error.localizedDescription
                 self.isLoading = false
             }
         }
     }
+
 
 }
 
