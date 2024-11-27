@@ -112,7 +112,7 @@ struct UpDownVoteView: View {
                     upVote = counts.upvotes
                     downVote = counts.downvotes
                     if let dealId = self.id {
-                        UserService.shared.getDealById(id: dealId) { result in
+                        DealService.shared.getDealById(id: dealId) { result in
                             switch result {
                             case .success(var deal):
                                 deal.upvote = self.upVote
