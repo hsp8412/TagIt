@@ -9,12 +9,11 @@ import SwiftUI
 
 struct ReviewCardView1: View {
     let review: BarcodeItemReview
-    let date: String = "1h"
-    let description: String = "abababbabababab"
+    let date: String = "1h" // MISSING DATE IN BARCODEITEMREVIEW
+    let description: String = "abababbabababab"  // MISSING DESCRIPTION IN BARCODEITEMREVIEW
     @State var isLoading = true
     @State var user: UserProfile?
     @State private var errorMessage: String?
-    @State private var isPhotoExpanded: Bool = false
 
     var body: some View {
         ZStack {
@@ -81,26 +80,22 @@ struct ReviewCardView1: View {
                     
                     Spacer()
                     
-                    // Product Image Section
+                    // Product Image
                     AsyncImage(url: URL(string: review.photoURL)) { phase in
                         if let image = phase.image {
                             image
                                 .resizable()
                                 .scaledToFill()
-                                .frame(height: 150)
+                                .frame(width: 90, height: 90) // Slightly smaller image
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .onTapGesture {
-                                    isPhotoExpanded = true // Expand the photo on tap
-                                }
                         } else {
                             ProgressView()
-                                .frame(height: 150)
-                                .frame(maxWidth: .infinity)
+                                .frame(width: 90, height: 90)
                                 .background(Color.gray.opacity(0.2))
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(width: 90, height: 90)
                 }
                 
                 // Review Content
@@ -109,6 +104,7 @@ struct ReviewCardView1: View {
                         .font(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)
+                    
                 }
             }
             .padding(25) // Add consistent padding inside the card
@@ -138,7 +134,6 @@ struct ReviewCardView1: View {
     }
 }
 
-
 #Preview {
     ReviewCardView1(
         review: BarcodeItemReview(
@@ -146,9 +141,9 @@ struct ReviewCardView1: View {
             photoURL: "https://i.imgur.com/8ciNZcY.jpeg",
             reviewStars: 4,
             productName: "Apple",
-            barcodeNumber: "123456789012",
-            reviewTitle: "The best apple ever",
-            reviewText: "This is a great apple. It's so juicy and sweet."
+            reviewTitle: "The best apple ever"',
+            reviewText: "This is a great apple. It's so juicy and sweet.",
+            barcodeNumber: "123456789012"
         )
     )
 }

@@ -66,7 +66,7 @@ class AddReviewViewModel: ObservableObject {
             userId: userId,
             barcodeNumber: barcode,
             reviewStars: Double(rating),
-            productName: "", 
+            productName: "",
             reviewTitle: reviewTitle,
             reviewText: reviewText,
             photoURL: photoURL
