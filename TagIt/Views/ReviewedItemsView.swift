@@ -74,7 +74,7 @@ struct ReviewedItemsView: View {
                     } else {
                         VStack(alignment: .leading, spacing: 30) {
                             ForEach(shownReviews) { review in
-                                ReviewCardView1(review: review)
+                                ReviewCardView(review: review)
                                     .background(Color.white)
                                     .cornerRadius(15)
                                     .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
