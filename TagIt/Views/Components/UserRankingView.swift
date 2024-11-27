@@ -83,7 +83,8 @@ struct UserRankingView: View {
         }
     }
 
-    func fetchRanking(limit: Int) {
+    func fetchRanking() {
+        let limit = 20
         print("Fetching top users for User Ranking View...")
 
         // Fetch top users
@@ -94,12 +95,14 @@ struct UserRankingView: View {
                 self.topUsers = topUsers
 
                 // Fetch current user rank
-                if let currentUserId = AuthService.shared.getCursrentUserID() {
+                if let currentUserId = AuthService.shared.getCurrentUserID() {
                     RankService.shared.getUserRank(userId: currentUserId) { rankResult in
                         switch rankResult {
                         case .success(let rank):
                             self.currentUserRank = rank
-                            self.currentUser = AuthService.shared.getCurrentUser()
+                            AuthService.shared.getCurrentUser { result in
+                                self.currentUser = result
+                        }
                             
                             if let currentUser = self.currentUser {
                                 print("Current user: \(currentUser.displayName), Rank: \(rank), Points: \(currentUser.rankingPoints)")
