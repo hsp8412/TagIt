@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ReviewCardView1: View {
     let review: BarcodeItemReview
-    let date: String = "1h" // MISSING DATE IN BARCODEITEMREVIEW
-    let description: String = "abababbabababab"  // MISSING DESCRIPTION IN BARCODEITEMREVIEW
+    let date: String = "1h"
+    let description: String = "abababbabababab"
     @State var isLoading = true
     @State var user: UserProfile?
     @State private var errorMessage: String?

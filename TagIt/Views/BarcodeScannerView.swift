@@ -7,47 +7,52 @@
 
 import SwiftUI
 import AVFoundation
+
 struct BarcodeScannerView: View {
     @StateObject var viewModel = BarcodeScannerViewModel()
     @State private var navigateToReviews = false
     @State private var scannedBarcode: String = ""
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                CameraPreview(viewModel: viewModel)
-                    .ignoresSafeArea()
+        ZStack {
+            CameraPreview(viewModel: viewModel)
+                .ignoresSafeArea()
 
-                VStack {
-                    Spacer()
+            VStack {
+                Spacer()
 
-                    if let barcode = viewModel.scannedBarcode {
-                        Text("Scanned Barcode: \(barcode)")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                    } else {
-                        Text("Scanning for barcodes...")
-                            .foregroundColor(.white)
-                            .padding()
-                    }
+                if let barcode = viewModel.scannedBarcode {
+                    Text("Scanned Barcode: \(barcode)")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                } else {
+                    Text("Scanning for barcodes...")
+                        .foregroundColor(.white)
+                        .padding()
                 }
-            }
-            .onAppear {
-                viewModel.scannedBarcode = nil
-            }
-            .onChange(of: viewModel.scannedBarcode) { oldValue, newValue in
-                if let newValue = newValue {
-                    scannedBarcode = newValue
-                    navigateToReviews = true
-                }
-            }
-            .navigationDestination(isPresented: $navigateToReviews) {
-                ScannedItemView(barcode: scannedBarcode, productName: "this item")
             }
         }
+        .onAppear {
+            viewModel.scannedBarcode = nil
+        }
+        .onChange(of: viewModel.scannedBarcode) { oldValue, newValue in
+            if let newValue = newValue {
+                scannedBarcode = newValue
+                navigateToReviews = true
+            }
+        }
+        .background(
+            NavigationLink(
+                destination: ScannedItemView(barcode: scannedBarcode, productName: "this item"),
+                isActive: $navigateToReviews
+            ) {
+                EmptyView()
+            }
+        )
     }
 }
+
 
 
 
