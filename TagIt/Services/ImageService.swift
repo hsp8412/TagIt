@@ -13,6 +13,7 @@ enum ImageFolder: String {
     case avatar
     case dealImage
     case productImage
+    case reviewImage
     
     var path: String {
         return self.rawValue

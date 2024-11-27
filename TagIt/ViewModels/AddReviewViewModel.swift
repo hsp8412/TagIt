@@ -38,13 +38,35 @@ class AddReviewViewModel: ObservableObject {
             return
         }
 
-        let photoURL = "" // Handle image upload if necessary
+        if let selectedImage = selectedImage {
+            // Upload image and submit review
+            uploadImageAndSubmitReview(image: selectedImage, userId: userId)
+        } else {
+            // Submit review without an image
+            handleReviewSubmission(userId: userId, photoURL: "")
+        }
+    }
 
+    private func uploadImageAndSubmitReview(image: UIImage, userId: String) {
+        ImageService.shared.uploadImage(image, folder: .reviewImage, fileName: "review-\(UUID().uuidString)") { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let photoURL):
+                    self?.handleReviewSubmission(userId: userId, photoURL: photoURL)
+                case .failure(let error):
+                    self?.errorMessage = "Failed to upload image: \(error.localizedDescription)"
+                    self?.isLoading = false
+                }
+            }
+        }
+    }
+
+    private func handleReviewSubmission(userId: String, photoURL: String) {
         ReviewService.shared.handleReview(
             userId: userId,
             barcodeNumber: barcode,
             reviewStars: Double(rating),
-            productName: "", // Provide the product name if available
+            productName: "", 
             reviewTitle: reviewTitle,
             reviewText: reviewText,
             photoURL: photoURL
@@ -55,7 +77,7 @@ class AddReviewViewModel: ObservableObject {
                 case .success():
                     self?.successMessage = "Review submitted successfully!"
                     self?.clearForm()
-                    self?.reviewSubmitted = true // Notify that the review was submitted
+                    self?.reviewSubmitted = true
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription
                 }
