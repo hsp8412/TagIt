@@ -1,5 +1,3 @@
-// BUG? SOMETIMES FULL SCREEN PIC SHOWS WHEN TAP BUTTON
-
 import SwiftUI
 import FirebaseAuth
 
@@ -8,6 +6,7 @@ struct DealInfoView: View {
     @State var isProfileLoading = true
     @State var isVoteLoading = true
     @State var isSaved = false
+    @State private var jump = false // State to control jump animation
     @State var curUserProfile: UserProfile?
     @State var user: UserProfile?
     @State private var profileErrorMessage: String?
@@ -17,130 +16,162 @@ struct DealInfoView: View {
 
     var body: some View {
         VStack(spacing: 15) {
-            Button(action: {
-                isSaved.toggle()
-                saveDeal()
-            }) {
-                Text(isSaved ? "Saved" : "Save")
-                    .foregroundStyle(isSaved ? .white : .green)
-                    .bold()
-            }
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(isSaved ? .green : .white)
-                    .stroke(isSaved ? .white : .green, lineWidth: 1)
-                    .frame(width: 70, height: 30)
-            )
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.trailing)
-            
-            Divider()
-                .background(Color.gray.opacity(0.5))
             
             // Product Image Section
-            AsyncImage(url: URL(string: deal.photoURL)) { phase in
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 150)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .onTapGesture {
-                            isPhotoExpanded = true // Expand the photo on tap
-                        }
-                } else {
-                    ProgressView()
-                        .frame(height: 150)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+            ZStack {
+                AsyncImage(url: URL(string: deal.photoURL)) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 150)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .contentShape(Rectangle()) // Restrict gesture area to the image
+                            .onTapGesture {
+                                isPhotoExpanded = true // Expand the photo on tap
+                            }
+                    } else {
+                        ProgressView()
+                            .frame(height: 150)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.gray.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
                 }
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
+            .padding(.bottom, 10)
 
             Divider()
                 .background(Color.gray.opacity(0.5))
 
             // User Info Section
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 10) {
-                    if (isProfileLoading) {
-                        ProgressView()
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
-                    } else if let profileErrorMessage = profileErrorMessage {
-                        Text("Error: \(profileErrorMessage)")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    } else {
-                        UserAvatarView(avatarURL: user?.avatarURL ?? "")
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
+            ZStack(alignment: .topTrailing) {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 10) {
+                        if isProfileLoading {
+                            ProgressView()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                        } else if let profileErrorMessage = profileErrorMessage {
+                            Text("Error: \(profileErrorMessage)")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        } else {
+                            UserAvatarView(avatarURL: user?.avatarURL ?? "")
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(user?.displayName ?? "Unknown User")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.black)
-                            
-                            Text(deal.date)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(user?.displayName ?? "Unknown User")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.black)
+
+                                Text(deal.date)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+
+                    // Product Details Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(deal.productText)
+                            .font(.headline)
+                            .foregroundColor(.black)
+
+                        Text(String(format: "$%.2f", deal.price))
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.red)
+                    }
+
+                    // Post Text
+                    Text("\"\(deal.postText)\"")
+                        .italic()
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+
+                    // Location and Voting Section
+                    HStack {
+                        HStack(spacing: 5) {
+                            Image(systemName: "mappin")
+                                .foregroundColor(.green)
+                            Text(deal.location)
                                 .font(.system(size: 14))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.green)
+                        }
+
+                        Spacer()
+
+                        if let userId = currentUserId {
+                            UpDownVoteView(
+                                userId: userId,
+                                type: .deal,
+                                id: deal.id!,
+                                upVote: $deal.upvote,
+                                downVote: $deal.downvote
+                            )
+                        } else {
+                            ProgressView()
                         }
                     }
                 }
+                .padding(10)
 
-                // Product Details Section
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(deal.productText)
-                        .font(.headline)
-                        .foregroundColor(.black)
-                    
-                    Text(String(format: "$%.2f", deal.price))
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.red)
-                }
-
-                // Post Text
-                Text("\"\(deal.postText)\"")
-                    .italic()
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-
-                // Location and Voting Section
                 HStack {
-                    HStack(spacing: 5) {
-                        Image(systemName: "mappin")
-                            .foregroundColor(.green)
-                        Text(deal.location)
-                            .font(.system(size: 14))
-                            .foregroundColor(.green)
-                    }
-                  
                     Spacer()
-                    
-                    if let userId = currentUserId {
-                        UpDownVoteView(
-                            userId: userId,
-                            type: .deal,
-                            id: deal.id!,
-                            upVote: $deal.upvote,
-                            downVote: $deal.downvote
-                        )
-                    } else {
-                        ProgressView()
+                    Button(action: {
+                        // Step 1: Animate the fill color change
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            isSaved.toggle() // Toggle the state to change the color
+                        }
+                        
+                        // Step 2: Animate the pop-out effect after the color change
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            // Pop out - Move up and scale up
+                            withAnimation(.easeOut(duration: 0.15)) {
+                                jump = true
+                            }
+                            
+                            // Step 3: Move back down and scale back to original size
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                                    jump = false
+                                }
+                            }
+                        }
+
+                        saveDeal()
+                    }) {
+                        Image(systemName: isSaved ? "heart.fill" : "heart")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(isSaved ? .green : .gray) // Color changes with state
+                            .scaleEffect(jump ? 2.0 : 1.0) // Scale up when jumping
+                            .offset(y: jump ? -20 : 0) // Move up when jumping
                     }
+                    .buttonStyle(PlainButtonStyle())
+
+
+
+
+
+
                 }
+                .padding(.trailing)
+
             }
+            .padding(15)
+            .background(
+                Color.white
+                    .cornerRadius(15)
+                    .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 5)
+            )
+            .padding(.horizontal, 20)
+
         }
-        .padding(15)
-        .background(
-            Color.white
-                .cornerRadius(15)
-                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 5)
-        )
-        .padding(.horizontal, 20)
         .onAppear {
             fetchCurrentUserProfile()
             fetchUserProfile()
@@ -235,17 +266,17 @@ struct DealInfoView: View {
             self.voteErrorMessage = "User not authenticated."
         }
     }
-    
+
     // Save deal
     private func saveDeal() {
-        if (isSaved) {
+        if isSaved {
             DealService.shared.addSavedDeal(userID: currentUserId!, dealID: deal.id!) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
                         print("[DEBUG] user \(currentUserId!) successfully saved deal \(deal.id!)")
                     case .failure(let error):
-                        print("[DEBUG] user \(currentUserId!) fail to saved deal \(deal.id!) due to error \(error.localizedDescription)")
+                        print("[DEBUG] user \(currentUserId!) failed to save deal \(deal.id!) due to error \(error.localizedDescription)")
                     }
                 }
             }
@@ -256,15 +287,10 @@ struct DealInfoView: View {
                     case .success:
                         print("[DEBUG] user \(currentUserId!) successfully deleted saved deal \(deal.id!)")
                     case .failure(let error):
-                        print("[DEBUG] user \(currentUserId!) fail to delete saved deal \(deal.id!) deu to error \(error.localizedDescription)")
+                        print("[DEBUG] user \(currentUserId!) failed to delete saved deal \(deal.id!) due to error \(error.localizedDescription)")
                     }
                 }
             }
         }
     }
-}
-
-#Preview {
-    @Previewable @State var deal = Deal(id: "1A3584D9-DF4E-4352-84F1-FA6812AE0A26", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", productText: "Prodcut~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", postText: "Product Text~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", price: 6.8, location: "Safeway", date: "1h", commentIDs: [], upvote: 5, downvote: 6)
-    DealInfoView(deal: $deal)
 }
