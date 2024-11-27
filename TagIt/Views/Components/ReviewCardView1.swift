@@ -135,5 +135,16 @@ struct ReviewCardView1: View {
 }
 
 #Preview {
-    ReviewCardView1(review: BarcodeItemReview(userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", reviewStars: 4, productName: "Apple", barcodeNumber: ""))
+    ReviewCardView1(
+        review: BarcodeItemReview(
+            userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2",
+            photoURL: "https://i.imgur.com/8ciNZcY.jpeg",
+            reviewStars: 4,
+            productName: "Apple",
+            barcodeNumber: "123456789012",
+            reviewTitle: "The best apple ever",
+            reviewText: "This is a great apple. It's so juicy and sweet."
+        )
+    )
 }
+
