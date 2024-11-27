@@ -97,6 +97,7 @@ struct HomeView: View {
             }
             .padding(.bottom, 20)
             .onAppear {
+                viewModel.resetFilters()
                 viewModel.fetchAllDeals()
             }
         }

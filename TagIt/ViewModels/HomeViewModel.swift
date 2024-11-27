@@ -23,7 +23,18 @@ class HomeViewModel: ObservableObject {
     
     var locationManager = LocationManager()
     
+    func resetFilters(){
+        for index in filters.indices{
+            if filters[index].value == "todaysDeal"{
+                filters[index].isSelected = true
+            }else{
+                filters[index].isSelected = false
+            }
+        }
+    }
+    
     func toggleFilter(id: String) {
+        errorMessage = nil
         for index in filters.indices {
             if filters[index].id == id{
                 filters[index].isSelected = true
@@ -68,6 +79,7 @@ class HomeViewModel: ObservableObject {
                 self?.allDeals = fetchedDeals
                 self?.fetchStoresForDeals()
                 self?.shownDeals = self?.allDeals ?? []
+                self?.fetchWeeklyDeals()
                 self?.isLoading = false
             case .failure(let error):
                 self?.errorMessage = error.localizedDescription
@@ -122,15 +134,19 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date()) // Today's 12:00 AM
+
         let startOfWeek = calendar.date(byAdding: .day, value: -7, to: startOfToday) ?? Date() // 7 days ago from today
         
         // Filter deals
         let weeklyDeals = allDeals.filter { deal in
             if let dealDate = deal.dateTime?.dateValue() { // Safely unwrap the optional Timestamp
-                return dealDate >= startOfWeek && dealDate < startOfToday
+                return dealDate >= startOfWeek
             }
             return false // Exclude deals with nil dateTime
         }
+        
+        
+        
         shownDeals = weeklyDeals
         isLoading = false
     }
@@ -189,7 +205,8 @@ class HomeViewModel: ObservableObject {
     func fetchNearbyDeals() {
         locationManager.requestLocationPermission()
         guard locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways else {
-            errorMessage = "Cannot filter deals by distance: Location permission not granted"
+//            errorMessage = "Cannot filter deals by distance: Location permission not granted"
+            isLoading=true
             return
         }
         guard let userLocation = locationManager.userLocation else {
@@ -242,7 +259,7 @@ class HomeViewModel: ObservableObject {
 struct Filter:Identifiable{
     let id: String
     let label: String
-    let value: String
+    var value: String
     let icon:String
     var isSelected: Bool
 }
