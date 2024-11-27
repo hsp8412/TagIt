@@ -4,10 +4,12 @@
 //
 //  Created by Chenghou Si on 2024-10-21.
 import SwiftUI
+import FirebaseAuth
 
 struct CommentCardView: View {
     @State var comment: UserComments
     @State var user: UserProfile? // Dynamically loaded user
+    @State var curUserID: String?
     @State private var isExpanded: Bool = false // Tracks whether the card is expanded
     let time = "1h" // Placeholder for now, can be dynamically calculated from the comment timestamp
 
@@ -81,13 +83,17 @@ struct CommentCardView: View {
             HStack {
                 Spacer() // Push voting controls to the right
 
-                UpDownVoteView(
-                    userId: user?.id ?? "", // Use the fetched user ID
-                    type: .comment,
-                    id: comment.id ?? "", // Ensure `comment.id` is unwrapped
-                    upVote: $comment.upvote, // Binding for upvotes
-                    downVote: $comment.downvote // Binding for downvotes
-                )
+                if (curUserID == nil) {
+                    ProgressView()
+                } else {
+                    UpDownVoteView(
+                        userId: curUserID!, // Use the fetched user ID
+                        type: .comment,
+                        id: comment.id ?? "", // Ensure `comment.id` is unwrapped
+                        upVote: $comment.upvote, // Binding for upvotes
+                        downVote: $comment.downvote // Binding for downvotes
+                    )
+                }
             }
         }
         .padding(12) // Reduced padding for a compact design
@@ -100,6 +106,15 @@ struct CommentCardView: View {
         .onAppear {
             fetchUserForComment()
             fetchVotesForComment()
+            fetchCurUserID()
+        }
+    }
+    
+    private func fetchCurUserID() {
+        if let curUser = Auth.auth().currentUser {
+            curUserID = curUser.uid
+        } else {
+            print("[DEBUG] User does not auth")
         }
     }
 

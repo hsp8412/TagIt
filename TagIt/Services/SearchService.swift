@@ -16,7 +16,7 @@ class SearchService {
     
     init() {
         guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_API_KEY") as? String,
-        let appID = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_APP_ID") as? String else {
+              let appID = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_APP_ID") as? String else {
             fatalError("Missing Algolia credentials in AppConfig.xcconfig")
         }
         
@@ -34,7 +34,7 @@ class SearchService {
                 query: query,
                 indexName: self.indexName
             ))]))
-//        print("Raw Algolia response: \(response)")
+        //        print("Raw Algolia response: \(response)")
         
         // Step 1: Extract objectIDs from search hits
         let objectIDs = response.results.compactMap { result in
@@ -61,7 +61,15 @@ class SearchService {
             for id in objectIDs {
                 group.addTask {
                     let document = try await firestore.collection("Deals").document(id).getDocument()
-                    return try document.data(as: Deal.self)
+                    var deal = try document.data(as: Deal.self)
+                    
+                    // Extract and convert dateTime
+                    if let timestamp = document.get("dateTime") as? Timestamp {
+                        let dateString = Utils.timeAgoString(from: timestamp)
+                        deal.date = dateString // Save the formatted string to the `date` field
+                    }
+                    
+                    return deal
                 }
             }
             
@@ -72,7 +80,16 @@ class SearchService {
             }
         }
         
-        return deals
+        // Sort deals by dateTime in descending order (newest first)
+        let sortedDeals = deals.sorted { firstDeal, secondDeal in
+            guard let firstTimestamp = firstDeal.dateTime?.seconds,
+                  let secondTimestamp = secondDeal.dateTime?.seconds else {
+                return false // Treat as unordered if dateTime is missing
+            }
+            return firstTimestamp > secondTimestamp // Descending order
+        }
+        
+        return sortedDeals
     }
 }
 

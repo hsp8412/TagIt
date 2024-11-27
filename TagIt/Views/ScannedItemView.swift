@@ -4,62 +4,68 @@
 //
 //  Created by Angi Shi on 2024-11-05.
 //
-
 import SwiftUI
 
 struct ScannedItemView: View {
+    @State private var shouldRefreshReviews = false // State for refreshing reviews
     @StateObject var viewModel: ScannedItemViewModel
-    let productName: String
     @State private var navigateToAddReview = false
 
     init(barcode: String, productName: String) {
-        _viewModel = StateObject(wrappedValue: ScannedItemViewModel(barcode: barcode))
-        self.productName = productName
+        _viewModel = StateObject(wrappedValue: ScannedItemViewModel(barcode: barcode, productName: productName))
     }
 
     var body: some View {
-        VStack {
-            if viewModel.isLoading {
-                VStack {
-                    Spacer()
-                    ProgressView("Loading Reviews...")
-                        .padding()
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-            } else if let errorMessage = viewModel.errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding()
-            } else if viewModel.reviews.isEmpty {
-                Text("Reviews for \(productName)")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.leading)
-                    .padding(.bottom, 50)
-
-                Text("No reviews found for this item.")
-                    .foregroundColor(.gray)
-                    .padding()
-            } else {
-                ScrollView {
-                    Text("Reviews for \(productName)")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.leading)
-                        .padding()
-
-                    VStack(spacing: 10) {
-                        ForEach(viewModel.reviews) { review in
-                            ReviewCardView(review: review)
-                        }
+        VStack(spacing: 10) {
+            // Filters Section
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(viewModel.filters) { filter in
+                        FilterButton(
+                            icon: filter.icon,
+                            text: filter.label,
+                            isSelected: filter.isSelected,
+                            action: {
+                                viewModel.toggleFilter(id: filter.id)
+                            }
+                        )
                     }
-                    .padding()
                 }
+                .padding(.horizontal, 16)
+                .frame(height: 50)
             }
 
-            Spacer()
+            Divider()
+                .padding(.horizontal)
 
+            // Reviews Section
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Loading Reviews...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                } else if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                } else if viewModel.shownReviews.isEmpty {
+                    Text("No reviews found for this item.")
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 10) {
+                            ForEach(viewModel.shownReviews) { review in
+                                ReviewCardView(review: review)
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            // Add Review Button
             if !viewModel.isLoading {
                 Button(action: {
                     navigateToAddReview = true
@@ -67,36 +73,47 @@ struct ScannedItemView: View {
                     HStack {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
-                            .foregroundColor(.white)
-
                         Text("Add a Review")
                             .font(.headline)
-                            .foregroundColor(.white)
                     }
+                    .foregroundColor(.white)
                     .padding()
+                    .frame(maxWidth: .infinity)
                     .background(Color.green)
                     .cornerRadius(10)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 16)
                 }
                 .padding(.bottom, 10)
             }
 
+            // Navigation to AddReviewView
             NavigationLink(
-                destination: AddReviewView(barcode: viewModel.barcode, productName: productName),
+                destination: AddReviewView(
+                    barcode: viewModel.barcode,
+                    productName: viewModel.productName,
+                    onReviewSubmitted: {
+                        shouldRefreshReviews = true // Trigger refresh after submission
+                    }
+                ),
                 isActive: $navigateToAddReview
             ) {
                 EmptyView()
             }
         }
-        .frame(maxWidth: .infinity)
+        .onChange(of: shouldRefreshReviews) { _ in
+            if shouldRefreshReviews {
+                viewModel.fetchReviews()
+                shouldRefreshReviews = false
+            }
+        }
         .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
-        .background(Color(.systemGray6))
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Reviews for \(viewModel.productName)")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+            }
+        }
+        .background(Color(.systemGray6).ignoresSafeArea())
     }
 }
 
-struct ScannedItemView_Previews: PreviewProvider {
-    static var previews: some View {
-        ScannedItemView(barcode: "1234567890123", productName: "Sample Product")
-    }
-}

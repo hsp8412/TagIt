@@ -7,10 +7,10 @@
 
 import SwiftUI
 import AVFoundation
-
 struct BarcodeScannerView: View {
     @StateObject var viewModel = BarcodeScannerViewModel()
-    @State private var selectedBarcode: String? // Replaces navigateToItem
+    @State private var navigateToReviews = false
+    @State private var scannedBarcode: String = ""
 
     var body: some View {
         NavigationStack {
@@ -26,13 +26,6 @@ struct BarcodeScannerView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
-
-                        NavigationLink(value: barcode) {
-                            Text("View Scanned Item")
-                                .foregroundColor(.blue)
-                                .underline()
-                                .padding()
-                        }
                     } else {
                         Text("Scanning for barcodes...")
                             .foregroundColor(.white)
@@ -43,15 +36,20 @@ struct BarcodeScannerView: View {
             .onAppear {
                 viewModel.scannedBarcode = nil
             }
-            .onChange(of: viewModel.scannedBarcode) { barcode in
-                selectedBarcode = barcode
+            .onChange(of: viewModel.scannedBarcode) { oldValue, newValue in
+                if let newValue = newValue {
+                    scannedBarcode = newValue
+                    navigateToReviews = true
+                }
             }
-            .navigationDestination(for: String.self) { barcode in
-                ScannedItemView(barcode: barcode, productName: "Unknown Product")
+            .navigationDestination(isPresented: $navigateToReviews) {
+                ScannedItemView(barcode: scannedBarcode, productName: "this item")
             }
         }
     }
 }
+
+
 
 struct CameraPreview: UIViewControllerRepresentable {
     @ObservedObject var viewModel: BarcodeScannerViewModel
