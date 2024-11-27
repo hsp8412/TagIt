@@ -3,44 +3,72 @@ import FirebaseFirestore
 
 class BarcodeItemService {
     static let shared = BarcodeItemService()
-    
+
     private let db = Firestore.firestore()
 
-    func getBarcodeItemsByBarcode(barcode: String, completion: @escaping (Result<[BarcodeItemReview], Error>) -> Void) {
-        db.collection(FirestoreCollections.revItem)
-            .whereField("barcodeNumber", isEqualTo: barcode) 
+    // Fetch all reviews for a given barcode
+    func getReviewsForBarcode(barcode: String, completion: @escaping (Result<[BarcodeItemReview], Error>) -> Void) {
+        db.collection("barcodes")
+            .document(barcode)
+            .collection("reviews")
             .getDocuments { snapshot, error in
                 if let error = error {
-                    completion(.failure(error)) 
+                    completion(.failure(error))
                 } else if let snapshot = snapshot {
                     do {
-                        let barcodeItems = try snapshot.documents.map { document in
-                            try document.data(as: BarcodeItemReview.self) 
+                        let reviews = try snapshot.documents.map { document in
+                            try document.data(as: BarcodeItemReview.self)
                         }
-                        completion(.success(barcodeItems)) 
+                        completion(.success(reviews))
                     } catch {
-                        completion(.failure(error)) 
+                        completion(.failure(error))
                     }
                 } else {
-                    completion(.failure(NSError(domain: "BarcodeItemService", code: -1, userInfo: [NSLocalizedDescriptionKey: "No BarcodeItem found"])))
+                    completion(.success([])) // No reviews found
                 }
             }
     }
 
-    func addBarcodeItem(barcodeItem: BarcodeItemReview, completion: @escaping (Result<Void, Error>) -> Void) {
-        do {
-            _ = try db.collection(FirestoreCollections.revItem)
-                .addDocument(from: barcodeItem) { error in
+    // Add a review for a barcode. If barcode doesn't exist, create it.
+    func addReviewForBarcode(barcode: String, productName: String, review: BarcodeItemReview, completion: @escaping (Result<Void, Error>) -> Void) {
+        let barcodeRef = db.collection("barcodes").document(barcode)
+
+        // Check if the barcode exists
+        barcodeRef.getDocument { document, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            if document?.exists == true {
+                // Add the review to the existing barcode
+                self.addReview(barcodeRef: barcodeRef, review: review, completion: completion)
+            } else {
+                // Create the barcode and add the review
+                barcodeRef.setData(["productName": productName]) { error in
                     if let error = error {
-                        completion(.failure(error)) 
-                    } else {
-                        completion(.success(())) 
+                        completion(.failure(error))
+                        return
                     }
+
+                    self.addReview(barcodeRef: barcodeRef, review: review, completion: completion)
                 }
+            }
+        }
+    }
+
+    // Helper function to add a review to a barcode's "reviews" subcollection
+    private func addReview(barcodeRef: DocumentReference, review: BarcodeItemReview, completion: @escaping (Result<Void, Error>) -> Void) {
+        do {
+            _ = try barcodeRef.collection("reviews").addDocument(from: review) { error in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(()))
+                }
+            }
         } catch {
             completion(.failure(error))
         }
     }
-
-
 }
