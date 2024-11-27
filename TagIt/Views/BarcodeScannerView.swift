@@ -10,13 +10,13 @@ import AVFoundation
 
 struct BarcodeScannerView: View {
     @StateObject var viewModel = BarcodeScannerViewModel()
-    @State private var navigateToItem = false
+    @State private var selectedBarcode: String? // Replaces navigateToItem
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 CameraPreview(viewModel: viewModel)
-                    .ignoresSafeArea() // Updated to ignoresSafeArea()
+                    .ignoresSafeArea()
 
                 VStack {
                     Spacer()
@@ -27,11 +27,11 @@ struct BarcodeScannerView: View {
                             .foregroundColor(.white)
                             .padding()
 
-                        NavigationLink(
-                            destination: ScannedItemView(barcode: barcode),
-                            isActive: $navigateToItem
-                        ) {
-                            EmptyView()
+                        NavigationLink(value: barcode) {
+                            Text("View Scanned Item")
+                                .foregroundColor(.blue)
+                                .underline()
+                                .padding()
                         }
                     } else {
                         Text("Scanning for barcodes...")
@@ -42,12 +42,12 @@ struct BarcodeScannerView: View {
             }
             .onAppear {
                 viewModel.scannedBarcode = nil
-                navigateToItem = false
             }
-            .onChange(of: viewModel.scannedBarcode) { newValue in
-                if newValue != nil {
-                    navigateToItem = true
-                }
+            .onChange(of: viewModel.scannedBarcode) { barcode in
+                selectedBarcode = barcode
+            }
+            .navigationDestination(for: String.self) { barcode in
+                ScannedItemView(barcode: barcode, productName: "Unknown Product")
             }
         }
     }

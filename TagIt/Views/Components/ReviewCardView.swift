@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+
 
 struct ReviewCardView: View {
     let review: BarcodeItemReview
@@ -81,8 +83,8 @@ struct ReviewCardView: View {
                     Spacer()
 
                     // Review Image (if available)
-                    if let photoURL = review.photoURL, !photoURL.isEmpty {
-                        AsyncImage(url: URL(string: photoURL)) { phase in
+                    if !review.photoURL.isEmpty {
+                        AsyncImage(url: URL(string: review.photoURL)) { phase in
                             if let image = phase.image {
                                 image
                                     .resizable()
@@ -98,6 +100,7 @@ struct ReviewCardView: View {
                         }
                         .frame(width: 90, height: 90)
                     }
+
                 }
 
                 // Review Content

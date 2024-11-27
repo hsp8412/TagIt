@@ -10,11 +10,14 @@ import SwiftUI
 struct AddReviewView: View {
     @StateObject var viewModel: AddReviewViewModel
     let productName: String
+    let barcode: String
 
     init(barcode: String, productName: String) {
         _viewModel = StateObject(wrappedValue: AddReviewViewModel(barcode: barcode))
+        self.barcode = barcode
         self.productName = productName
     }
+
 
 
     var body: some View {
@@ -110,7 +113,7 @@ struct AddReviewView: View {
 
             // Submit Button
             Button(action: {
-                viewModel.submitReview(for: barcode)
+                viewModel.submitReview()
             }) {
                 HStack {
                     if viewModel.isLoading {
