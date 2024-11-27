@@ -1,5 +1,5 @@
 //
-//  BarcodeView.swift
+//  BarcodeScannerView.swift
 //  TagIt
 //
 //  Created by Angi Shi on 2024-10-27.
@@ -7,31 +7,27 @@
 
 import SwiftUI
 import AVFoundation
-
 struct BarcodeScannerView: View {
     @StateObject var viewModel = BarcodeScannerViewModel()
-    @State private var navigateToItem = false
+    @State private var navigateToReviews = false
+    @State private var scannedBarcode: String = ""
 
     var body: some View {
         NavigationStack {
             ZStack {
                 CameraPreview(viewModel: viewModel)
-                    .edgesIgnoringSafeArea(.all)
-                
+                    .ignoresSafeArea()
+
                 VStack {
                     Spacer()
-                    
+
                     if let barcode = viewModel.scannedBarcode {
                         Text("Scanned Barcode: \(barcode)")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
-                        
-                        NavigationLink(destination: ScannedItemView(barcode: barcode, productName: "Item Name"), isActive: $navigateToItem) {
-                            EmptyView()
-                        }
                     } else {
-                        Text("No barcode detected")
+                        Text("Scanning for barcodes...")
                             .foregroundColor(.white)
                             .padding()
                     }
@@ -39,27 +35,32 @@ struct BarcodeScannerView: View {
             }
             .onAppear {
                 viewModel.scannedBarcode = nil
-                navigateToItem = false
             }
-            .onChange(of: viewModel.scannedBarcode) { newValue in
-                if newValue != nil {
-                    navigateToItem = true
+            .onChange(of: viewModel.scannedBarcode) { oldValue, newValue in
+                if let newValue = newValue {
+                    scannedBarcode = newValue
+                    navigateToReviews = true
                 }
+            }
+            .navigationDestination(isPresented: $navigateToReviews) {
+                ScannedItemView(barcode: scannedBarcode, productName: "this item")
             }
         }
     }
 }
 
+
+
 struct CameraPreview: UIViewControllerRepresentable {
     @ObservedObject var viewModel: BarcodeScannerViewModel
 
-    func makeUIViewController(context: Context) -> UIViewController {
+    func makeUIViewController(context: Context) -> ScannerViewController {
         let viewController = ScannerViewController()
         viewController.viewModel = viewModel
         return viewController
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: ScannerViewController, context: Context) {}
 }
 
 // Custom UIViewController to manage the camera session
@@ -89,48 +90,49 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
               captureSession.canAddInput(videoInput) else { return }
 
         captureSession.addInput(videoInput)
-        
+
         let metadataOutput = AVCaptureMetadataOutput()
         if captureSession.canAddOutput(metadataOutput) {
             captureSession.addOutput(metadataOutput)
             metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-            metadataOutput.metadataObjectTypes = [.ean13, .qr]
+            metadataOutput.metadataObjectTypes = [.ean13, .qr, .code128] // Include other barcode types if needed
         }
 
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer?.frame = view.bounds
         previewLayer?.videoGravity = .resizeAspectFill
         view.layer.addSublayer(previewLayer!)
     }
 
-    private func startSession() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if !self.captureSession.isRunning {
-                self.captureSession.startRunning()
-            }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer?.frame = view.bounds
+    }
+
+    func startSession() {
+        if !captureSession.isRunning {
+            captureSession.startRunning()
         }
     }
 
-    private func stopSession() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if self.captureSession.isRunning {
-                self.captureSession.stopRunning()
-            }
+    func stopSession() {
+        if captureSession.isRunning {
+            captureSession.stopRunning()
         }
     }
 
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         if let readableObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
            let barcode = readableObject.stringValue {
-            viewModel?.scannedBarcode = barcode
             DispatchQueue.main.async {
-                self.dismiss(animated: true)
+                self.viewModel?.scannedBarcode = barcode
+                self.stopSession() // Stop scanning after a barcode is found
             }
         }
     }
 }
 
-
-#Preview {
-    BarcodeScannerView()
+struct BarcodeScannerView_Previews: PreviewProvider {
+    static var previews: some View {
+        BarcodeScannerView()
+    }
 }
