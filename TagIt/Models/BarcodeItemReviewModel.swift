@@ -15,4 +15,7 @@ struct BarcodeItemReview: Identifiable, Codable {
     var reviewStars: Double
     var productName: String
     var barcodeNumber: String
+    @ServerTimestamp var dateTime: Timestamp?
+    var reviewTitle: String
+    var reviewText: String
 }
