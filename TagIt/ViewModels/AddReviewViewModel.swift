@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FirebaseAuth
 
 class AddReviewViewModel: ObservableObject {
     @Published var reviewTitle: String = ""
@@ -16,20 +17,48 @@ class AddReviewViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var successMessage: String? = nil
+    @Published var reviewSubmitted: Bool = false // Notify when the review is submitted
 
-    func submitReview(for barcode: String) {
+    private let barcode: String
+
+    init(barcode: String) {
+        self.barcode = barcode
+    }
+
+    func submitReview() {
         guard validateReview() else { return }
 
         isLoading = true
         errorMessage = nil
         successMessage = nil
 
-        // Simulate async submission
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            self.errorMessage = "User not authenticated."
+            self.isLoading = false
+            return
+        }
+
+        let photoURL = "" // Handle image upload if necessary
+
+        ReviewService.shared.handleReview(
+            userId: userId,
+            barcodeNumber: barcode,
+            reviewStars: Double(rating),
+            productName: "", // Provide the product name if available
+            reviewTitle: reviewTitle,
+            reviewText: reviewText,
+            photoURL: photoURL
+        ) { [weak self] result in
             DispatchQueue.main.async {
-                self.isLoading = false
-                self.successMessage = "Review submitted successfully!"
-                self.clearForm()
+                self?.isLoading = false
+                switch result {
+                case .success():
+                    self?.successMessage = "Review submitted successfully!"
+                    self?.clearForm()
+                    self?.reviewSubmitted = true // Notify that the review was submitted
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
             }
         }
     }

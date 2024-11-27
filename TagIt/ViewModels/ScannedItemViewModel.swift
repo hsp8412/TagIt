@@ -6,30 +6,69 @@
 //
 
 import Foundation
-
+import FirebaseFirestore
 class ScannedItemViewModel: ObservableObject {
-    @Published var reviews: [Review] = [] // Holds reviews for the scanned item
-    @Published var isLoading: Bool = true // Indicates loading state
-    @Published var errorMessage: String? = nil // Stores error messages
+    @Published var reviews: [BarcodeItemReview] = []
+    @Published var shownReviews: [BarcodeItemReview] = [] // Filtered reviews
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+    @Published var filters: [Filter] = [
+        Filter(id: "1", label: "Latest", value: "latest", icon: "arrow.down", isSelected: true),
+        Filter(id: "2", label: "Oldest", value: "oldest", icon: "arrow.up", isSelected: false)
+    ]
+    
+    let barcode: String
+    let productName: String
 
-    // Fetch all reviews for a scanned barcode
-    func fetchReviews(for barcode: String) {
+    init(barcode: String, productName: String) {
+        self.barcode = barcode
+        self.productName = productName
+        fetchReviews()
+    }
+
+    func fetchReviews() {
         isLoading = true
         errorMessage = nil
-        
-        // Add your actual fetching logic here
-        // Simulate fetching data for now
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // Simulate delay
-            if barcode.isEmpty {
-                self.errorMessage = "Invalid barcode."
-                self.isLoading = false
-            } else {
-                self.reviews = [
-                    Review(id: "1", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", reviewText: "Great product!", rating: 5, date: "2 days ago"),
-                    Review(id: "2", userID: "1B7Ra3hPWbOVr2B96mzp3oGXIiK2", photoURL: "https://i.imgur.com/8ciNZcY.jpeg", reviewText: "Good quality.", rating: 4, date: "1 week ago")
-                ]
-                self.isLoading = false
+
+        BarcodeItemService.shared.getReviewsForBarcode(barcode: barcode) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let reviews):
+                    self?.reviews = reviews
+                    self?.applyFilter()
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
             }
+        }
+    }
+
+    func toggleFilter(id: String) {
+        for index in filters.indices {
+            filters[index].isSelected = (filters[index].id == id)
+        }
+        applyFilter()
+    }
+
+    private func applyFilter() {
+        guard let selectedFilter = filters.first(where: { $0.isSelected }) else {
+            shownReviews = reviews
+            return
+        }
+        switch selectedFilter.value {
+        case "latest":
+            shownReviews = reviews.sorted {
+                ($0.dateTime?.dateValue() ?? Date.distantPast) >
+                ($1.dateTime?.dateValue() ?? Date.distantPast)
+            }
+        case "oldest":
+            shownReviews = reviews.sorted {
+                ($0.dateTime?.dateValue() ?? Date.distantPast) <
+                ($1.dateTime?.dateValue() ?? Date.distantPast)
+            }
+        default:
+            shownReviews = reviews
         }
     }
 }
