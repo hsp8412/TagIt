@@ -5,6 +5,7 @@
 //  Created by Chenghou Si on 2024-10-31.
 //
 import SwiftUI
+import FirebaseFirestore
 
 struct UpDownVoteView: View {
     let userId: String
@@ -94,6 +95,7 @@ struct UpDownVoteView: View {
                     case .success:
                         upVoteTap = (voteType == .upvote)
                         downVoteTap = (voteType == .downvote)
+
                         fetchUpdatedVotes()
                     case .failure(let error):
                         print("Error updating vote: \(error.localizedDescription)")
@@ -110,10 +112,41 @@ struct UpDownVoteView: View {
                 case .success(let counts):
                     upVote = counts.upvotes
                     downVote = counts.downvotes
+                    let dealId = self.id
+                    DealService.shared.getDealById(id: dealId) { result in
+                        switch result {
+                        case .success(var deal):
+                            deal.upvote = self.upVote
+                            deal.downvote = self.downVote
+                            self.updateDealInFirestore(deal)
+                            
+                        case .failure(let error):
+                            print("Error fetching deal: \(error.localizedDescription)")
+                        }
+                    }
+                    
                     fetchUserVoteState()
                 case .failure(let error):
                     print("Error fetching updated vote counts: \(error.localizedDescription)")
                 }
+            }
+        }
+    }
+
+    private func updateDealInFirestore(_ deal: Deal) {
+      
+        guard let dealId = deal.id else { return }
+        
+        let dealRef = Firestore.firestore().collection(FirestoreCollections.deals).document(dealId)
+        
+        dealRef.updateData([
+            "upvote": deal.upvote,
+            "downvote": deal.downvote
+        ]) { error in
+            if let error = error {
+                print("Error updating deal in Firestore: \(error.localizedDescription)")
+            } else {
+                print("Successfully updated deal votes in Firestore.")
             }
         }
     }
