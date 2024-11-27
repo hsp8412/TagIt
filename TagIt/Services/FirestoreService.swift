@@ -316,8 +316,28 @@ class FirestoreService {
     private func initializeBarcodeItemReviewCollection(group: DispatchGroup) {
         group.enter()
         let barcodeItemReviewData: [BarcodeItemReview] = [
-            BarcodeItemReview(id: nil, userID: "user1", photoURL: "https://example.com/review_photo1.jpg", reviewStars: 4.5, productName: "Product 1", barcodeNumber: "1234567890123"),
-            BarcodeItemReview(id: nil, userID: "user2", photoURL: "https://example.com/review_photo2.jpg", reviewStars: 3.7, productName: "Product 2", barcodeNumber: "9876543210987")
+            BarcodeItemReview(
+                id: nil,
+                userID: "user1",
+                photoURL: "https://example.com/review_photo1.jpg",
+                reviewStars: 4.5,
+                productName: "Product 1",
+                barcodeNumber: "1234567890123",
+                dateTime: nil,
+                reviewTitle: "Great Product!",
+                reviewText: "I really enjoyed using this product. Highly recommend!"
+            ),
+            BarcodeItemReview(
+                id: nil,
+                userID: "user2",
+                photoURL: "https://example.com/review_photo2.jpg",
+                reviewStars: 3.7,
+                productName: "Product 2",
+                barcodeNumber: "9876543210987",
+                dateTime: nil,
+                reviewTitle: "Good, but could be better",
+                reviewText: "The product is decent, but I had some issues with it."
+            )
         ]
         self.initializeCollection(collectionName: FirestoreCollections.revItem, initialData: barcodeItemReviewData) { error in
             if let error = error {
@@ -329,6 +349,7 @@ class FirestoreService {
         }
     }
 
+
     /**
      Initializes the ReviewStars collection with predefined data.
      
@@ -338,8 +359,16 @@ class FirestoreService {
     private func initializeReviewStarsCollection(group: DispatchGroup) {
         group.enter()
         let reviewStarsData: [ReviewStars] = [
-            ReviewStars(id: nil, barcodeNumber: "1234567890123", reviewStars: 4.5, productName: "Product 1"),
-            ReviewStars(id: nil, barcodeNumber: "9876543210987", reviewStars: 3.7, productName: "Product 2")
+            ReviewStars(
+                barcodeNumber: "1234567890123",
+                reviewStars: 4.5,
+                productName: "Product 1"
+            ),
+            ReviewStars(
+                barcodeNumber: "9876543210987",
+                reviewStars: 3.7,
+                productName: "Product 2"
+            )
         ]
         self.initializeCollection(collectionName: FirestoreCollections.revStars, initialData: reviewStarsData) { error in
             if let error = error {
@@ -350,6 +379,7 @@ class FirestoreService {
             group.leave()
         }
     }
+
 
     /**
      Initializes the UserComments collection with predefined data.
@@ -438,7 +468,7 @@ class FirestoreService {
                 documentID = (data as! UserComments).id ?? UUID().uuidString
             case is BarcodeItemReview.Type:
                 let review = data as! BarcodeItemReview
-                documentID = review.barcodeNumber
+                documentID = review.id ?? "\(review.userID)_\(review.barcodeNumber)"
             case is ReviewStars.Type:
                 let review = data as! ReviewStars
                 documentID = review.barcodeNumber
