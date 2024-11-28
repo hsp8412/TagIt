@@ -36,7 +36,7 @@ struct ContentView: View {
                     
                     ProductsView()
                         .tabItem {
-                            Label("Products", systemImage: "bag.fill")
+                            Label("My Deals", systemImage: "cart.fill")
                         }.tag(4)
                 }
             }
