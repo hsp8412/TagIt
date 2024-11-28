@@ -1,0 +1,10 @@
+//
+//  Config.xcconfig
+//  TagIt
+//
+//  Created by 何斯鹏 on 2024-11-18.
+//
+ALGOLIA_APP_ID = LVF2AHK0DP
+ALGOLIA_API_KEY = b71225a77263d19809939d53d2bf0f51
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
