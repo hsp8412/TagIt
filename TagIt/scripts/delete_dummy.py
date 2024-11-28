@@ -1,4 +1,4 @@
-import firebase_admin
+import firebase_admin 
 from firebase_admin import credentials, firestore
 
 SERVICE_ACCOUNT_PATH = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
@@ -19,6 +19,7 @@ def delete_dummy_data():
         "ReviewStars",
         "Votes",
         "UserProfile",
+        "Stores",
     ]
 
     for collection_name in collections:
