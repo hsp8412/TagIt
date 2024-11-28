@@ -1,23 +1,40 @@
-import firebase_admin 
+import firebase_admin
 from firebase_admin import credentials, firestore
+import json
 from datetime import datetime
-from dummy_data import dummy_data
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SERVICE_ACCOUNT_PATH = os.path.join(
+    SCRIPT_DIR, "tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
+)
+JSON_FILE_PATH = os.path.join(SCRIPT_DIR, "dummy_data.json")
 
 # Initialize Firebase Admin SDK
-SERVICE_ACCOUNT_PATH = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
 firebase_admin.initialize_app(cred)
 
 # Firestore database reference
 db = firestore.client()
 
-# Initialize Firebase Admin SDK
-def initialize_firebase(service_account_path):
-    # Check if the app has already been initialized
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(service_account_path)
-        firebase_admin.initialize_app(cred)
-    return firestore.client()
+
+# Load JSON file and replace placeholders
+def load_and_replace_json(file_path):
+    with open(file_path, "r") as f:
+        data = json.load(f)
+    return replace_timestamps(data)
+
+
+# Recursively replace `__SERVER_TIMESTAMP__` with `firestore.SERVER_TIMESTAMP`
+def replace_timestamps(data):
+    if isinstance(data, dict):
+        return {key: replace_timestamps(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [replace_timestamps(item) for item in data]
+    elif data == "__SERVER_TIMESTAMP__":
+        return firestore.SERVER_TIMESTAMP
+    return data
+
 
 # Populate a Firestore collection with data
 def populate_collection(collection_name, data_list, db):
@@ -28,6 +45,7 @@ def populate_collection(collection_name, data_list, db):
             print(f"Added {collection_name}: {item['id']}")
         except Exception as e:
             print(f"Error adding {collection_name}: {item['id']}: {e}")
+
 
 # Populate UserProfile and create a mapping of usernames to IDs
 def populate_user_profiles(user_profiles, db):
@@ -42,6 +60,7 @@ def populate_user_profiles(user_profiles, db):
             print(f"Error adding UserProfile: {e}")
     return user_profile_map
 
+
 # Populate Stores collection
 def populate_stores(stores, db):
     print("Populating Stores collection...")
@@ -51,6 +70,7 @@ def populate_stores(stores, db):
             print(f"Added Store: {store['id']} - {store['name']}")
         except Exception as e:
             print(f"Error adding Store {store['id']}: {e}")
+
 
 # Populate Deals collection
 def populate_deals(deals, db, user_profile_map):
@@ -69,7 +89,9 @@ def populate_deals(deals, db, user_profile_map):
         # Validate locationId
         store_ref = db.collection("Stores").document(deal["locationId"]).get()
         if not store_ref.exists:
-            print(f"Error: Store {deal['locationId']} for deal {deal['id']} does not exist.")
+            print(
+                f"Error: Store {deal['locationId']} for deal {deal['id']} does not exist."
+            )
             continue
 
         # Ensure date field is valid
@@ -80,6 +102,7 @@ def populate_deals(deals, db, user_profile_map):
             print(f"Added Deal: {deal['id']} with userID {deal['userID']}")
         except Exception as e:
             print(f"Error adding Deal {deal['id']}: {e}")
+
 
 # Populate UserComments collection
 def populate_user_comments(comments, db, user_profile_map):
@@ -99,9 +122,11 @@ def populate_user_comments(comments, db, user_profile_map):
         except Exception as e:
             print(f"Error adding UserComment: {e}")
 
+
 # Main function to initialize data
-def initialize_data(service_account_path, collections):
-    db = initialize_firebase(service_account_path)
+def initialize_data(json_file_path):
+    # Load JSON data
+    collections = load_and_replace_json(json_file_path)
 
     # Populate collections
     user_profile_map = populate_user_profiles(collections["UserProfile"], db)
@@ -110,4 +135,6 @@ def initialize_data(service_account_path, collections):
     populate_user_comments(collections["UserComments"], db, user_profile_map)
     print("Data initialization completed.")
 
-initialize_data(SERVICE_ACCOUNT_PATH, dummy_data)
+
+# Run the initialization
+initialize_data(JSON_FILE_PATH)
