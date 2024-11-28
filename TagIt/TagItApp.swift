@@ -8,15 +8,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     // Initialize Firebase
     FirebaseApp.configure()
       
-//      // Initialize Firestore collections using DatabaseInitializationService
-//      DummyService.shared.initializeAllCollections { success in
-//          if success {
-//              print("Firebase collections initialized successfully.")
-//          } else {
-//              print("Firebase collections initialization failed.")
-//          }
-//      }
-      
     return true
   }
 
