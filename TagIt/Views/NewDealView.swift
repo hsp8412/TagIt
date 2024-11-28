@@ -89,7 +89,15 @@ struct NewDealView: View {
                                             }
                                         }
                                         .pickerStyle(.navigationLink)
+                                        .onChange(of: viewModel.location) {_, newLocation in
+                                            viewModel.locationTouched = true
+                                        }
                                         
+                                        .onAppear(){
+                                            if viewModel.locationTouched == false{
+                                                viewModel.getClosestStore()
+                                            }
+                                        }
                                     }
                                     
                                     VStack(alignment: .leading) {
