@@ -4,7 +4,9 @@ import json
 from datetime import datetime
 
 # Path to your Firebase service account JSON file
-SERVICE_ACCOUNT_PATH = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
+SERVICE_ACCOUNT_PATH = (
+    "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
+)
 
 # Initialize Firebase Admin with your service account
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
@@ -12,6 +14,7 @@ firebase_admin.initialize_app(cred)
 
 # Firestore database client
 db = firestore.client()
+
 
 def export_firestore_data():
     """Recursively exports all collections and documents from Firestore."""
@@ -22,6 +25,7 @@ def export_firestore_data():
         export_data[collection.id] = export_collection(collection)
 
     return export_data
+
 
 def export_collection(collection):
     """Exports all documents and subcollections in a given Firestore collection."""
@@ -37,6 +41,7 @@ def export_collection(collection):
 
     return collection_data
 
+
 def serialize_firestore_data(data):
     """Custom serialization for Firestore data."""
     if isinstance(data, datetime):
@@ -49,6 +54,7 @@ def serialize_firestore_data(data):
         # Recursively serialize list
         return [serialize_firestore_data(item) for item in data]
     return data
+
 
 if __name__ == "__main__":
     try:
