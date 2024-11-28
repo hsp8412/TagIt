@@ -51,4 +51,26 @@ class ImageService {
             }
         }
     }
+    
+    // Download image from a URL
+    func downloadImage(from urlString: String, completion: @escaping (Result<UIImage, Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "InvalidURL", code: 400, userInfo: nil)))
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            if let data = data, let image = UIImage(data: data) {
+                print("got valid image")
+                completion(.success(image))
+            } else {
+                completion(.failure(NSError(domain: "ImageDataError", code: 500, userInfo: nil)))
+            }
+        }.resume()
+    }
 }

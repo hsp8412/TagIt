@@ -21,6 +21,11 @@ struct ProfileView: View {
                     width: 120,
                     height: 120
                 )
+                .onChange(of: viewModel.image) { newImage in
+                    if let newImage = newImage {
+                        viewModel.updateProfileImage(newImage: newImage)
+                    }
+                }
                 .padding(.top, 20)
                 .padding(.bottom, 40)
                 
@@ -129,6 +134,10 @@ struct ProfileView: View {
                 
                 Spacer()
             }
+        }
+        .onAppear {
+            viewModel.fetchCachedUser() // Fetch user profile and image on view load
+            viewModel.fetchProfileImage()
         }
         .background(Color(.systemGray6))
     }
