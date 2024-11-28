@@ -23,6 +23,7 @@ class NewDealViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var stores: [Store] = []
     @Published var isLoading: Bool = true
+    @Published var locationTouched = false
     
     // MARK: - Private Properties
     private var selectedTab: Binding<Int>
@@ -40,7 +41,6 @@ class NewDealViewModel: ObservableObject {
             switch result {
             case .success(let stores):
                 self?.stores = stores
-                self?.getClosestStore()
                 self?.isLoading = false
             case .failure(let error):
                 print("Error fetching stores: \(error)")
