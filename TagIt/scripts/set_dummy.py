@@ -1,13 +1,13 @@
 import firebase_admin
-from firebase_admin import credentials, firestore, storage, auth
+from firebase_admin import credentials, firestore, auth, storage
 import json
 from datetime import datetime, timedelta
 import os
+import random
 import requests
 from io import BytesIO
 import uuid
 import time
-import random
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -80,26 +80,30 @@ def generate_date_range():
     return date_range
 
 # Load JSON file and replace placeholders
-def load_and_replace_json(file_path):
+def load_and_replace_json(file_path, update_existing, process_images):
     with open(file_path, "r") as f:
         data = json.load(f)
 
-    # Replace Unsplash URLs with Firebase Storage URLs
-    for profile in data["UserProfile"]:
-        image_content = download_image(profile["avatarURL"])
-        if image_content:
-            fileName = f"{uuid.uuid4()}"
-            profile["avatarURL"] = upload_image_to_storage(image_content, ImageFolder.AVATAR, fileName)
-        else:
-            print(f"Skipping profile {profile['id']} due to image download error.")
+    # Process images only if the user opted in
+    if process_images:
+        print("Processing images...")
+        for profile in data["UserProfile"]:
+            image_content = download_image(profile["avatarURL"])
+            if image_content:
+                fileName = f"{uuid.uuid4()}"
+                profile["avatarURL"] = upload_image_to_storage(image_content, ImageFolder.AVATAR, fileName)
+            else:
+                print(f"Skipping profile {profile['id']} due to image download error.")
 
-    for deal in data["Deals"]:
-        image_content = download_image(deal["photoURL"])
-        if image_content:
-            fileName = f"{uuid.uuid4()}"
-            deal["photoURL"] = upload_image_to_storage(image_content, ImageFolder.DEAL_IMAGE, fileName)
-        else:
-            print(f"Skipping deal {deal['id']} due to image download error.")
+        for deal in data["Deals"]:
+            image_content = download_image(deal["photoURL"])
+            if image_content:
+                fileName = f"{uuid.uuid4()}"
+                deal["photoURL"] = upload_image_to_storage(image_content, ImageFolder.DEAL_IMAGE, fileName)
+            else:
+                print(f"Skipping deal {deal['id']} due to image download error.")
+    else:
+        print("Skipping image processing as per user choice.")
 
     # Replace timestamps in Deals
     data = replace_timestamps(data)
@@ -111,6 +115,7 @@ def load_and_replace_json(file_path):
     data = replace_comment_timestamps(data, deal_timestamps)
 
     return data
+
 
 # Recursively replace `__SERVER_TIMESTAMP__` with generated dates
 def replace_timestamps(data):
@@ -164,46 +169,47 @@ def replace_comment_timestamps(data, deal_timestamps):
 
     return data
 
-
 # Check if document already exists before adding
 def document_exists(collection, doc_id, db):
     doc_ref = db.collection(collection).document(doc_id)
     doc = doc_ref.get()
     return doc.exists
 
-# Populate a Firestore collection with data
-def populate_collection(collection_name, data_list, db):
-    print(f"Populating {collection_name} collection...")
+# Update a Firestore collection with data
+def update_collection(collection_name, data_list, db):
+    print(f"Updating {collection_name} collection...")
     for item in data_list:
         doc_id = item["id"]
-        if not document_exists(collection_name, doc_id, db):
+        if document_exists(collection_name, doc_id, db):
             try:
                 # Ensure dateTime field is set as a Firestore timestamp
                 if "dateTime" in item:
                     item["dateTime"] = firestore.SERVER_TIMESTAMP
-                db.collection(collection_name).document(doc_id).set(item)
-                print(f"Added {collection_name}: {doc_id}")
+                db.collection(collection_name).document(doc_id).update(item)
+                print(f"Updated {collection_name}: {doc_id}")
             except Exception as e:
-                print(f"Error adding {collection_name}: {doc_id}: {e}")
+                print(f"Error updating {collection_name}: {doc_id}: {e}")
         else:
-            print(f"Skipped {collection_name}: {doc_id} (already exists)")
+            print(f"Skipped {collection_name}: {doc_id} (does not exist)")
 
 # Populate UserProfile and create a mapping of usernames to IDs
 def populate_user_profiles(user_profiles, db):
-    user_profile_map = {}
+    user_profile_map_username = {}
+    user_profile_map_id = {}
     print("Populating UserProfile collection...")
     for profile in user_profiles:
         doc_id = profile["id"]
         if not document_exists("UserProfile", doc_id, db):
             try:
                 db.collection("UserProfile").document(doc_id).set(profile)
-                user_profile_map[profile["username"]] = doc_id
+                user_profile_map_username[profile["username"]] = doc_id
+                user_profile_map_id[doc_id] = doc_id
                 print(f"Added UserProfile: {doc_id}")
             except Exception as e:
                 print(f"Error adding UserProfile: {e}")
         else:
             print(f"Skipped UserProfile: {doc_id} (already exists)")
-    return user_profile_map
+    return user_profile_map_username, user_profile_map_id
 
 # Populate Stores collection
 def populate_stores(stores, db):
@@ -266,13 +272,108 @@ def populate_user_comments(comments, db, user_profile_map):
                 print(f"Warning: No UserProfile found for userID {username}")
                 comment["userID"] = "unknown"
 
+            # Include 'isDummy' if present
+            if "isDummy" not in comment:
+                comment["isDummy"] = True  # Assuming comments are dummy data
+
             try:
                 db.collection("UserComments").document(doc_id).set(comment)
                 print(f"Added UserComment: {doc_id} with userID {comment['userID']}")
             except Exception as e:
-                print(f"Error adding UserComment: {e}")
+                print(f"Error adding UserComment {doc_id}: {e}")
         else:
             print(f"Skipped UserComment: {doc_id} (already exists)")
+            
+# Populate Votes collection
+def populate_votes(votes, db, user_profile_map_id):
+    print("Populating Votes collection...")
+
+    # Mapping from 'itemType' strings to integers
+    item_type_mapping = {
+        "comment": 0,
+        "deal": 1,
+        "review": 2
+    }
+
+    for vote in votes:
+        # Extract necessary fields
+        user_id = vote["userId"]
+        item_id = vote["itemId"]
+        item_type_str = vote["itemType"]
+        vote_type = vote["voteType"]
+
+        # Convert 'itemType' to integer
+        item_type_int = item_type_mapping.get(item_type_str)
+        if item_type_int is None:
+            print(f"Invalid itemType '{item_type_str}' in vote: {vote}")
+            continue
+
+        # Construct document ID
+        doc_id = f"{user_id}_{item_id}_{item_type_int}"
+
+        # Prepare vote data without 'id'
+        vote_data = {
+            "userId": user_id,
+            "itemId": item_id,
+            "voteType": vote_type,
+            "itemType": item_type_int
+        }
+
+        # Include 'isDummy' if present
+        if "isDummy" in vote:
+            vote_data["isDummy"] = vote["isDummy"]
+
+        # Verify userId
+        if user_id not in user_profile_map_id:
+            print(f"Warning: No UserProfile found for userId {user_id}")
+            vote_data["userId"] = "unknown"
+
+        try:
+            db.collection("Votes").document(doc_id).set(vote_data)
+            print(f"Added Vote: {doc_id} with userId {vote_data['userId']}")
+        except Exception as e:
+            print(f"Error adding Vote: {doc_id}: {e}")
+
+
+# Update upvote/downvote counts in UserComments and Deals based on Votes
+def update_vote_counts(data):
+    # Initialize dictionaries to store upvote and downvote counts
+    comment_votes = {}
+    deal_votes = {}
+
+    # Populate the dictionaries with vote counts
+    for vote in data["Votes"]:
+        item_id = vote["itemId"]
+        item_type = vote["itemType"]  # This is now an integer
+        vote_type = vote["voteType"]
+
+        if item_type == 0:  # Comment
+            vote_dict = comment_votes
+        elif item_type == 1:  # Deal
+            vote_dict = deal_votes
+        else:
+            continue  # Skip if itemType is not recognized
+
+        if item_id not in vote_dict:
+            vote_dict[item_id] = {"upvote": 0, "downvote": 0}
+        vote_dict[item_id][vote_type] += 1
+
+    # Update UserComments with vote counts
+    for comment in data["UserComments"]:
+        comment_id = comment["id"]
+        if comment_id in comment_votes:
+            comment["upvote"] = comment_votes[comment_id]["upvote"]
+            comment["downvote"] = comment_votes[comment_id]["downvote"]
+
+    # Update Deals with vote counts
+    for deal in data["Deals"]:
+        deal_id = deal["id"]
+        if deal_id in deal_votes:
+            deal["upvote"] = deal_votes[deal_id]["upvote"]
+            deal["downvote"] = deal_votes[deal_id]["downvote"]
+
+    return data
+
 
 # Create dummy users in Firebase Authentication
 def create_dummy_users(user_profiles):
@@ -292,17 +393,46 @@ def create_dummy_users(user_profiles):
 
 # Main function to initialize data
 def initialize_data(json_file_path):
+    # Ask the user if they want to update existing entries
+    update_existing = input("Do you want to update existing entries from the JSON file? (yes/no): ").strip().lower()
+    if update_existing == "yes":
+        update_existing = True
+    else:
+        update_existing = False
+
+    # Ask the user if they want to process images
+    process_images = input("Do you want to process images (download and upload to Firebase)? (yes/no): ").strip().lower()
+    if process_images == "yes":
+        process_images = True
+    else:
+        process_images = False
+
     # Load JSON data
-    collections = load_and_replace_json(json_file_path)
+    collections = load_and_replace_json(json_file_path, update_existing, process_images)
 
     # Create dummy users in Firebase Authentication
     create_dummy_users(collections["UserProfile"])
 
+    # Create a mapping of usernames to IDs
+    user_profile_map_username, user_profile_map_id = populate_user_profiles(collections["UserProfile"], db)
+
+    # Update vote counts in UserComments and Deals
+    collections = update_vote_counts(collections)
+
+    if update_existing:
+        # Update existing collections
+        update_collection("UserProfile", collections["UserProfile"], db)
+        update_collection("Stores", collections["Stores"], db)
+        update_collection("Deals", collections["Deals"], db)
+        update_collection("UserComments", collections["UserComments"], db)
+        update_collection("Votes", collections["Votes"], db)
+
     # Populate collections
-    user_profile_map = populate_user_profiles(collections["UserProfile"], db)
     populate_stores(collections["Stores"], db)
-    populate_deals(collections["Deals"], db, user_profile_map)
-    populate_user_comments(collections["UserComments"], db, user_profile_map)
+    populate_deals(collections["Deals"], db, user_profile_map_username)
+    populate_user_comments(collections["UserComments"], db, user_profile_map_username)
+    # Update the call to populate_votes
+    populate_votes(collections["Votes"], db, user_profile_map_id)
     print("Data initialization completed.")
 
 # Run the initialization

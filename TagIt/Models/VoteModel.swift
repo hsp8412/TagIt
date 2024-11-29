@@ -14,6 +14,7 @@ struct Vote: Codable {
     let itemId: String
     let voteType: VoteType
     let itemType: ItemType
+    var isDummy: Bool?
 
     enum VoteType: String, Codable {
         case upvote
