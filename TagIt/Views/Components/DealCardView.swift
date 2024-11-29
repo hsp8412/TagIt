@@ -146,7 +146,7 @@ struct DealCardView: View {
     private func fetchCommentCount() {
         guard let dealId = deal.id else { return }
         
-        CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
+        CommentService.shared.getCommentsForItem(itemID: dealId) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let comments):

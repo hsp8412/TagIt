@@ -4,7 +4,6 @@
 //
 //  Created by Peter Tran on 2024-10-21.
 //
-
 import Foundation
 import FirebaseFirestore
 
@@ -12,37 +11,52 @@ import FirebaseFirestore
 class CommentService {
     /// Shared singleton instance of `CommentService`.
     static let shared = CommentService()
-    
+
     /// Firestore database reference.
     private let db = Firestore.firestore()
-    
+
     private init() {}
-    
+
     /**
      Fetches all comments from Firestore.
-     
+
      - Parameters:
         - completion: A closure that returns a `Result` containing an array of `UserComments` on success or an `Error` on failure.
      */
     func getComments(completion: @escaping (Result<[UserComments], Error>) -> Void) {
         db.collection(FirestoreCollections.userComm)
+            .order(by: "dateTime", descending: true) // Order comments by dateTime in descending order
             .getDocuments { snapshot, error in
                 if let error = error {
                     print("[DEBUG] Error fetching comments: \(error.localizedDescription)")
                     completion(.failure(error))
                 } else if let snapshot = snapshot {
                     let comments = snapshot.documents.compactMap { doc -> UserComments? in
-                        try? doc.data(as: UserComments.self)
+                        do {
+                            var comment = try doc.data(as: UserComments.self)
+                            if let timestamp = doc.get("dateTime") as? Timestamp {
+                                // Convert `dateTime` to a human-readable string
+                                comment.date = Utils.timeAgoString(from: timestamp)
+                            } else {
+                                comment.date = "Just now" // Fallback for missing timestamps
+                            }
+                            return comment
+                        } catch {
+                            print("Error decoding UserComments: \(error)")
+                            return nil
+                        }
                     }
                     print("[DEBUG] Fetched \(comments.count) comments")
                     completion(.success(comments))
                 }
             }
     }
-    
+
+
+
     /**
      Fetches a comment by its unique ID from Firestore.
-     
+
      - Parameters:
         - id: The unique identifier for the comment.
         - completion: A closure that returns a `Result` containing `UserComments` on success or an `Error` on failure.
@@ -54,7 +68,10 @@ class CommentService {
                 if let error = error {
                     print("[DEBUG] Error fetching comment by ID: \(error.localizedDescription)")
                     completion(.failure(error))
-                } else if let snapshot = snapshot, let comment = try? snapshot.data(as: UserComments.self) {
+                } else if let snapshot = snapshot, var comment = try? snapshot.data(as: UserComments.self) {
+                    if let timestamp = comment.dateTime {
+                        comment.date = Utils.timeAgoString(from: timestamp)
+                    }
                     print("[DEBUG] Fetched comment with ID \(id)")
                     completion(.success(comment))
                 } else {
@@ -64,7 +81,7 @@ class CommentService {
                 }
             }
     }
-    
+
     /**
      Fetches all comments for a specific item from Firestore based on the provided item ID and comment type.
 
@@ -73,24 +90,37 @@ class CommentService {
         - commentType: The type of the comment (e.g., `.deal`, `.barcodeItemReview`).
         - completion: A closure that returns a `Result` containing an array of `UserComments` on success or an `Error` on failure.
      */
-    func getCommentsForItem(itemID: String, commentType: UserComments.CommentType, completion: @escaping (Result<[UserComments], Error>) -> Void) {
+    func getCommentsForItem(itemID: String, completion: @escaping (Result<[UserComments], Error>) -> Void) {
         db.collection(FirestoreCollections.userComm)
             .whereField("itemID", isEqualTo: itemID)
-            .whereField("commentType", isEqualTo: commentType.rawValue)
+            .order(by: "dateTime", descending: true) // Order by dateTime
             .getDocuments { snapshot, error in
                 if let error = error {
                     print("[DEBUG] Error fetching comments for item \(itemID): \(error.localizedDescription)")
                     completion(.failure(error))
                 } else if let snapshot = snapshot {
                     let comments = snapshot.documents.compactMap { doc -> UserComments? in
-                        try? doc.data(as: UserComments.self)
+                        do {
+                            var comment = try doc.data(as: UserComments.self)
+                            if let timestamp = doc.get("dateTime") as? Timestamp {
+                                comment.date = Utils.timeAgoString(from: timestamp)
+                            } else {
+                                comment.date = "Just now"
+                            }
+                            return comment
+                        } catch {
+                            print("Error decoding UserComments: \(error)")
+                            return nil
+                        }
                     }
                     print("[DEBUG] Fetched \(comments.count) comments for item \(itemID)")
                     completion(.success(comments))
                 }
             }
     }
-    
+
+
+
     /**
      Adds a new comment to Firestore and updates the user's total comments and ranking points.
 
@@ -109,12 +139,12 @@ class CommentService {
                 completion(.failure(error))
             } else {
                 print("[DEBUG] Successfully added new comment")
-                // Increment the user's totalComments
-                self.incrementTotalComments(forUserId: newComment.userID, completion: completion)
+                completion(.success(()))
             }
         }
     }
-    
+
+
     /**
      Increments the `totalComments` field for a user in Firestore and updates their ranking points.
 
@@ -139,7 +169,7 @@ class CommentService {
             }
         }
     }
-    
+
     /**
      Updates the `rankingPoints` field for a user based on their updated statistics.
 
@@ -176,7 +206,7 @@ class CommentService {
             }
         }
     }
-    
+
     /**
      Fetches all unique deals commented on by a specific user.
 
@@ -200,4 +230,3 @@ class CommentService {
             }
     }
 }
-

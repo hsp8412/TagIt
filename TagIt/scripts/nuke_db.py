@@ -1,8 +1,7 @@
 import firebase_admin
-from firebase_admin import credentials, firestore, storage
+from firebase_admin import credentials, firestore, storage, auth
 
 # Initialize Firebase Admin SDK
-
 SERVICE_ACCOUNT_PATH = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
 firebase_admin.initialize_app(cred, {'storageBucket': 'tagit-39035.appspot.com'})
@@ -72,8 +71,27 @@ def delete_files_in_folders():
     except Exception as e:
         print(f"Error deleting files in folders: {e}")
 
+def delete_all_users():
+    """
+    Deletes all users in Firebase Authentication.
+    """
+    try:
+        print("Fetching users from Firebase Authentication...")
+        users = auth.list_users().iterate_all()
+        deleted_count = 0
+        for user in users:
+            try:
+                print(f"Deleting user: {user.uid}")
+                auth.delete_user(user.uid)
+                deleted_count += 1
+            except Exception as e:
+                print(f"Error deleting user {user.uid}: {e}")
+        print(f"Deleted {deleted_count} users from Firebase Authentication.")
+    except Exception as e:
+        print(f"Error fetching users from Firebase Authentication: {e}")
+
 if __name__ == "__main__":
-    print("WARNING: THIS WILL DELETE ALL DOCUMENTS AND FILES IN THE TAG IT DB AND STORAGE.")
+    print("WARNING: THIS WILL DELETE ALL DOCUMENTS, FILES, AND USERS IN THE TAG IT DB AND STORAGE.")
     confirmation = input("Are you sure you want to proceed? Type 'yes' to confirm: ").strip().lower()
     if confirmation == 'yes':
         for collection in collections_to_clear:
@@ -83,6 +101,9 @@ if __name__ == "__main__":
         print("Clearing storage folders...")
         delete_files_in_folders()
 
-        print("All specified collections and storage folders have been cleared.")
+        print("Deleting users from Firebase Authentication...")
+        delete_all_users()
+
+        print("All specified collections, storage folders, and users have been cleared.")
     else:
-        print("Operation canceled. No documents or files were deleted.")
+        print("Operation canceled. No documents, files, or users were deleted.")

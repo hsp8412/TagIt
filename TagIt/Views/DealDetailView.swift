@@ -103,7 +103,7 @@ struct DealDetailView: View {
         }
 
         print("Fetching comment count for deal ID: \(dealId)")
-        CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
+        CommentService.shared.getCommentsForItem(itemID: dealId) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedComments):
@@ -115,6 +115,7 @@ struct DealDetailView: View {
         }
     }
 
+
     private func fetchComments() {
         guard let dealId = deal.id else {
             print("Error: Deal ID is nil")
@@ -122,7 +123,7 @@ struct DealDetailView: View {
         }
 
         isLoading = true
-        CommentService.shared.getCommentsForItem(itemID: dealId, commentType: .deal) { result in
+        CommentService.shared.getCommentsForItem(itemID: dealId) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedComments):
@@ -136,6 +137,7 @@ struct DealDetailView: View {
             }
         }
     }
+
 
     private func fetchVotesForComment(_ comment: UserComments) {
         guard let commentId = comment.id else {
@@ -171,7 +173,9 @@ struct DealDetailView: View {
             commentText: self.newComment,
             commentType: .deal,
             upvote: 0,
-            downvote: 0
+            downvote: 0,
+            date: "Just now",
+            dateTime: nil
         )
 
         CommentService.shared.addComment(newComment: commentToPost) { result in
@@ -179,13 +183,14 @@ struct DealDetailView: View {
                 switch result {
                 case .success:
                     self.newComment = ""
-                    self.fetchComments()
+                    self.fetchComments() // Reload comments to include the new one
                 case .failure(let error):
                     print("Error posting comment: \(error.localizedDescription)")
                 }
             }
         }
     }
+
 
     private func updateVoteCounts() {
         guard let dealId = deal.id else {

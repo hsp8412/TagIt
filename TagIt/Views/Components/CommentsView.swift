@@ -5,6 +5,7 @@
 //  Created by Chenghou Si on 2024-10-21.
 //
 import SwiftUI
+import FirebaseFirestore
 
 struct CommentsView: View {
     @State var comments: [UserComments]
@@ -48,8 +49,40 @@ struct CommentsView: View {
 
 #Preview {
     CommentsView(comments: [
-        UserComments(id: "CommentID1", userID: "2", itemID: "DealID1", commentText: "This is the first comment.", commentType: .deal, upvote: 6, downvote: 7),
-        UserComments(id: "CommentID2", userID: "2", itemID: "DealID1", commentText: "This is another insightful comment.", commentType: .deal, upvote: 8, downvote: 9),
-        UserComments(id: "CommentID3", userID: "2", itemID: "DealID1", commentText: "Here is yet another comment.", commentType: .deal, upvote: 10, downvote: 11)
+        UserComments(
+            id: "CommentID1",
+            userID: "2",
+            itemID: "DealID1",
+            commentText: "This is the first comment.",
+            commentType: .deal,
+            upvote: 6,
+            downvote: 7,
+            date: Utils.timeAgoString(from: Timestamp(date: Date().addingTimeInterval(-3600))), // 1 hour ago
+            dateTime: Timestamp(date: Date().addingTimeInterval(-3600))
+        ),
+        UserComments(
+            id: "CommentID2",
+            userID: "2",
+            itemID: "DealID1",
+            commentText: "This is another insightful comment.",
+            commentType: .deal,
+            upvote: 8,
+            downvote: 9,
+            date: Utils.timeAgoString(from: Timestamp(date: Date().addingTimeInterval(-7200))), // 2 hours ago
+            dateTime: Timestamp(date: Date().addingTimeInterval(-7200))
+        ),
+        UserComments(
+            id: "CommentID3",
+            userID: "2",
+            itemID: "DealID1",
+            commentText: "Here is yet another comment.",
+            commentType: .deal,
+            upvote: 10,
+            downvote: 11,
+            date: Utils.timeAgoString(from: Timestamp(date: Date().addingTimeInterval(-10800))), // 3 hours ago
+            dateTime: Timestamp(date: Date().addingTimeInterval(-10800))
+        )
     ])
 }
+
+

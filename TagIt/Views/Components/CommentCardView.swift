@@ -5,51 +5,44 @@
 //  Created by Chenghou Si on 2024-10-21.
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 struct CommentCardView: View {
     @State var comment: UserComments
     @State var user: UserProfile? // Dynamically loaded user
     @State var curUserID: String?
     @State private var isExpanded: Bool = false // Tracks whether the card is expanded
-    let time = "1h" // Placeholder for now, can be dynamically calculated from the comment timestamp
+    @State private var errorMessage: String?
 
     private let maxTextLength: Int = 255 // Maximum visible characters before truncation
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // User Info Row
-            HStack(spacing: 10) {
-                // User Avatar
-                if let user = user, let avatarURL = user.avatarURL, let url = URL(string: avatarURL) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 40, height: 40)
-                                .clipShape(Circle())
-                        } else {
-                            ProgressView()
-                                .frame(width: 40, height: 40)
-                                .clipShape(Circle())
-                        }
+            HStack {
+                if let user = user {
+                    UserAvatarView(avatarURL: user.avatarURL ?? "")
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(user.displayName ?? "Unknown User")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.black)
+
+                        // Display formatted date
+                        Text(comment.date ?? "Just now")
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
                     }
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)")
+                        .font(.caption)
+                        .foregroundColor(.red)
                 } else {
-                    Circle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 40, height: 40) // Placeholder avatar
-                }
-
-                // User Name and Timestamp
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(user?.displayName ?? "Loading...")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.black)
-                        .lineLimit(1)
-
-                    Text(time)
-                        .font(.system(size: 14))
-                        .foregroundColor(.gray)
+                    ProgressView()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
                 }
 
                 Spacer()
@@ -83,16 +76,16 @@ struct CommentCardView: View {
             HStack {
                 Spacer() // Push voting controls to the right
 
-                if (curUserID == nil) {
-                    ProgressView()
-                } else {
+                if let curUserID = curUserID {
                     UpDownVoteView(
-                        userId: curUserID!, // Use the fetched user ID
+                        userId: curUserID,
                         type: .comment,
-                        id: comment.id ?? "", // Ensure `comment.id` is unwrapped
-                        upVote: $comment.upvote, // Binding for upvotes
-                        downVote: $comment.downvote // Binding for downvotes
+                        id: comment.id ?? "",
+                        upVote: $comment.upvote,
+                        downVote: $comment.downvote
                     )
+                } else {
+                    ProgressView()
                 }
             }
         }
@@ -104,40 +97,34 @@ struct CommentCardView: View {
         )
         .padding(.horizontal)
         .onAppear {
+            updateCommentDate() // Update the comment date on appear
             fetchUserForComment()
             fetchVotesForComment()
             fetchCurUserID()
         }
     }
-    
+
     private func fetchCurUserID() {
         if let curUser = Auth.auth().currentUser {
             curUserID = curUser.uid
-        } else {
-            print("[DEBUG] User does not auth")
         }
     }
 
     private func fetchUserForComment() {
-        let userId = comment.userID
-
-        UserService.shared.getUserById(id: userId) { result in
+        UserService.shared.getUserById(id: comment.userID) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedUser):
                     self.user = fetchedUser
                 case .failure(let error):
-                    print("Error fetching user for comment: \(error.localizedDescription)")
+                    self.errorMessage = error.localizedDescription
                 }
             }
         }
     }
 
     private func fetchVotesForComment() {
-        guard let commentId = comment.id else {
-            print("Error: Comment ID is nil")
-            return
-        }
+        guard let commentId = comment.id else { return }
 
         VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
             DispatchQueue.main.async {
@@ -151,6 +138,19 @@ struct CommentCardView: View {
             }
         }
     }
+
+    private func updateCommentDate() {
+        if let timestamp = comment.dateTime {
+            // Check the raw date value
+            print("Raw dateTime: \(timestamp.dateValue())")
+            
+            // Generate the time ago string
+            comment.date = Utils.timeAgoString(from: timestamp)
+        } else {
+            comment.date = "Just now"
+        }
+    }
+
 }
 
 #Preview {
@@ -162,7 +162,10 @@ struct CommentCardView: View {
             commentText: "This is a sample comment. It can be multiline and styled appropriately. If the text is too long, it will be truncated and expandable with a 'Show More' option.",
             commentType: .deal,
             upvote: 6,
-            downvote: 7
+            downvote: 7,
+            date: Utils.timeAgoString(from: Timestamp(date: Date().addingTimeInterval(-3600))),
+            dateTime: Timestamp(date: Date().addingTimeInterval(-3600)) // 1 hour ago
         )
     )
 }
+

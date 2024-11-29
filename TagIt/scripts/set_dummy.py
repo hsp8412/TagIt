@@ -7,6 +7,7 @@ import requests
 from io import BytesIO
 import uuid
 import time
+import random
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -78,7 +79,6 @@ def generate_date_range():
 
     return date_range
 
-
 # Load JSON file and replace placeholders
 def load_and_replace_json(file_path):
     with open(file_path, "r") as f:
@@ -101,7 +101,16 @@ def load_and_replace_json(file_path):
         else:
             print(f"Skipping deal {deal['id']} due to image download error.")
 
-    return replace_timestamps(data)
+    # Replace timestamps in Deals
+    data = replace_timestamps(data)
+
+    # Extract deal timestamps for comment timestamp generation
+    deal_timestamps = {deal["id"]: deal["dateTime"] for deal in data["Deals"]}
+
+    # Replace timestamps in UserComments based on deal timestamps
+    data = replace_comment_timestamps(data, deal_timestamps)
+
+    return data
 
 # Recursively replace `__SERVER_TIMESTAMP__` with generated dates
 def replace_timestamps(data):
@@ -126,6 +135,35 @@ def replace_timestamps(data):
         return value
 
     return replace(data)
+
+# Replace comment timestamps based on deal timestamps
+def replace_comment_timestamps(data, deal_timestamps):
+    def replace(value, deal_timestamp=None):
+        if isinstance(value, dict):
+            return {key: replace(val, deal_timestamp) for key, val in value.items()}
+        elif isinstance(value, list):
+            return [replace(item, deal_timestamp) for item in value]
+        elif value == "__SERVER_TIMESTAMP__":
+            if deal_timestamp:
+                # Generate a random timestamp within 12 hours after the deal's timestamp
+                deal_datetime = datetime.fromisoformat(deal_timestamp)
+                random_hours = random.randint(1, 12)  # Randomly add between 1 and 12 hours
+                comment_datetime = deal_datetime + timedelta(hours=random_hours)
+                return comment_datetime
+            else:
+                # Fallback if no deal timestamp exists
+                return datetime.now()
+        return value
+
+    # Replace timestamps in UserComments based on deal timestamps
+    for comment in data["UserComments"]:
+        deal_id = comment["itemID"]
+        deal_timestamp = deal_timestamps.get(deal_id)
+        if deal_timestamp:
+            comment["dateTime"] = replace(comment["dateTime"], deal_timestamp)
+
+    return data
+
 
 # Check if document already exists before adding
 def document_exists(collection, doc_id, db):
