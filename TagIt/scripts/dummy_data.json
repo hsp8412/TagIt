@@ -668,6 +668,38 @@
       "downvote": 1,
       "dateTime": "__SERVER_TIMESTAMP__",
       "isDummy": true
+    },
+    {
+      "id": "deal11",
+      "userID": "PIKA_BLYAT",
+      "photoURL": "https://i.redd.it/huesr3qfros91.jpg",
+      "productText": "Finally Found Horizon Organic Whole Milk!",
+      "postText": "It took forever to find this brand, just spotted in Safeway Market Mall!",
+      "price": 5.0,
+      "location": "Safeway Market Mall Calgary",
+      "locationId": "loc818",
+      "date": "2024-11-28",
+      "commentIDs": [],
+      "upvote": 10,
+      "downvote": 5,
+      "dateTime": "__SERVER_TIMESTAMP__",
+      "isDummy": true
+    },
+    {
+      "id": "deal12",
+      "userID": "hopeful_shopper",
+      "photoURL": "https://www.ctvnews.ca/content/dam/ctvnews/en/images/2024/3/12/bagged-milk-1-6804825-1710273556540.png",
+      "productText": "Milk In a Bag!",
+      "postText": "Who even buys milk in a bag anymore?",
+      "price": 4.5,
+      "location": "FreshCo Brentwood",
+      "locationId": "loc456",
+      "date": "2024-11-29",
+      "commentIDs": [],
+      "upvote": 5,
+      "downvote": 5,
+      "dateTime": "__SERVER_TIMESTAMP__",
+      "isDummy": true
     }
   ],
   "UserComments": [
@@ -1149,6 +1181,54 @@
       "dateTime": "__SERVER_TIMESTAMP__",
       "itemID": "deal10",
       "userID": "banana_pref",
+      "isDummy": true
+    },
+    {
+      "id": "comment41",
+      "commentText": "Finally found this brand! It's been so hard to get my hands on it. Definitely worth the price.",
+      "downvote": 0,
+      "commentType": "deal",
+      "upvote": 8,
+      "date": "2024-11-28",
+      "dateTime": "__SERVER_TIMESTAMP__",
+      "itemID": "deal11",
+      "userID": "dairydelight",
+      "isDummy": true
+    },
+    {
+      "id": "comment42",
+      "commentText": "I've been looking for this milk for ages. Thanks for sharing the deal!",
+      "downvote": 0,
+      "commentType": "deal",
+      "upvote": 7,
+      "date": "2024-11-28",
+      "dateTime": "__SERVER_TIMESTAMP__",
+      "itemID": "deal11",
+      "userID": "cereal_fanatic",
+      "isDummy": true
+    },
+    {
+      "id": "comment43",
+      "commentText": "Milk in a bag? Who even buys this anymore? Feels like a step back in time.",
+      "downvote": 3,
+      "commentType": "deal",
+      "upvote": 4,
+      "date": "2024-11-29",
+      "dateTime": "__SERVER_TIMESTAMP__",
+      "itemID": "deal12",
+      "userID": "coffee_addict",
+      "isDummy": true
+    },
+    {
+      "id": "comment44",
+      "commentText": "Interesting find! Might give it a try just for the nostalgia.",
+      "downvote": 1,
+      "commentType": "deal",
+      "upvote": 6,
+      "date": "2024-11-29",
+      "dateTime": "__SERVER_TIMESTAMP__",
+      "itemID": "deal12",
+      "userID": "banana_fanatic",
       "isDummy": true
     }
   ]

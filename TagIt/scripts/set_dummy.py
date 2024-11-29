@@ -80,7 +80,7 @@ def generate_date_range():
     return date_range
 
 # Load JSON file and replace placeholders
-def load_and_replace_json(file_path, update_existing, process_images):
+def load_and_replace_json(file_path, update_existing, process_images, db):
     with open(file_path, "r") as f:
         data = json.load(f)
 
@@ -88,20 +88,28 @@ def load_and_replace_json(file_path, update_existing, process_images):
     if process_images:
         print("Processing images...")
         for profile in data["UserProfile"]:
-            image_content = download_image(profile["avatarURL"])
-            if image_content:
-                fileName = f"{uuid.uuid4()}"
-                profile["avatarURL"] = upload_image_to_storage(image_content, ImageFolder.AVATAR, fileName)
+            doc_id = profile["id"]
+            if not document_exists("UserProfile", doc_id, db) or update_existing:
+                image_content = download_image(profile["avatarURL"])
+                if image_content:
+                    fileName = f"{uuid.uuid4()}"
+                    profile["avatarURL"] = upload_image_to_storage(image_content, ImageFolder.AVATAR, fileName)
+                else:
+                    print(f"Skipping profile {doc_id} due to image download error.")
             else:
-                print(f"Skipping profile {profile['id']} due to image download error.")
+                print(f"Skipping image processing for existing UserProfile: {doc_id}")
 
         for deal in data["Deals"]:
-            image_content = download_image(deal["photoURL"])
-            if image_content:
-                fileName = f"{uuid.uuid4()}"
-                deal["photoURL"] = upload_image_to_storage(image_content, ImageFolder.DEAL_IMAGE, fileName)
+            doc_id = deal["id"]
+            if not document_exists("Deals", doc_id, db) or update_existing:
+                image_content = download_image(deal["photoURL"])
+                if image_content:
+                    fileName = f"{uuid.uuid4()}"
+                    deal["photoURL"] = upload_image_to_storage(image_content, ImageFolder.DEAL_IMAGE, fileName)
+                else:
+                    print(f"Skipping deal {doc_id} due to image download error.")
             else:
-                print(f"Skipping deal {deal['id']} due to image download error.")
+                print(f"Skipping image processing for existing Deal: {doc_id}")
     else:
         print("Skipping image processing as per user choice.")
 
@@ -115,6 +123,7 @@ def load_and_replace_json(file_path, update_existing, process_images):
     data = replace_comment_timestamps(data, deal_timestamps)
 
     return data
+
 
 # Recursively replace `__SERVER_TIMESTAMP__` with generated dates
 def replace_timestamps(deals):
@@ -469,7 +478,7 @@ def initialize_data(json_file_path):
     process_images = process_images == "yes"
 
     # Load JSON data
-    collections = load_and_replace_json(json_file_path, update_existing, process_images)
+    collections = load_and_replace_json(json_file_path, update_existing, process_images, db)
 
     # Create dummy users in Firebase Authentication
     create_dummy_users(collections["UserProfile"])

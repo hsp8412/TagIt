@@ -19,7 +19,7 @@ struct TopNavView: View {
                 .frame(width: 40, height: 40)
                 .padding(.leading, 16)
                 .foregroundStyle(.green)
-            Text("Tagit")
+            Text("TagIt")
                 .font(.system(size: 25))
                 .fontWeight(.bold)
                 .foregroundColor(Color.gray)
