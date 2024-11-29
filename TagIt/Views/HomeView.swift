@@ -12,7 +12,7 @@ struct HomeView: View {
     @StateObject var viewModel = HomeViewModel()
     @State private var search: String = ""
     @State private var selectedFilter: FilterType? = nil // Track the selected filter
-
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
@@ -100,6 +100,10 @@ struct HomeView: View {
                 viewModel.resetFilters()
                 viewModel.fetchAllDeals()
             }
+            .background(Color.white // <-- this is also a view
+                .onTapGesture { // <-- add tap gesture to it
+                    UIApplication.shared.hideKeyboard()
+                })
         }
     }
 }

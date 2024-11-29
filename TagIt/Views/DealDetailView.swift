@@ -15,13 +15,16 @@ struct DealDetailView: View {
     @State private var errorMessage: String?
     @State private var showAllComments: Bool = false // Toggles showing all comments
     @State private var totalComments: Int = 0 // Tracks the total number of comments
-
+    
     var body: some View {
         VStack {
             ScrollView {
                 // Deal Information
                 DealInfoView(deal: $deal)
-
+                    .onTapGesture {
+                        UIApplication.shared.hideKeyboard()
+                    }
+                
                 // Comments Section Header
                 HStack {
                     Text(showAllComments ? "Hide Comments" : "View all \(totalComments) comments")
@@ -35,12 +38,12 @@ struct DealDetailView: View {
                                 }
                             }
                         }
-
+                    
                     Spacer()
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
-
+                
                 // Comments List
                 if isLoading && showAllComments {
                     ProgressView("Loading comments...")
@@ -63,19 +66,22 @@ struct DealDetailView: View {
                                     .onAppear {
                                         fetchVotesForComment(comment)
                                     }
+                                    .onTapGesture {
+                                        UIApplication.shared.hideKeyboard()
+                                    }
                             }
                         }
                         .padding(.horizontal)
                     }
                 }
             }
-
+            
             // New Comment Bar
             HStack {
                 Image(systemName: "lasso.and.sparkles")
                     .foregroundColor(.gray)
                     .padding(.leading)
-
+                
                 TextField("New Comment", text: $newComment)
                     .autocapitalization(.none)
                     .onSubmit {
@@ -94,14 +100,18 @@ struct DealDetailView: View {
             updateVoteCounts()
             fetchCommentCount() // Fetch total comment count when the view appears
         }
+        .background(Color.white // <-- this is also a view
+            .onTapGesture { // <-- add tap gesture to it
+                UIApplication.shared.hideKeyboard()
+            })
     }
-
+    
     private func fetchCommentCount() {
         guard let dealId = deal.id else {
             print("Error: Deal ID is nil")
             return
         }
-
+        
         print("Fetching comment count for deal ID: \(dealId)")
         CommentService.shared.getCommentsForItem(itemID: dealId) { result in
             DispatchQueue.main.async {
@@ -114,14 +124,13 @@ struct DealDetailView: View {
             }
         }
     }
-
-
+    
     private func fetchComments() {
         guard let dealId = deal.id else {
             print("Error: Deal ID is nil")
             return
         }
-
+        
         isLoading = true
         CommentService.shared.getCommentsForItem(itemID: dealId) { result in
             DispatchQueue.main.async {
@@ -137,13 +146,12 @@ struct DealDetailView: View {
             }
         }
     }
-
-
+    
     private func fetchVotesForComment(_ comment: UserComments) {
         guard let commentId = comment.id else {
             return
         }
-
+        
         VoteService.shared.getVoteCounts(itemId: commentId, itemType: .comment) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -160,12 +168,12 @@ struct DealDetailView: View {
             }
         }
     }
-
+    
     private func postComment() {
         guard !newComment.isEmpty else {
             return
         }
-
+        
         let commentToPost = UserComments(
             id: nil,
             userID: AuthService.shared.getCurrentUserID() ?? "",
@@ -177,7 +185,7 @@ struct DealDetailView: View {
             date: "Just now",
             dateTime: nil
         )
-
+        
         CommentService.shared.addComment(newComment: commentToPost) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -190,13 +198,12 @@ struct DealDetailView: View {
             }
         }
     }
-
-
+    
     private func updateVoteCounts() {
         guard let dealId = deal.id else {
             return
         }
-
+        
         VoteService.shared.getVoteCounts(itemId: dealId, itemType: .deal) { result in
             DispatchQueue.main.async {
                 switch result {

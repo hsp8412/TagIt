@@ -13,6 +13,10 @@ struct RegisterView: View {
         ZStack{
             Color.green
                 .ignoresSafeArea()
+                .onTapGesture {
+                    // Dismiss the keyboard when tapping outside
+                    UIApplication.shared.hideKeyboard()
+                }
             VStack{
                 Text("Sign up")
                     .font(.system(size:40))

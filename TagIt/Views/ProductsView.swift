@@ -20,7 +20,7 @@ struct ProductsView: View {
     @State var isProfileLoading: Bool = true
     @State var isSavedDealsLoading: Bool = true
     @State var errorMessage: String?
-
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -68,6 +68,10 @@ struct ProductsView: View {
                     Text("Error: \(errorMessage)")
                         .padding(.horizontal) // Added horizontal padding for better alignment
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.white // <-- this is also a view
+                            .onTapGesture { // <-- add tap gesture to it
+                                UIApplication.shared.hideKeyboard()
+                            })
                 } else {
                     ScrollView {
                         if shownDeals.isEmpty {
@@ -78,12 +82,13 @@ struct ProductsView: View {
                                     .foregroundColor(.gray)
                             }
                             .frame(maxHeight: .infinity)
+                            .background(Color.white // <-- this is also a view
+                                .onTapGesture { // <-- add tap gesture to it
+                                    UIApplication.shared.hideKeyboard()
+                                })
                         } else {
                             VStack(alignment: .leading, spacing: 30) {
                                 ForEach(shownDeals) { deal in
-//                                    SwipeableDealCardView(deal: deal, swipedDealID: $swipedDealID, deleteAction: {
-//                                        delSavedDeal(deal: deal)
-//                                    })
                                     NavigationLink(destination: DealDetailView(deal: deal)) {
                                         DealCardView1(deal: deal)
                                             .background(Color.white)
@@ -95,7 +100,10 @@ struct ProductsView: View {
                                             }
                                     }
                                 }
-                            }
+                            }.background(Color.white // <-- this is also a view
+                                .onTapGesture { // <-- add tap gesture to it
+                                    UIApplication.shared.hideKeyboard()
+                                })
                         }
                         
                     }
@@ -122,7 +130,11 @@ struct ProductsView: View {
                 // Fetch saved deal list
                 fetchSavedDeals()
             }
-        }
+            
+        }.background(Color.white // <-- this is also a view
+            .onTapGesture { // <-- add tap gesture to it
+                UIApplication.shared.hideKeyboard()
+            })
     }
     
     private func searchSavedDeals(searchText: String) {
@@ -149,7 +161,7 @@ struct ProductsView: View {
     
     private func fetchSavedDeals() {
         isSavedDealsLoading = true
-
+        
         DealService.shared.getSavedDealsByUserID(userID: self.userID!) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -185,66 +197,6 @@ struct ProductsView: View {
     }
 }
 
-struct SwipeableDealCardView: View {
-    let deal: Deal
-    @Binding var swipedDealID: String?
-    let deleteAction: () -> Void
-
-    @State private var offset: CGFloat = 0
-    @GestureState private var isDragging: Bool = false
-
-    var body: some View {
-        ZStack {
-            // Background swipe actions
-            HStack {
-                Spacer()
-                Button(action: deleteAction) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.white)
-                        .frame(width: 80, height: 200)
-                        .background(Color.red)
-                        .cornerRadius(10)
-                }
-            }
-            .padding(.horizontal)
-
-            // Foreground content
-            DealCardView(deal: deal)
-                .frame(maxWidth: .infinity, minHeight: 200)
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 2)
-                .offset(x: offset)
-                .gesture(
-                    DragGesture()
-                        .onChanged { gesture in
-                            if gesture.translation.width < 0 { // Swipe left
-                                offset = max(gesture.translation.width, -80) // Limit swipe to 80 points
-                            }
-                        }
-                        .onEnded { gesture in
-                            if gesture.translation.width < -50 { // If swiped enough
-                                withAnimation {
-                                    swipedDealID = deal.id
-                                    offset = -80
-                                }
-                            } else {
-                                withAnimation {
-                                    offset = 0
-                                }
-                            }
-                        }
-                )
-        }
-        .onChange(of: swipedDealID) { oldValue, newValue in
-            if newValue != deal.id {
-                withAnimation {
-                    offset = 0
-                }
-            }
-        }
-    }
-}
 
 struct DealCardView1: View {
     let deal: Deal

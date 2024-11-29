@@ -13,7 +13,7 @@ struct DealInfoView: View {
     @State private var voteErrorMessage: String?
     @State private var currentUserId: String? = nil
     @State private var isPhotoExpanded: Bool = false // State to toggle photo expansion
-
+    
     var body: some View {
         VStack(spacing: 15) {
             
@@ -29,6 +29,7 @@ struct DealInfoView: View {
                             .contentShape(Rectangle()) // Restrict gesture area to the image
                             .onTapGesture {
                                 isPhotoExpanded = true // Expand the photo on tap
+                                UIApplication.shared.hideKeyboard()
                             }
                     } else {
                         ProgressView()
@@ -39,12 +40,18 @@ struct DealInfoView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-            }
+                .onTapGesture {
+                    UIApplication.shared.hideKeyboard()
+                }
+            } .background(Color.white // <-- this is also a view
+                .onTapGesture { // <-- add tap gesture to it
+                    UIApplication.shared.hideKeyboard()
+                })
             .padding(.bottom, 10)
-
+            
             Divider()
                 .background(Color.gray.opacity(0.5))
-
+            
             // User Info Section
             ZStack(alignment: .topTrailing) {
                 VStack(alignment: .leading, spacing: 10) {
@@ -61,30 +68,30 @@ struct DealInfoView: View {
                             UserAvatarView(avatarURL: user?.avatarURL ?? "")
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
-
+                            
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(user?.displayName ?? "Unknown User")
                                     .font(.system(size: 16, weight: .semibold))
                                     .foregroundColor(.black)
-
+                                
                                 Text(deal.date)
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                             }
                         }
                     }
-
+                    
                     // Product Details Section
                     VStack(alignment: .leading, spacing: 8) {
                         Text(deal.productText)
                             .font(.headline)
                             .foregroundColor(.black)
-
+                        
                         Text(String(format: "$%.2f", deal.price))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.red)
                     }
-
+                    
                     // Post Text
                     Text("\"\(deal.postText)\"")
                         .italic()
@@ -92,7 +99,7 @@ struct DealInfoView: View {
                         .foregroundColor(.gray)
                         .lineLimit(3)
                         .multilineTextAlignment(.leading)
-
+                    
                     // Location and Voting Section
                     HStack {
                         HStack(spacing: 5) {
@@ -102,9 +109,9 @@ struct DealInfoView: View {
                                 .font(.system(size: 14))
                                 .foregroundColor(.green)
                         }
-
+                        
                         Spacer()
-
+                        
                         if let userId = currentUserId {
                             UpDownVoteView(
                                 userId: userId,
@@ -119,7 +126,7 @@ struct DealInfoView: View {
                     }
                 }
                 .padding(10)
-
+                
                 HStack {
                     Spacer()
                     Button(action: {
@@ -142,7 +149,7 @@ struct DealInfoView: View {
                                 }
                             }
                         }
-
+                        
                         saveDeal()
                     }) {
                         Image(systemName: isSaved ? "heart.fill" : "heart")
@@ -153,15 +160,15 @@ struct DealInfoView: View {
                             .offset(y: jump ? -20 : 0) // Move up when jumping
                     }
                     .buttonStyle(PlainButtonStyle())
-
-
-
-
-
-
+                    
+                    
+                    
+                    
+                    
+                    
                 }
                 .padding(.trailing)
-
+                
             }
             .padding(15)
             .background(
@@ -170,7 +177,7 @@ struct DealInfoView: View {
                     .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 5)
             )
             .padding(.horizontal, 20)
-
+            
         }
         .onAppear {
             fetchCurrentUserProfile()
@@ -180,15 +187,15 @@ struct DealInfoView: View {
             PhotoFullScreenView(imageURL: deal.photoURL, isPresented: $isPhotoExpanded)
         }
     }
-
+    
     struct PhotoFullScreenView: View {
         let imageURL: String
         @Binding var isPresented: Bool
-
+        
         var body: some View {
             ZStack(alignment: .topTrailing) {
                 Color.black.edgesIgnoringSafeArea(.all)
-
+                
                 AsyncImage(url: URL(string: imageURL)) { phase in
                     if let image = phase.image {
                         image
@@ -202,7 +209,7 @@ struct DealInfoView: View {
                             .background(Color.black)
                     }
                 }
-
+                
                 // Close Button
                 Button(action: {
                     isPresented = false
@@ -215,7 +222,7 @@ struct DealInfoView: View {
             }
         }
     }
-
+    
     // Fetch the current user's profile
     private func fetchUserProfile() {
         isProfileLoading = true
@@ -234,11 +241,11 @@ struct DealInfoView: View {
             }
         }
     }
-
+    
     // Fetch the current user ID using Firebase Authentication
     private func fetchCurrentUserProfile() {
         isVoteLoading = true
-
+        
         if let currentUser = Auth.auth().currentUser {
             self.currentUserId = currentUser.uid
             
@@ -266,7 +273,7 @@ struct DealInfoView: View {
             self.voteErrorMessage = "User not authenticated."
         }
     }
-
+    
     // Save deal
     private func saveDeal() {
         if isSaved {

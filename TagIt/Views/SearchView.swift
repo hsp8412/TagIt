@@ -11,12 +11,15 @@ struct SearchView: View {
     @StateObject var viewModel: SearchViewModel = SearchViewModel()
     @State private var isPresent: Bool = false
     @State private var showWarning: Bool = false
-
+    
     var body: some View {
         NavigationStack {
             VStack {
                 ZStack {
                     Color(UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1))
+                        .onTapGesture { // <-- add tap gesture to it
+                            UIApplication.shared.hideKeyboard()
+                        }
                     VStack {
                         GradientTitle(
                             icon: "magnifyingglass.circle.fill",
