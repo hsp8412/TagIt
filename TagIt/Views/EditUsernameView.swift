@@ -42,6 +42,10 @@ struct EditUsernameView: View {
             Spacer()
         }
         .padding()
+        .background(Color.white // <-- this is also a view
+            .onTapGesture { // <-- add tap gesture to it
+                UIApplication.shared.hideKeyboard()
+            })
     }
 }
 

@@ -20,7 +20,7 @@ struct ProductsView: View {
     @State var isProfileLoading: Bool = true
     @State var isSavedDealsLoading: Bool = true
     @State var errorMessage: String?
-
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -68,6 +68,10 @@ struct ProductsView: View {
                     Text("Error: \(errorMessage)")
                         .padding(.horizontal) // Added horizontal padding for better alignment
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.white // <-- this is also a view
+                            .onTapGesture { // <-- add tap gesture to it
+                                UIApplication.shared.hideKeyboard()
+                            })
                 } else {
                     ScrollView {
                         if shownDeals.isEmpty {
@@ -78,12 +82,13 @@ struct ProductsView: View {
                                     .foregroundColor(.gray)
                             }
                             .frame(maxHeight: .infinity)
+                            .background(Color.white // <-- this is also a view
+                                .onTapGesture { // <-- add tap gesture to it
+                                    UIApplication.shared.hideKeyboard()
+                                })
                         } else {
                             VStack(alignment: .leading, spacing: 30) {
                                 ForEach(shownDeals) { deal in
-//                                    SwipeableDealCardView(deal: deal, swipedDealID: $swipedDealID, deleteAction: {
-//                                        delSavedDeal(deal: deal)
-//                                    })
                                     NavigationLink(destination: DealDetailView(deal: deal)) {
                                         DealCardView1(deal: deal)
                                             .background(Color.white)
@@ -95,7 +100,10 @@ struct ProductsView: View {
                                             }
                                     }
                                 }
-                            }
+                            }.background(Color.white // <-- this is also a view
+                                .onTapGesture { // <-- add tap gesture to it
+                                    UIApplication.shared.hideKeyboard()
+                                })
                         }
                         
                     }
@@ -122,7 +130,11 @@ struct ProductsView: View {
                 // Fetch saved deal list
                 fetchSavedDeals()
             }
-        }
+            
+        }.background(Color.white // <-- this is also a view
+            .onTapGesture { // <-- add tap gesture to it
+                UIApplication.shared.hideKeyboard()
+            })
     }
     
     private func searchSavedDeals(searchText: String) {
@@ -149,7 +161,7 @@ struct ProductsView: View {
     
     private func fetchSavedDeals() {
         isSavedDealsLoading = true
-
+        
         DealService.shared.getSavedDealsByUserID(userID: self.userID!) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -185,66 +197,6 @@ struct ProductsView: View {
     }
 }
 
-struct SwipeableDealCardView: View {
-    let deal: Deal
-    @Binding var swipedDealID: String?
-    let deleteAction: () -> Void
-
-    @State private var offset: CGFloat = 0
-    @GestureState private var isDragging: Bool = false
-
-    var body: some View {
-        ZStack {
-            // Background swipe actions
-            HStack {
-                Spacer()
-                Button(action: deleteAction) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.white)
-                        .frame(width: 80, height: 200)
-                        .background(Color.red)
-                        .cornerRadius(10)
-                }
-            }
-            .padding(.horizontal)
-
-            // Foreground content
-            DealCardView(deal: deal)
-                .frame(maxWidth: .infinity, minHeight: 200)
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 2)
-                .offset(x: offset)
-                .gesture(
-                    DragGesture()
-                        .onChanged { gesture in
-                            if gesture.translation.width < 0 { // Swipe left
-                                offset = max(gesture.translation.width, -80) // Limit swipe to 80 points
-                            }
-                        }
-                        .onEnded { gesture in
-                            if gesture.translation.width < -50 { // If swiped enough
-                                withAnimation {
-                                    swipedDealID = deal.id
-                                    offset = -80
-                                }
-                            } else {
-                                withAnimation {
-                                    offset = 0
-                                }
-                            }
-                        }
-                )
-        }
-        .onChange(of: swipedDealID) { oldValue, newValue in
-            if newValue != deal.id {
-                withAnimation {
-                    offset = 0
-                }
-            }
-        }
-    }
-}
 
 struct DealCardView1: View {
     let deal: Deal
@@ -252,117 +204,117 @@ struct DealCardView1: View {
     @State var user: UserProfile?
     @State private var errorMessage: String?
     @State private var commentCount: Int = 0 // Holds the number of comments for the deal
-
+    
     var body: some View {
-//        NavigationLink(destination: DealDetailView(deal: deal)) {
-            ZStack {
-                Color.white
-                    .cornerRadius(15) // Rounded corners, no shadow
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    // User Info Row with Price
-                    HStack {
-                        if isLoading {
-                            ProgressView()
+        //        NavigationLink(destination: DealDetailView(deal: deal)) {
+        ZStack {
+            Color.white
+                .cornerRadius(15) // Rounded corners, no shadow
+            
+            VStack(alignment: .leading, spacing: 10) {
+                // User Info Row with Price
+                HStack {
+                    if isLoading {
+                        ProgressView()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    } else if let errorMessage = errorMessage {
+                        Text("Error: \(errorMessage)")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    } else {
+                        HStack(spacing: 10) {
+                            UserAvatarView(avatarURL: user?.avatarURL ?? "")
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
-                        } else if let errorMessage = errorMessage {
-                            Text("Error: \(errorMessage)")
-                                .font(.caption)
-                                .foregroundColor(.red)
-                        } else {
-                            HStack(spacing: 10) {
-                                UserAvatarView(avatarURL: user?.avatarURL ?? "")
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(user?.displayName ?? "Unknown User")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.black)
                                 
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(user?.displayName ?? "Unknown User")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.black)
-                                    
-                                    Text(deal.date)
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.gray)
-                                }
+                                Text(deal.date)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
                             }
                         }
-                        
-                        Spacer()
-                        
-                        // Price
-                        Text(String(format: "$%.2f", deal.price))
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.red)
                     }
                     
-                    Divider()
-                        .background(Color.gray.opacity(0.5))
+                    Spacer()
                     
-                    // Content Area
-                    HStack(alignment: .top, spacing: 10) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            // Product Text
-                            Text(deal.productText)
-                                .font(.headline)
-                                .foregroundColor(.black)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.leading)
-                            
-                            Text("\"\(deal.postText)\"")
-                                .font(.system(size: 14))
-                                .foregroundColor(.gray)
-                                .italic()
-                                .lineLimit(1)
-
-                            Spacer()
-                            
-                            HStack(spacing: 5) {
-                                Image(systemName: "mappin.and.ellipse")
-                                    .foregroundColor(.green)
-                                Text(deal.location)
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.green)
-                                
-                                Spacer()
-                                
-                                // Comments Icon and Count
-                                Image(systemName: "bubble.left.and.bubble.right")
-                                    .foregroundColor(.gray) // Updated to gray
-                                Text("\(commentCount)")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.gray) // Updated to gray
-                            }
-                        }
+                    // Price
+                    Text(String(format: "$%.2f", deal.price))
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.red)
+                }
+                
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+                
+                // Content Area
+                HStack(alignment: .top, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Product Text
+                        Text(deal.productText)
+                            .font(.headline)
+                            .foregroundColor(.black)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                        
+                        Text("\"\(deal.postText)\"")
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                            .italic()
+                            .lineLimit(1)
                         
                         Spacer()
                         
-                        // Product Image
-                        AsyncImage(url: URL(string: deal.photoURL)) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 100) // Slightly smaller image
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                            } else {
-                                ProgressView()
-                                    .frame(width: 100, height: 100)
-                                    .background(Color.gray.opacity(0.2))
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                            }
+                        HStack(spacing: 5) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .foregroundColor(.green)
+                            Text(deal.location)
+                                .font(.system(size: 14))
+                                .foregroundColor(.green)
+                            
+                            Spacer()
+                            
+                            // Comments Icon and Count
+                            Image(systemName: "bubble.left.and.bubble.right")
+                                .foregroundColor(.gray) // Updated to gray
+                            Text("\(commentCount)")
+                                .font(.system(size: 14))
+                                .foregroundColor(.gray) // Updated to gray
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    // Product Image
+                    AsyncImage(url: URL(string: deal.photoURL)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100) // Slightly smaller image
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        } else {
+                            ProgressView()
+                                .frame(width: 100, height: 100)
+                                .background(Color.gray.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
                 }
-                .padding(15) // Add consistent padding inside the card
             }
-            .frame(maxWidth: .infinity) // Extend card horizontally
-            .padding(.horizontal, 0) // Remove extra padding between cards
-            .onAppear {
-                fetchUserProfile()
-                fetchCommentCount() // Fetch the number of comments for the deal
-            }
-//        }
+            .padding(15) // Add consistent padding inside the card
+        }
+        .frame(maxWidth: .infinity) // Extend card horizontally
+        .padding(.horizontal, 0) // Remove extra padding between cards
+        .onAppear {
+            fetchUserProfile()
+            fetchCommentCount() // Fetch the number of comments for the deal
+        }
+        //        }
     }
     
     // Function to fetch user profile

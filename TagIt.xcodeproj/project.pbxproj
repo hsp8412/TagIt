@@ -598,7 +598,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"TagIt/Preview Content\"";
-				DEVELOPMENT_TEAM = 6BD4M5LM86;
+				DEVELOPMENT_TEAM = 5QR6S7V3RY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TagIt/Info.plist;
@@ -614,7 +614,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ucalgary.cpsc575.TagIt;
+				PRODUCT_BUNDLE_IDENTIFIER = ucalgary.cpsc575.TagItt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

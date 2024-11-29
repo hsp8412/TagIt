@@ -15,6 +15,10 @@ struct LoginView: View {
             ZStack{
                 Color.green
                     .ignoresSafeArea()
+                    .onTapGesture {
+                        // Dismiss the keyboard when tapping outside
+                        UIApplication.shared.hideKeyboard()
+                    }
                 VStack{
                     Spacer()
                     Image(systemName: "tag.fill")
@@ -94,10 +98,7 @@ struct LoginView: View {
                 }
             }
         }
-        .onTapGesture {
-            // Dismiss the keyboard when tapping outside
-            UIApplication.shared.hideKeyboard()
-        }
+        
         .tint(.white)
     }
 }

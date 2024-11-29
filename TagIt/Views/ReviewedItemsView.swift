@@ -15,7 +15,7 @@ struct ReviewedItemsView: View {
     @State var search: String = ""
     @State var isLoading: Bool = true
     @State var errorMessage: String?
-
+    
     var body: some View {
         VStack {
             // Search bar
@@ -92,7 +92,10 @@ struct ReviewedItemsView: View {
         }
         .onAppear() {
             fetchReviews()
-        }
+        } .background(Color.white // <-- this is also a view
+            .onTapGesture { // <-- add tap gesture to it
+                UIApplication.shared.hideKeyboard()
+            })
     }
     
     private func fetchReviews() {
@@ -106,7 +109,7 @@ struct ReviewedItemsView: View {
             }
         }
         
-        ReviewService.shared.getAllUserReviews(userID: userID!) { result in
+        BarcodeItemService.shared.fetchReviewsByUserId(userId: userID!) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let reviews):
