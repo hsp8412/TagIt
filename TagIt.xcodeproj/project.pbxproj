@@ -48,7 +48,6 @@
 		5D1D9B1F2CE9238600698E2A /* UserAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */; };
 		5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */; };
 		5D1D9B832CE96AE800698E2A /* UserRankingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D9B822CE96AE800698E2A /* UserRankingView.swift */; };
-		5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */; };
 		5D62B03F2CEAE2E6004A7E39 /* DealRankingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */; };
 		5D62B0412CEB0EBC004A7E39 /* DealRankingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */; };
 		5DA00C2E2CC5D8730057041E /* CommentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA00C2D2CC5D8730057041E /* CommentCardView.swift */; };
@@ -119,7 +118,6 @@
 		5D1D9B1E2CE9238600698E2A /* UserAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAvatarView.swift; sourceTree = "<group>"; };
 		5D1D9B202CE9345100698E2A /* UserRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingCardView.swift; sourceTree = "<group>"; };
 		5D1D9B822CE96AE800698E2A /* UserRankingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankingView.swift; sourceTree = "<group>"; };
-		5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyboardViewModel.swift; sourceTree = "<group>"; };
 		5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealRankingCardView.swift; sourceTree = "<group>"; };
 		5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealRankingView.swift; sourceTree = "<group>"; };
 		5DA00C2D2CC5D8730057041E /* CommentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCardView.swift; sourceTree = "<group>"; };
@@ -220,7 +218,6 @@
 				909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */,
 				4086FD0B2CB50A0600EB6411 /* LoginViewModel.swift */,
 				4086FD0F2CB50F5F00EB6411 /* MainViewModel.swift */,
-				5D5605262CB7591900B3790F /* HideKeyboardViewModel.swift */,
 				40171D0B2CC06C27002E146C /* RegisterViewModel.swift */,
 				40BB0C762CC07D1B004D070B /* PasswordRecoveryViewModel.swift */,
 				40BB0CDC2CC0C462004D070B /* ProfileViewModel.swift */,
@@ -417,7 +414,6 @@
 				BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */,
 				5DB365382CBEDE5300424571 /* BarcodeItemReviewModel.swift in Sources */,
 				5DD1EFE22CF5D34A0015D263 /* ReviewedItemsView.swift in Sources */,
-				5D5605272CB7591900B3790F /* HideKeyboardViewModel.swift in Sources */,
 				BF255FFF2CF6957A0003C3A4 /* reviewStars.swift in Sources */,
 				4086FD0E2CB50EF800EB6411 /* MainView.swift in Sources */,
 				BF69F1F32CF193EC001E1F20 /* HomeViewModel.swift in Sources */,
