@@ -16,6 +16,11 @@ class AuthService {
     
     private init() {}
     
+    
+    func resetCurrentUserProfile() {
+        currentUserProfile = nil
+    }
+    
     func getCurrentUser(completion: @escaping (UserProfile?) -> Void) {
         if let profile = currentUserProfile {
             completion(profile)

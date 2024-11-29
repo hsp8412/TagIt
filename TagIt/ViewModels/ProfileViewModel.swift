@@ -15,6 +15,7 @@ class ProfileViewModel:ObservableObject{
     @Published var errorMessage:String? = nil;
     @Published var userProfile: UserProfile? = nil;
     @Published var image: UIImage?;
+    @Published var avatarImage: UIImage? = nil
     
     init() {
         // Fetch the cached user from AuthService when the ViewModel is initialized
@@ -23,10 +24,36 @@ class ProfileViewModel:ObservableObject{
         fetchProfileImage()
     }
     
+    
+    func loadAvatarImage() {
+        guard let avatarUrl = userProfile?.avatarURL, !avatarUrl.isEmpty, let url = URL(string: avatarUrl) else {
+            // Use the placeholder if the URL is invalid
+            DispatchQueue.main.async {
+                self.avatarImage = UIImage(named: "uploadProfileIcon")
+            }
+            return
+        }
+        
+        // Load the image asynchronously
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self.avatarImage = image
+                }
+            } else {
+                // Use the placeholder in case of error
+                DispatchQueue.main.async {
+                    self.avatarImage = UIImage(named: "uploadProfileIcon")
+                }
+            }
+        }.resume()
+    }
+    
     func fetchCachedUser() {
         AuthService.shared.getCurrentUser(){profile in
             DispatchQueue.main.async {
                 self.userProfile = profile
+                self.loadAvatarImage()
                 print("Success loading profile: \(profile?.displayName ?? "Unknown")")
             }
         }
@@ -51,7 +78,8 @@ class ProfileViewModel:ObservableObject{
             DispatchQueue.main.async {
                 switch result {
                 case .success(let image):
-                    self.image = image
+//                    self.image = image
+                    self.avatarImage = image
                     print("Success loading image: \(avatarURL)")
                 case .failure(let error):
                     print("Failed to download image: \(error.localizedDescription)")
@@ -59,29 +87,32 @@ class ProfileViewModel:ObservableObject{
             }
         }
     }
-
+    
     func updateProfileImage(newImage: UIImage) {
-        guard let userId = userProfile?.id else { return }
+        guard let _ = userProfile?.id else { return }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // Custom format
-
+        
         let formattedDate = dateFormatter.string(from: Date())
-
+        
         isLoading = true
         ImageService.shared.uploadImage(newImage, folder: .avatar, fileName: "avater-\(UUID().uuidString)-\(formattedDate)") { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let imageUrl):
                     self.updateAvatarURL(imageUrl: imageUrl)
+                    self.userProfile?.avatarURL = imageUrl
                     print("succes update avatar URL")
+                    AuthService.shared.resetCurrentUserProfile()
                 case .failure(let error):
                     self.errorMessage = "Failed to upload image: \(error.localizedDescription)"
                     self.isLoading = false
                 }
             }
         }
+        
     }
-
+    
     private func updateAvatarURL(imageUrl: String) {
         guard let userId = userProfile?.id else { return }
         
