@@ -105,8 +105,8 @@ def load_and_replace_json(file_path, update_existing, process_images):
     else:
         print("Skipping image processing as per user choice.")
 
-    # Replace timestamps in Deals
-    data = replace_timestamps(data)
+    # Replace timestamps in Deals only
+    data["Deals"] = replace_timestamps(data["Deals"])
 
     # Extract deal timestamps for comment timestamp generation
     deal_timestamps = {deal["id"]: deal["dateTime"] for deal in data["Deals"]}
@@ -116,9 +116,8 @@ def load_and_replace_json(file_path, update_existing, process_images):
 
     return data
 
-
 # Recursively replace `__SERVER_TIMESTAMP__` with generated dates
-def replace_timestamps(data):
+def replace_timestamps(deals):
     date_range = generate_date_range()
     date_index = 0
 
@@ -132,14 +131,15 @@ def replace_timestamps(data):
             if date_index < len(date_range):
                 date_value = date_range[date_index]
                 date_index += 1
-                # Convert the date to a Firestore timestamp format
+                # Convert the date to a datetime object
                 timestamp = datetime.fromisoformat(date_value)
                 return timestamp
             else:
                 return datetime.now()
         return value
 
-    return replace(data)
+    return replace(deals)
+
 
 # Replace comment timestamps based on deal timestamps
 def replace_comment_timestamps(data, deal_timestamps):
@@ -150,8 +150,8 @@ def replace_comment_timestamps(data, deal_timestamps):
             return [replace(item, deal_timestamp) for item in value]
         elif value == "__SERVER_TIMESTAMP__":
             if deal_timestamp:
-                # Generate a random timestamp within 12 hours after the deal's timestamp
-                deal_datetime = datetime.fromisoformat(deal_timestamp)
+                # Since deal_timestamp is already a datetime object, use it directly
+                deal_datetime = deal_timestamp
                 random_hours = random.randint(1, 12)  # Randomly add between 1 and 12 hours
                 comment_datetime = deal_datetime + timedelta(hours=random_hours)
                 return comment_datetime
@@ -166,6 +166,9 @@ def replace_comment_timestamps(data, deal_timestamps):
         deal_timestamp = deal_timestamps.get(deal_id)
         if deal_timestamp:
             comment["dateTime"] = replace(comment["dateTime"], deal_timestamp)
+        else:
+            # Handle the case where the deal_id is not found
+            comment["dateTime"] = datetime.now()
 
     return data
 
@@ -272,9 +275,8 @@ def populate_user_comments(comments, db, user_profile_map):
                 print(f"Warning: No UserProfile found for userID {username}")
                 comment["userID"] = "unknown"
 
-            # Include 'isDummy' if present
-            if "isDummy" not in comment:
-                comment["isDummy"] = True  # Assuming comments are dummy data
+            # Print the dateTime for debugging
+            print(f"Comment {doc_id} dateTime: {comment['dateTime']}")
 
             try:
                 db.collection("UserComments").document(doc_id).set(comment)
@@ -283,6 +285,8 @@ def populate_user_comments(comments, db, user_profile_map):
                 print(f"Error adding UserComment {doc_id}: {e}")
         else:
             print(f"Skipped UserComment: {doc_id} (already exists)")
+
+
             
 # Populate Votes collection
 def populate_votes(votes, db, user_profile_map_id):
@@ -335,46 +339,6 @@ def populate_votes(votes, db, user_profile_map_id):
             print(f"Error adding Vote: {doc_id}: {e}")
 
 
-# Update upvote/downvote counts in UserComments and Deals based on Votes
-def update_vote_counts(data):
-    # Initialize dictionaries to store upvote and downvote counts
-    comment_votes = {}
-    deal_votes = {}
-
-    # Populate the dictionaries with vote counts
-    for vote in data["Votes"]:
-        item_id = vote["itemId"]
-        item_type = vote["itemType"]  # This is now an integer
-        vote_type = vote["voteType"]
-
-        if item_type == 0:  # Comment
-            vote_dict = comment_votes
-        elif item_type == 1:  # Deal
-            vote_dict = deal_votes
-        else:
-            continue  # Skip if itemType is not recognized
-
-        if item_id not in vote_dict:
-            vote_dict[item_id] = {"upvote": 0, "downvote": 0}
-        vote_dict[item_id][vote_type] += 1
-
-    # Update UserComments with vote counts
-    for comment in data["UserComments"]:
-        comment_id = comment["id"]
-        if comment_id in comment_votes:
-            comment["upvote"] = comment_votes[comment_id]["upvote"]
-            comment["downvote"] = comment_votes[comment_id]["downvote"]
-
-    # Update Deals with vote counts
-    for deal in data["Deals"]:
-        deal_id = deal["id"]
-        if deal_id in deal_votes:
-            deal["upvote"] = deal_votes[deal_id]["upvote"]
-            deal["downvote"] = deal_votes[deal_id]["downvote"]
-
-    return data
-
-
 # Create dummy users in Firebase Authentication
 def create_dummy_users(user_profiles):
     for profile in user_profiles:
@@ -391,21 +355,118 @@ def create_dummy_users(user_profiles):
         except Exception as e:
             print(f"Error creating user {profile['id']}: {e}")
 
+def generate_votes_from_counts(deals, comments, all_user_ids):
+    print("Generating Votes based on upvote/downvote counts...")
+    votes = []
+    used_votes = set()  # To prevent duplicate votes from the same user on the same item
+
+    # Helper function to generate votes for an item
+    def generate_votes_for_item(item_id, item_type, upvote_count, downvote_count, exclude_user_id):
+        item_votes = []
+        total_votes = upvote_count + downvote_count
+        available_user_ids = [uid for uid in all_user_ids if uid != exclude_user_id]
+
+        if total_votes > len(available_user_ids):
+            print(f"Warning: Not enough unique users to generate votes for {item_type} {item_id}.")
+            total_votes = len(available_user_ids)
+            upvote_count = min(upvote_count, total_votes)
+            downvote_count = total_votes - upvote_count
+
+        random.shuffle(available_user_ids)
+        vote_user_ids = available_user_ids[:total_votes]
+
+        # Assign upvotes
+        for uid in vote_user_ids[:upvote_count]:
+            vote_key = (uid, item_id)
+            if vote_key not in used_votes:
+                used_votes.add(vote_key)
+                votes.append({
+                    "userId": uid,
+                    "itemId": item_id,
+                    "itemType": item_type,
+                    "voteType": "upvote",
+                    "isDummy": True
+                })
+
+        # Assign downvotes
+        for uid in vote_user_ids[upvote_count:]:
+            vote_key = (uid, item_id)
+            if vote_key not in used_votes:
+                used_votes.add(vote_key)
+                votes.append({
+                    "userId": uid,
+                    "itemId": item_id,
+                    "itemType": item_type,
+                    "voteType": "downvote",
+                    "isDummy": True
+                })
+
+    # Generate votes for Deals
+    for deal in deals:
+        item_id = deal["id"]
+        upvote_count = deal.get("upvote", 0)
+        downvote_count = deal.get("downvote", 0)
+        exclude_user_id = deal.get("userID", "")
+        generate_votes_for_item(item_id, "deal", upvote_count, downvote_count, exclude_user_id)
+
+    # Generate votes for UserComments
+    for comment in comments:
+        item_id = comment["id"]
+        upvote_count = comment.get("upvote", 0)
+        downvote_count = comment.get("downvote", 0)
+        exclude_user_id = comment.get("userID", "")
+        generate_votes_for_item(item_id, "comment", upvote_count, downvote_count, exclude_user_id)
+
+    print(f"Generated {len(votes)} votes.")
+    return votes
+
+# Function to populate generated votes into Firestore
+def populate_generated_votes(votes, db):
+    print("Populating Votes collection...")
+    item_type_mapping = {
+        "comment": 0,
+        "deal": 1,
+        "review": 2
+    }
+
+    for vote in votes:
+        user_id = vote["userId"]
+        item_id = vote["itemId"]
+        item_type_str = vote["itemType"]
+        vote_type = vote["voteType"]
+
+        # Convert 'itemType' to integer
+        item_type_int = item_type_mapping.get(item_type_str)
+        if item_type_int is None:
+            print(f"Invalid itemType '{item_type_str}' in vote: {vote}")
+            continue
+
+        # Construct document ID
+        doc_id = f"{user_id}_{item_id}_{item_type_int}"
+
+        vote_data = {
+            "userId": user_id,
+            "itemId": item_id,
+            "itemType": item_type_int,
+            "voteType": vote_type,
+            "isDummy": True
+        }
+
+        try:
+            db.collection("Votes").document(doc_id).set(vote_data)
+            print(f"Added Vote: {doc_id}")
+        except Exception as e:
+            print(f"Error adding Vote: {doc_id}: {e}")
+
 # Main function to initialize data
 def initialize_data(json_file_path):
     # Ask the user if they want to update existing entries
     update_existing = input("Do you want to update existing entries from the JSON file? (yes/no): ").strip().lower()
-    if update_existing == "yes":
-        update_existing = True
-    else:
-        update_existing = False
+    update_existing = update_existing == "yes"
 
     # Ask the user if they want to process images
     process_images = input("Do you want to process images (download and upload to Firebase)? (yes/no): ").strip().lower()
-    if process_images == "yes":
-        process_images = True
-    else:
-        process_images = False
+    process_images = process_images == "yes"
 
     # Load JSON data
     collections = load_and_replace_json(json_file_path, update_existing, process_images)
@@ -416,23 +477,28 @@ def initialize_data(json_file_path):
     # Create a mapping of usernames to IDs
     user_profile_map_username, user_profile_map_id = populate_user_profiles(collections["UserProfile"], db)
 
-    # Update vote counts in UserComments and Deals
-    collections = update_vote_counts(collections)
+    # Collect all user IDs
+    all_user_ids = list(user_profile_map_id.keys())
 
-    if update_existing:
-        # Update existing collections
-        update_collection("UserProfile", collections["UserProfile"], db)
-        update_collection("Stores", collections["Stores"], db)
-        update_collection("Deals", collections["Deals"], db)
-        update_collection("UserComments", collections["UserComments"], db)
-        update_collection("Votes", collections["Votes"], db)
-
-    # Populate collections
+    # Populate Stores collection
     populate_stores(collections["Stores"], db)
+
+    # Populate Deals collection
     populate_deals(collections["Deals"], db, user_profile_map_username)
+
+    # Populate UserComments collection
     populate_user_comments(collections["UserComments"], db, user_profile_map_username)
-    # Update the call to populate_votes
-    populate_votes(collections["Votes"], db, user_profile_map_id)
+
+    # Generate Votes based on upvote/downvote counts
+    generated_votes = generate_votes_from_counts(
+        collections["Deals"],
+        collections["UserComments"],
+        all_user_ids
+    )
+
+    # Populate Votes collection
+    populate_generated_votes(generated_votes, db)
+
     print("Data initialization completed.")
 
 # Run the initialization
