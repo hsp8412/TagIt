@@ -94,10 +94,10 @@ struct LoginView: View {
                 }
             }
         }
-//        .onTapGesture {
-//            // Dismiss the keyboard when tapping outside
-//            UIApplication.shared.hideKeyboard()
-//        }
+        .onTapGesture {
+            // Dismiss the keyboard when tapping outside
+            UIApplication.shared.hideKeyboard()
+        }
         .tint(.white)
     }
 }

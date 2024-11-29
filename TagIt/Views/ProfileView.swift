@@ -21,7 +21,7 @@ struct ProfileView: View {
                     width: 120,
                     height: 120
                 )
-                .onChange(of: viewModel.image) { newImage in
+                .onChange(of: viewModel.image) { _, newImage in
                     if let newImage = newImage {
                         viewModel.updateProfileImage(newImage: newImage)
                     }

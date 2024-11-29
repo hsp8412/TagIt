@@ -221,7 +221,7 @@ class HomeViewModel: ObservableObject {
                 
                 let storeLocation = CLLocation(latitude: store.latitude, longitude: store.longitude)
                 let distance = storeLocation.distance(from: userLocation) // Distance in meters
-                return distance <= 1000 ? (deal, distance) : nil
+                return distance <= 5000 ? (deal, distance) : nil
             }
             .sorted { $0.distance < $1.distance } // Sort by distance ascending
             .map { $0.deal } // Extract the deals only
