@@ -12,6 +12,8 @@
 		4017C4552CC5DF6F00D110AD /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 4017C4542CC5DF6F00D110AD /* FirebaseStorage */; };
 		4017C4572CC5E90000D110AD /* NewDealViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4017C4562CC5E90000D110AD /* NewDealViewModel.swift */; };
 		4017C4672CC610DC00D110AD /* ImageUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4017C4662CC610DC00D110AD /* ImageUploadView.swift */; };
+		402271212CF946D200E5B04D /* NavAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402271202CF946D100E5B04D /* NavAvatarView.swift */; };
+		402271232CF953F400E5B04D /* TopNavViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402271222CF953F400E5B04D /* TopNavViewModel.swift */; };
 		403755742CD16D8E00C7D96C /* GradientTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403755732CD16D8E00C7D96C /* GradientTitle.swift */; };
 		403755762CD1743700C7D96C /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403755752CD1743700C7D96C /* SearchViewModel.swift */; };
 		403755782CD1761000C7D96C /* DropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403755772CD1761000C7D96C /* DropdownView.swift */; };
@@ -84,6 +86,8 @@
 		40171D0B2CC06C27002E146C /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		4017C4562CC5E90000D110AD /* NewDealViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDealViewModel.swift; sourceTree = "<group>"; };
 		4017C4662CC610DC00D110AD /* ImageUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploadView.swift; sourceTree = "<group>"; };
+		402271202CF946D100E5B04D /* NavAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavAvatarView.swift; sourceTree = "<group>"; };
+		402271222CF953F400E5B04D /* TopNavViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavViewModel.swift; sourceTree = "<group>"; };
 		403755732CD16D8E00C7D96C /* GradientTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientTitle.swift; sourceTree = "<group>"; };
 		403755752CD1743700C7D96C /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		403755772CD1761000C7D96C /* DropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownView.swift; sourceTree = "<group>"; };
@@ -224,6 +228,7 @@
 				403755752CD1743700C7D96C /* SearchViewModel.swift */,
 				40FD1ED42CEAA6E800729291 /* SearchResultViewModel.swift */,
 				40A3669B2CEC721500038754 /* SearchResultDetailViewModel.swift */,
+				402271222CF953F400E5B04D /* TopNavViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -247,6 +252,7 @@
 				5D62B03E2CEAE2E6004A7E39 /* DealRankingCardView.swift */,
 				5D1D9B822CE96AE800698E2A /* UserRankingView.swift */,
 				5D62B0402CEB0EBC004A7E39 /* DealRankingView.swift */,
+				402271202CF946D100E5B04D /* NavAvatarView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -401,6 +407,7 @@
 				5D1D9B212CE9345100698E2A /* UserRankingCardView.swift in Sources */,
 				403755742CD16D8E00C7D96C /* GradientTitle.swift in Sources */,
 				40A3669C2CEC721500038754 /* SearchResultDetailViewModel.swift in Sources */,
+				402271232CF953F400E5B04D /* TopNavViewModel.swift in Sources */,
 				5DF09DBC2CD337FB002B6A79 /* UpDownVoteView.swift in Sources */,
 				4086FD0A2CB5088800EB6411 /* RegisterView.swift in Sources */,
 				5DB365362CBEDD0F00424571 /* UserProfileModel.swift in Sources */,
@@ -453,6 +460,7 @@
 				5DB364892CBED87500424571 /* DealModel.swift in Sources */,
 				90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */,
 				4086FD042CB4838300EB6411 /* TopNavView.swift in Sources */,
+				402271212CF946D200E5B04D /* NavAvatarView.swift in Sources */,
 				5DB365442CBEECC500424571 /* DealInfoView.swift in Sources */,
 				BF255E8B2CF541360003C3A4 /* FilterButton.swift in Sources */,
 				5DB3653C2CBEDF8500424571 /* UserCommentModel.swift in Sources */,

@@ -17,7 +17,7 @@ struct ProfileView: View {
             VStack {
                 ImageUploadView(
                     imageToUpload: $viewModel.image,
-                    placeholderImage: UIImage(named: "uploadProfileIcon")!,
+                    placeholderImage: viewModel.avatarImage ?? UIImage(named: "uploadProfileIcon")!,
                     width: 120,
                     height: 120
                 )

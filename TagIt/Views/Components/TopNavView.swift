@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TopNavView: View {
-    @StateObject var viewModel = ProfileViewModel()
+    @StateObject var viewModel = TopNavViewModel()
 
     var body: some View {
         HStack {
@@ -38,13 +38,16 @@ struct TopNavView: View {
                         .foregroundStyle(.gray)
                 }
                 NavigationLink(destination: ProfileView()) {
-                    if viewModel.userProfile == nil{
+                    if viewModel.isLoading && viewModel.userProfile == nil{
                         ProgressView()
                             .frame(width: 40, height: 40)
                     } else {
-                        UserAvatarView(avatarURL: viewModel.userProfile?.avatarURL ?? "")
+                        NavAvatarView(avatar: $viewModel.avatarImage)
                             .frame(width: 40, height: 40)
                     }
+                }.onAppear(){
+                    viewModel.isLoading = true
+                    viewModel.fetchCachedUser()
                 }
             }
             .padding(.trailing, 16)
