@@ -515,7 +515,7 @@
       "id": "deal1",
       "userID": "healthy_harry",
       "photoURL": "https://images.unsplash.com/photo-1512070904629-fa988dab2fe1?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Avocado",
+      "productText": "Found perfectly ripe Hass avocados on sale! Perfect for guacamole or your toast!",
       "postText": "Perfectly ripe avocados on sale!",
       "price": 1.49,
       "location": "Save-On-Foods University District",
@@ -531,7 +531,7 @@
       "id": "deal2",
       "userID": "fruitfanatic",
       "photoURL": "https://images.unsplash.com/photo-1727285100419-348edd55d403?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Blueberries",
+      "productText": "I stumbled upon Driscoll's organic blueberries at an amazing price! Stock up while they’re fresh.",
       "postText": "Fresh blueberries at a great price!",
       "price": 3.99,
       "location": "FreshCo Brentwood",
@@ -547,7 +547,7 @@
       "id": "deal3",
       "userID": "groceryguru",
       "photoURL": "https://images.unsplash.com/photo-1510247548804-1a5c6f550b2d?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Bananas",
+      "productText": "Del Monte bananas at unbeatable prices! Perfect for smoothies or banana bread.",
       "postText": "Bananas at unbeatable prices!",
       "price": 0.49,
       "location": "Safeway Castleridge",
@@ -563,7 +563,7 @@
       "id": "deal4",
       "userID": "dairydelight",
       "photoURL": "https://images.unsplash.com/photo-1506617420156-8e4536971650?q=80&w=4046&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Milk",
+      "productText": "2% Prairie Farms milk on sale! Ideal for your cereal or a creamy latte.",
       "postText": "2% Milk for your morning cereal.",
       "price": 2.99,
       "location": "Brentwood Co-op",
@@ -578,7 +578,7 @@
       "id": "deal5",
       "userID": "budgetbuddy",
       "photoURL": "https://plus.unsplash.com/premium_photo-1664305037196-003c3164a78c?q=80&w=3880&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Eggs",
+      "productText": "Found large Grade A brown eggs at a steal! Get them while they last!",
       "postText": "Farm fresh eggs, limited time offer!",
       "price": 3.49,
       "location": "Safeway Market Mall Calgary",
@@ -593,7 +593,7 @@
       "id": "deal6",
       "userID": "Meat Man",
       "photoURL": "https://plus.unsplash.com/premium_photo-1668616816678-5f82734f1f40?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Ground Beef",
+      "productText": "High-quality, 85% lean ground beef at a price you can’t beat! Perfect for burgers or tacos.",
       "postText": "High-quality ground beef at an unbeatable price!",
       "price": 5.99,
       "location": "Save-On-Foods Seton",
@@ -609,7 +609,7 @@
       "id": "deal7",
       "userID": "Ms Sunshine",
       "photoURL": "https://images.unsplash.com/photo-1601601197972-4b3f50fd18e8?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Oranges",
+      "productText": "Juicy Valencia oranges for a steal! Stock up for fresh juice or healthy snacks.",
       "postText": "Juicy oranges perfect for snacking!",
       "price": 3.29,
       "location": "FreshCo Brentwood",
@@ -625,7 +625,7 @@
       "id": "deal8",
       "userID": "Bing Chillin",
       "photoURL": "https://media.npr.org/assets/img/2023/02/08/ice-cream-ben-jerrys-haagen-daz-freezer-aisle-brooklyn-583a71a7981d4d187eac23f8318876dccd7b86be.jpg?s=1100&c=85&f=webp",
-      "productText": "Ice Cream",
+      "productText": "Ben & Jerry's ice cream on sale! Treat yourself to a sweet indulgence.",
       "postText": "Creamy ice cream for a sweet treat!",
       "price": 4.99,
       "location": "Safeway Castleridge",
@@ -641,7 +641,7 @@
       "id": "deal9",
       "userID": "zzK_Hello",
       "photoURL": "https://images.unsplash.com/photo-1703365090713-3efcd8f74d14?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Apples",
+      "productText": "Crisp Honeycrisp apples are on sale! Perfect for snacking or adding to a salad.",
       "postText": "Crisp and fresh apples for a healthy snack!",
       "price": 1.99,
       "location": "Brentwood Co-op",
@@ -657,7 +657,7 @@
       "id": "deal10",
       "userID": "MOON_PRISM_POWER",
       "photoURL": "https://plus.unsplash.com/premium_photo-1663100586213-5dc19bc83fca?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "productText": "Bread",
+      "productText": "Freshly baked artisan sourdough bread—grab it before it’s gone!",
       "postText": "Freshly baked bread for your breakfast!",
       "price": 2.99,
       "location": "Safeway Market Mall Calgary",
@@ -673,7 +673,7 @@
   "UserComments": [
     {
       "id": "comment1",
-      "commentText": "This is an amazing deal on avocados!",
+      "commentText": "Finally, a deal that doesn't make me cry at the checkout. Avocado toast for the week is sorted!",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 10,
@@ -684,7 +684,7 @@
     },
     {
       "id": "comment2",
-      "commentText": "Wish I could get this price all year round.",
+      "commentText": "If only my local store had these prices. I swear grocery chains love ripping us off. Every time I go, it’s full price and rotten!",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 5,
@@ -695,7 +695,7 @@
     },
     {
       "id": "comment3",
-      "commentText": "My store was already out of stock :(",
+      "commentText": "Of course, they're out of stock. Why even bother advertising these deals if you can’t meet the demand? Classic bait-and-switch tactics.",
       "downvote": 3,
       "commentType": "deal",
       "upvote": 2,
@@ -706,7 +706,7 @@
     },
     {
       "id": "comment4",
-      "commentText": "Perfect for guacamole night!",
+      "commentText": "Avocados this ripe and affordable are a rare find. Perfect timing for taco night with friends!",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 12,
@@ -717,7 +717,7 @@
     },
     {
       "id": "comment5",
-      "commentText": "These blueberries are so sweet and fresh.",
+      "commentText": "Blueberries are my go-to snack, and this deal means I can grab more without feeling guilty about my grocery bill.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 8,
@@ -728,7 +728,7 @@
     },
     {
       "id": "comment6",
-      "commentText": "Great price for organic blueberries!",
+      "commentText": "Why do these deals always pop up right after I’ve bought a week's worth of overpriced berries? Story of my life.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 6,
@@ -739,7 +739,7 @@
     },
     {
       "id": "comment7",
-      "commentText": "Perfect for baking muffins this weekend.",
+      "commentText": "Perfect for muffins and pancakes this weekend. These blueberries better taste as good as they look in the photo.",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 4,
@@ -750,7 +750,7 @@
     },
     {
       "id": "comment8",
-      "commentText": "Hope my store has enough stock for this deal.",
+      "commentText": "Hope my store doesn't run out before I get there. It’s like every time there’s a deal, I show up to empty shelves!",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 3,
@@ -761,7 +761,7 @@
     },
     {
       "id": "comment9",
-      "commentText": "Best price on bananas I've seen this year!",
+      "commentText": "Bananas at this price? I’m stocking up for smoothies, banana bread, and, frankly, to just eat by the dozen.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 15,
@@ -772,7 +772,7 @@
     },
     {
       "id": "comment10",
-      "commentText": "Grabbed a bunch of these for smoothies!",
+      "commentText": "Not a bad deal at all. My morning smoothie game is about to get an upgrade!",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 10,
@@ -783,7 +783,7 @@
     },
     {
       "id": "comment11",
-      "commentText": "Stock was limited, but worth the hunt.",
+      "commentText": "Stock was limited, but I managed to grab a few. Honestly, it felt like a battle just to get to the produce section. Worth it, though.",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 8,
@@ -794,7 +794,7 @@
     },
     {
       "id": "comment12",
-      "commentText": "I love bananas, but not when they're too ripe.",
+      "commentText": "I love bananas, but sometimes I feel like they ripen faster than I can eat them. Let’s see if these last through the week.",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 5,
@@ -805,7 +805,7 @@
     },
     {
       "id": "comment13",
-      "commentText": "Great deal on milk for cereal lovers!",
+      "commentText": "Milk this cheap is a blessing for cereal addicts like me. Definitely stocking up while it lasts.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 9,
@@ -816,7 +816,7 @@
     },
     {
       "id": "comment14",
-      "commentText": "Perfect for my morning coffee!",
+      "commentText": "Good deal, but why is it always 2% milk? Can we get some variety in these sales for once?",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 6,
@@ -827,7 +827,7 @@
     },
     {
       "id": "comment15",
-      "commentText": "My fridge is fully stocked now!",
+      "commentText": "I'm pretty sure this milk was expired when I bought it. Thanks for the deal, I guess?",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 7,
@@ -838,7 +838,7 @@
     },
     {
       "id": "comment16",
-      "commentText": "Fresh milk is a must-have for baking.",
+      "commentText": "Milk is a baking essential, and this price makes it guilt-free to whip up all the cookies I want.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 8,
@@ -849,7 +849,7 @@
     },
     {
       "id": "comment17",
-      "commentText": "Farm fresh eggs taste amazing!",
+      "commentText": "Farm fresh eggs are a game-changer. Thanks to this deal, brunch at my place just got a lot fancier!",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 12,
@@ -860,7 +860,7 @@
     },
     {
       "id": "comment18",
-      "commentText": "Perfect for weekend brunch!",
+      "commentText": "Great deal, but does anyone else feel like egg cartons are getting smaller these days? Or is it just me?",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 9,
@@ -871,7 +871,7 @@
     },
     {
       "id": "comment19",
-      "commentText": "Best eggs for baking cakes!",
+      "commentText": "These eggs were fine, but I wouldn’t call them 'farm fresh.' They taste like any other store brand.",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 7,
@@ -882,7 +882,7 @@
     },
     {
       "id": "comment20",
-      "commentText": "Fresh and affordable eggs.",
+      "commentText": "Not bad, but with rising costs everywhere, deals like this are becoming the bare minimum. Can we celebrate mediocrity less?",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 10,
@@ -893,7 +893,7 @@
     },
     {
       "id": "comment21",
-      "commentText": "This ground beef is perfect for burgers!",
+      "commentText": "This ground beef is perfect for burgers! Finally, I can impress my friends without spending a fortune. Maybe I’ll even try making meatballs this time! 🍔",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 12,
@@ -904,7 +904,7 @@
     },
     {
       "id": "comment22",
-      "commentText": "Great quality meat at this price is a steal!",
+      "commentText": "Great quality meat at this price is a steal! I’m genuinely surprised, but I’ll take it while it lasts. Hope this isn’t a one-time thing! 🥩",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 8,
@@ -915,7 +915,7 @@
     },
     {
       "id": "comment23",
-      "commentText": "Perfect for making meatballs this weekend.",
+      "commentText": "Perfect for making meatballs this weekend. My kids are going to love it! Deals like this make cooking for the family feel less like a chore.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 7,
@@ -926,7 +926,7 @@
     },
     {
       "id": "comment24",
-      "commentText": "Hope they have enough stock for this deal.",
+      "commentText": "Hope they have enough stock for this deal. It’s so annoying when stores advertise discounts but don’t actually prepare for the rush. Do better!",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 5,
@@ -937,7 +937,7 @@
     },
     {
       "id": "comment25",
-      "commentText": "These oranges are so juicy and sweet!",
+      "commentText": "These oranges are so juicy and sweet! I’m glad I found this deal before they disappeared. Nothing beats fresh oranges for a quick snack. 🍊",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 10,
@@ -948,7 +948,7 @@
     },
     {
       "id": "comment26",
-      "commentText": "Perfect for fresh orange juice in the morning.",
+      "commentText": "Perfect for fresh orange juice in the morning. Seriously, the best way to start the day is with a cold glass of homemade juice. Thanks for sharing this deal!",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 9,
@@ -959,7 +959,7 @@
     },
     {
       "id": "comment27",
-      "commentText": "Great price for organic oranges!",
+      "commentText": "Great price for organic oranges! The only downside is the store was super crowded, and people were acting like these oranges were gold bars.",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 6,
@@ -970,7 +970,7 @@
     },
     {
       "id": "comment28",
-      "commentText": "I love oranges, but not when they're too sour.",
+      "commentText": "I love oranges, but not when they're too sour. Unfortunately, the ones I bought were almost inedible. Maybe this deal wasn’t so great after all.",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 4,
@@ -981,7 +981,7 @@
     },
     {
       "id": "comment29",
-      "commentText": "This ice cream is so creamy and delicious!",
+      "commentText": "This ice cream is so creamy and delicious! Perfect for a movie night or honestly just because I deserve a treat after a long week. 🍦",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 15,
@@ -992,7 +992,7 @@
     },
     {
       "id": "comment30",
-      "commentText": "Perfect for a sweet treat after dinner.",
+      "commentText": "Perfect for a sweet treat after dinner. I can’t believe they’re selling premium ice cream at this price. Probably going back for more tomorrow!",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 12,
@@ -1003,7 +1003,7 @@
     },
     {
       "id": "comment31",
-      "commentText": "Great price for premium ice cream!",
+      "commentText": "Great price for premium ice cream! My only complaint is that my store ran out almost immediately, so I didn’t even get to grab one. Guess I’ll stick to full price.",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 10,
@@ -1014,7 +1014,7 @@
     },
     {
       "id": "comment32",
-      "commentText": "I love ice cream, but not when it's too sweet.",
+      "commentText": "I love ice cream, but not when it's too sweet. This brand seems to overload the sugar to mask any real flavor. Definitely won’t be buying again.",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 5,
@@ -1025,7 +1025,7 @@
     },
     {
       "id": "comment33",
-      "commentText": "These apples are so crisp and fresh!",
+      "commentText": "These apples are so crisp and fresh! I think I’ve found my new go-to snack. Going to grab another bag before they’re gone.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 12,
@@ -1036,7 +1036,7 @@
     },
     {
       "id": "comment34",
-      "commentText": "Perfect for a healthy snack!",
+      "commentText": "Perfect for a healthy snack! I feel like I’m finally eating clean without having to empty my wallet.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 10,
@@ -1047,7 +1047,7 @@
     },
     {
       "id": "comment35",
-      "commentText": "Great price for organic apples!",
+      "commentText": "Great price for organic apples! The store manager even said they might extend the deal, so fingers crossed for next week.",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 8,
@@ -1058,7 +1058,7 @@
     },
     {
       "id": "comment36",
-      "commentText": "I love apples, but not when they're too tart.",
+      "commentText": "I love apples, but not when they're too tart. These ones were borderline sour. Honestly, I feel like I wasted my money on this deal.",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 5,
@@ -1069,7 +1069,7 @@
     },
     {
       "id": "comment37",
-      "commentText": "This bread is so fresh and delicious!",
+      "commentText": "This bread is so fresh and delicious! I can’t even describe how good it smells. My whole kitchen smells like a bakery now.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 12,
@@ -1080,7 +1080,7 @@
     },
     {
       "id": "comment38",
-      "commentText": "Perfect for breakfast!",
+      "commentText": "Perfect for breakfast! I’m glad I stumbled upon this deal. I might have to buy a few more loaves and freeze them for later.",
       "downvote": 0,
       "commentType": "deal",
       "upvote": 10,
@@ -1091,7 +1091,7 @@
     },
     {
       "id": "comment39",
-      "commentText": "Great price for freshly baked bread!",
+      "commentText": "Great price for freshly baked bread! The only issue is that it doesn’t last long—went stale pretty fast. Maybe they were clearing out older batches?",
       "downvote": 1,
       "commentType": "deal",
       "upvote": 8,
@@ -1102,7 +1102,7 @@
     },
     {
       "id": "comment40",
-      "commentText": "I love bread, but not when it's too hard.",
+      "commentText": "I love bread, but not when it’s rock hard after just one day. This deal seemed too good to be true, and I guess it was.",
       "downvote": 2,
       "commentType": "deal",
       "upvote": 5,

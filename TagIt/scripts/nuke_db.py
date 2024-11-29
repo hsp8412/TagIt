@@ -1,14 +1,11 @@
-"""
-DISCLAIMER: THIS SCRIPT WILL NUKE ALL DOCUMENTS IN THE TAGIT DB
-"""
-
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, storage
 
 # Initialize Firebase Admin SDK
+
 SERVICE_ACCOUNT_PATH = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {'storageBucket': 'tagit-39035.appspot.com'})
 
 # Firestore database reference
 db = firestore.client()
@@ -22,6 +19,14 @@ collections_to_clear = [
     "UserProfile",
     "Votes",
     "barcodes"
+]
+
+# List of folders to clear in Firebase Storage
+folders_to_clear = [
+    "avatar/",
+    "dealImage/",
+    "productImage/",
+    "reviewImage/"
 ]
 
 def delete_collection(collection_name, batch_size=500):
@@ -49,13 +54,35 @@ def delete_collection(collection_name, batch_size=500):
     except Exception as e:
         print(f"Error deleting documents in {collection_name}: {e}")
 
+def delete_files_in_folders():
+    """
+    Deletes all files in the specified folders in Firebase Storage.
+    """
+    bucket = storage.bucket()
+    try:
+        for folder in folders_to_clear:
+            print(f"Deleting files in folder: {folder}")
+            blobs = bucket.list_blobs(prefix=folder)
+            deleted_count = 0
+            for blob in blobs:
+                print(f"Deleting file: {blob.name}")
+                blob.delete()
+                deleted_count += 1
+            print(f"Deleted {deleted_count} files from folder: {folder}")
+    except Exception as e:
+        print(f"Error deleting files in folders: {e}")
+
 if __name__ == "__main__":
-    print("WARNING: THIS WILL DELETE ALL DOCUMENTS IN THE TAG IT DB.")
+    print("WARNING: THIS WILL DELETE ALL DOCUMENTS AND FILES IN THE TAG IT DB AND STORAGE.")
     confirmation = input("Are you sure you want to proceed? Type 'yes' to confirm: ").strip().lower()
     if confirmation == 'yes':
         for collection in collections_to_clear:
             print(f"Clearing collection: {collection}")
             delete_collection(collection)
-        print("All specified collections have been cleared.")
+        
+        print("Clearing storage folders...")
+        delete_files_in_folders()
+
+        print("All specified collections and storage folders have been cleared.")
     else:
-        print("Operation canceled. No documents were deleted.")
+        print("Operation canceled. No documents or files were deleted.")
