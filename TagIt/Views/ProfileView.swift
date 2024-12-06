@@ -1,20 +1,18 @@
-//
-//  ProfileView.swift
-//  TagIt
-//
-//  Created by 何斯鹏 on 2024-10-16.
-//
-
 import SwiftUI
 
+/**
+ `ProfileView` allows the user to view and edit their profile information.
+ It displays the profile image, username, email, and options for account settings like changing the username, password, and logging out.
+ */
 struct ProfileView: View {
-    @StateObject var viewModel = ProfileViewModel()
-    @State private var isEditingUsername = false
-    @State private var newUsername = ""
-    
+    @StateObject var viewModel = ProfileViewModel() // ViewModel to manage the profile data and image
+    @State private var isEditingUsername = false // Flag to track if the username is being edited
+    @State private var newUsername = "" // Store the new username when editing
+
     var body: some View {
         ScrollView {
             VStack {
+                // Profile image upload section
                 ImageUploadView(
                     imageToUpload: $viewModel.image,
                     placeholderImage: viewModel.avatarImage ?? UIImage(named: "uploadProfileIcon")!,
@@ -22,51 +20,51 @@ struct ProfileView: View {
                     height: 120
                 )
                 .onChange(of: viewModel.image) { _, newImage in
-                    if let newImage = newImage {
-                        viewModel.updateProfileImage(newImage: newImage)
+                    if let newImage {
+                        viewModel.updateProfileImage(newImage: newImage) // Update profile image when a new image is selected
                     }
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 40)
-                
+
                 VStack(alignment: .leading, spacing: 15) {
                     Group {
-                        Text("Profile Information")
+                        Text("Profile Information") // Section header for profile details
                             .fontWeight(.heavy)
-                        
+
                         Divider()
-                        
-                        // Username
+
+                        // Username Section
                         HStack {
                             Text("Username")
                                 .fontWeight(.semibold)
                             Spacer()
                             if let username = viewModel.userProfile?.displayName {
-                                Text(username)
+                                Text(username) // Display current username
                                     .foregroundColor(.gray)
                             } else {
-                                ProgressView()
+                                ProgressView() // Show loading indicator if username is being fetched
                             }
                         }
-                        
+
                         Divider()
-                        
-                        // Email
+
+                        // Email Section
                         HStack {
                             Text("Email")
                                 .fontWeight(.semibold)
                             Spacer()
                             if let email = viewModel.userProfile?.email {
-                                Text(email)
+                                Text(email) // Display current email
                                     .foregroundColor(.gray)
                             } else {
-                                ProgressView()
+                                ProgressView() // Show loading indicator if email is being fetched
                             }
                         }
-                        
+
                         Divider()
-                        
-                        // My Reviews
+
+                        // My Reviews Section
                         NavigationLink(destination: ReviewedItemsView()) {
                             HStack {
                                 Text("Reviewed Posts")
@@ -78,38 +76,40 @@ struct ProfileView: View {
                             }
                         }
                         Divider()
-                        .padding(.bottom, 20)
-                        
-                        Text("Account Settings")
+                            .padding(.bottom, 20)
+
+                        Text("Account Settings") // Section header for account settings
                             .fontWeight(.heavy)
-                        
+
                         Divider()
-                        // Edit Username
+
+                        // Edit Username Section
                         NavigationLink(destination: EditUsernameView()) {
-                                HStack {
-                                    Text("Edit Username")
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.black)
-                                    Spacer()
-                                }
+                            HStack {
+                                Text("Edit Username")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.black)
+                                Spacer()
                             }
-                        
+                        }
+
                         Divider()
-                        
-                        // Change Password
+
+                        // Change Password Section
                         NavigationLink(destination: ChangePasswordView()) {
-                                HStack {
-                                    Text("Change Password")
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.black)
-                                    Spacer()
-                                }
+                            HStack {
+                                Text("Change Password")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.black)
+                                Spacer()
                             }
-                        
+                        }
+
                         Divider()
-                        
+
+                        // Logout Button
                         Button(action: {
-                            viewModel.logout()
+                            viewModel.logout() // Log out the user when pressed
                         }) {
                             Text("Log Out")
                                 .foregroundColor(.red)
@@ -123,23 +123,25 @@ struct ProfileView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color(.systemGray6)) // Background color for the profile section
                 .cornerRadius(10)
-                
+
+                // Display error message if there is an issue fetching data
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .padding(.horizontal)
                 }
-                
+
                 Spacer()
             }
         }
         .onAppear {
-            viewModel.fetchCachedUser() // Fetch user profile and image on view load
+            // Fetch user profile and image when the view appears
+            viewModel.fetchCachedUser()
             viewModel.fetchProfileImage()
         }
-        .background(Color(.systemGray6))
+        .background(Color(.systemGray6)) // Set background color for the entire view
     }
 }
 

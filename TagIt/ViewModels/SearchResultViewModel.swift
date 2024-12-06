@@ -4,164 +4,171 @@
 //
 //  Created by 何斯鹏 on 2024-11-17.
 //
-import SwiftUI
-import MapKit
+
 import Combine
+import MapKit
+import SwiftUI
 
-
+/**
+ ViewModel responsible for handling search results, including fetching and filtering deals,
+ managing map annotations, and updating the map region based on user location and selected filters.
+ */
 class SearchResultViewModel: NSObject, ObservableObject {
+    // MARK: - Published Properties
+
+    /// Indicates whether to show detailed view for a selected deal.
     @Published var showDetails: Bool = false
+    /// The currently selected map item.
     @Published var selection: MKMapItem?
-    @Published var searchText:String
-    //    @Published var position: MapCameraPosition = .userLocation(followsHeading: false, fallback: .automatic)
-//    var position:MapCameraPosition = .userLocation(followsHeading: false, fallback: .automatic)
-    @Published var position:MapCameraPosition = .automatic
-    //    @Published var region = MKCoordinateRegion(
-    //        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),  // Default location
-    //        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    //    )
+    /// The search query entered by the user.
+    @Published var searchText: String
+    /// The current position of the map camera.
+    @Published var position: MapCameraPosition = .automatic
+    /// The user's current location.
     @Published var currentLocation: CLLocation?
-    @Published var mapAnnotations: [CustomAnnotation] = [] // For map annotations
+    /// Annotations to be displayed on the map.
+    @Published var mapAnnotations: [CustomAnnotation] = []
+    /// Indicates whether deals are available for the search query.
     @Published var hasDeals: Bool = true
+    /// Indicates whether a loading operation is in progress.
     @Published var loading: Bool = true
-    let tags:[Tag] = [
-        Tag(label:"1km",value: 1000,color: .red),
-        Tag(label:"5km",value:5000,color: .blue),
-        Tag(label:"10km", value:10000,  color: .green)
+    /// Tags for filtering search results by distance.
+    let tags: [Tag] = [
+        Tag(label: "1km", value: 1000, color: .red),
+        Tag(label: "5km", value: 5000, color: .blue),
+        Tag(label: "10km", value: 10000, color: .green),
     ]
-    @Published var selectedTag:Tag?=nil
-    
-    var allAnnotations:[CustomAnnotation] = []
-    
-    
+    /// The currently selected distance filter tag.
+    @Published var selectedTag: Tag? = nil
+
+    /// All available map annotations before applying filters.
+    var allAnnotations: [CustomAnnotation] = []
+
+    // MARK: - Private Properties
+
+    /// A set of Combine subscriptions for managing data streams.
     private var cancellables = Set<AnyCancellable>()
+    /// Observes and manages the user's location.
     @ObservedObject var locationManager: LocationManager
-    
-    var deals : [Deal] = []
-    
-    
+    /// A list of deals fetched for the current search query.
+    var deals: [Deal] = []
+
+    // MARK: - Initializer
+
+    /**
+     Initializes the SearchResultViewModel with a search query and a LocationManager instance.
+
+     - Parameters:
+       - searchText: The initial search query.
+       - locationManager: The LocationManager instance for tracking user location.
+     */
     init(searchText: String, locationManager: LocationManager) {
         self.searchText = searchText
         self.locationManager = locationManager
         super.init()
         setupBindings()
     }
-    
+
+    // MARK: - Setup
+
+    /// Sets up bindings to observe location updates and handle location errors.
     private func setupBindings() {
-        // Update region when the user location changes
         locationManager.$userLocation
-            .compactMap { $0 } // Filter out nil values
+            .compactMap(\.self) // Filter out nil values
             .sink { [weak self] location in
                 DispatchQueue.main.async {
-                    self?.currentLocation = location // Save the location directly
+                    self?.currentLocation = location
                 }
             }
             .store(in: &cancellables)
-        
-        // Handle location errors
+
         locationManager.$locationError
             .sink { [weak self] error in
-                if let error = error {
+                if let error {
                     print("Location Error: \(error)")
                 }
             }
             .store(in: &cancellables)
     }
-    
+
+    // MARK: - Fetching Deals
+
+    /**
+     Fetches deals based on the current search query and updates map annotations.
+     */
     func fetchDeals() {
-        StoreService.shared.getDeals(query:searchText) { [weak self] result in
+        StoreService.shared.getDeals(query: searchText) { [weak self] result in
             switch result {
-            case .success(let deals):
+            case let .success(deals):
                 self?.deals = deals
-                self?.hasDeals = !deals.isEmpty // Update hasDeals
-                for deal in deals {
-                    if let store = deal.store {
-                        print("Latitude: \(store.latitude)")
-                        print("Longitude: \(store.longitude)")
-                    }
-                }
+                self?.hasDeals = !deals.isEmpty
                 DispatchQueue.main.async {
                     self?.mapAnnotations = deals.compactMap { deal in
                         guard let store = deal.store else { return nil }
                         let storeLocation = CLLocation(latitude: store.latitude, longitude: store.longitude)
-                        var storeDistance = 0.0;
-                        if let currentLocation = self?.currentLocation {
-                            storeDistance = storeLocation.distance(from: currentLocation)
-                        }
+                        let storeDistance = self?.currentLocation?.distance(from: storeLocation) ?? 0
                         return CustomAnnotation(
-                            locationId:store.id ?? "",
+                            locationId: store.id ?? "",
                             title: store.name,
                             subtitle: deal.productText,
                             coordinate: CLLocationCoordinate2D(latitude: store.latitude, longitude: store.longitude),
-                            store: deal.store ?? nil,
-                            distance:storeDistance
+                            store: store,
+                            distance: storeDistance
                         )
                     }
                     self?.allAnnotations = self?.mapAnnotations ?? []
-                    
-                    self?.hasDeals = (!(self?.deals.isEmpty ?? true))
-                    self?.loading = false // Loading complete
-                    self?.updateMapRegion() // Update region to include all annotations
+                    self?.loading = false
+                    self?.updateMapRegion()
                 }
-                
-            case .failure(let error):
+            case let .failure(error):
                 print("Error fetching deals: \(error)")
-                self?.hasDeals = false // Assume no deals on failure
+                self?.hasDeals = false
             }
         }
     }
-    
+
+    // MARK: - Filtering Deals
+
+    /**
+     Applies the selected distance filter to the map annotations.
+     */
     func applyFilters() {
-        var maxDistance = 0.0
-        guard let selectedTag = selectedTag else {
-            // No filter applied, show all annotations
-            print("123")
+        guard let selectedTag else {
             DispatchQueue.main.async {
                 self.mapAnnotations = self.allAnnotations
-                print(self.mapAnnotations.count)
                 self.hasDeals = !self.allAnnotations.isEmpty
                 self.updateMapRegion()
             }
             return
         }
-        maxDistance = Double(selectedTag.value)
 
+        let maxDistance = Double(selectedTag.value)
         let filteredAnnotations = allAnnotations.filter { $0.distance ?? 0 <= maxDistance }
 
         DispatchQueue.main.async {
             self.mapAnnotations = filteredAnnotations
             self.hasDeals = !filteredAnnotations.isEmpty
-            self.updateMapRegion() // Update region to include all annotations
+            self.updateMapRegion()
         }
     }
 
-    
-    // CLLocationManagerDelegate methods
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            DispatchQueue.main.async {
-                self.currentLocation = location
-                self.updateMapRegion()
-            }
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to get user location: \(error)")
-    }
-    
+    // MARK: - Map Region Updates
+
+    /**
+     Updates the map region to encompass all current annotations and the user's location.
+     */
     func updateMapRegion() {
-        guard let currentLocation = currentLocation else { return }
+        guard let currentLocation else { return }
 
-        let coordinates = mapAnnotations.map { $0.coordinate } + [currentLocation.coordinate]
-        let latitudeDelta = coordinates.map { $0.latitude }.max()! - coordinates.map { $0.latitude }.min()!
-        let longitudeDelta = coordinates.map { $0.longitude }.max()! - coordinates.map { $0.longitude }.min()!
+        let coordinates = mapAnnotations.map(\.coordinate) + [currentLocation.coordinate]
+        let latitudeDelta = coordinates.map(\.latitude).max()! - coordinates.map(\.latitude).min()!
+        let longitudeDelta = coordinates.map(\.longitude).max()! - coordinates.map(\.longitude).min()!
 
         DispatchQueue.main.async {
             self.position = .region(MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
-                    latitude: (coordinates.map { $0.latitude }.max()! + coordinates.map { $0.latitude }.min()!) / 2,
-                    longitude: (coordinates.map { $0.longitude }.max()! + coordinates.map { $0.longitude }.min()!) / 2
+                    latitude: (coordinates.map(\.latitude).max()! + coordinates.map(\.latitude).min()!) / 2,
+                    longitude: (coordinates.map(\.longitude).max()! + coordinates.map(\.longitude).min()!) / 2
                 ),
                 span: MKCoordinateSpan(
                     latitudeDelta: latitudeDelta * 1.2, // Add some padding
@@ -171,23 +178,52 @@ class SearchResultViewModel: NSObject, ObservableObject {
         }
     }
 
+    // MARK: - CLLocationManagerDelegate Methods
+
+    /// Updates the user's location and map region when location changes.
+    func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            DispatchQueue.main.async {
+                self.currentLocation = location
+                self.updateMapRegion()
+            }
+        }
+    }
+
+    /// Handles location errors.
+    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to get user location: \(error)")
+    }
 }
 
-
-
-
+/**
+ Represents a custom map annotation for a store location and its associated deal.
+ */
 struct CustomAnnotation: Identifiable {
+    /// A unique identifier for the annotation.
     let id = UUID()
+    /// The location ID of the store.
     let locationId: String
+    /// The title of the annotation, usually the store name.
     let title: String
+    /// The subtitle of the annotation, typically the product text.
     let subtitle: String
+    /// The geographical coordinate of the annotation.
     let coordinate: CLLocationCoordinate2D
+    /// The store associated with this annotation.
     let store: Store?
+    /// The distance from the user's current location to this annotation.
     let distance: Double?
 }
 
-struct Tag{
-    let label:String
-    let value:Int
-    let color:Color
+/**
+ Represents a filter tag for categorizing deals by distance.
+ */
+struct Tag {
+    /// The label of the tag, e.g., "1km".
+    let label: String
+    /// The distance value associated with the tag in meters.
+    let value: Int
+    /// The color associated with the tag for UI display.
+    let color: Color
 }

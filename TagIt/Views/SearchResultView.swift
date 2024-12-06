@@ -1,40 +1,39 @@
-//
-//  SearchResultView.swift
-//  TagIt
-//
-//  Created by 何斯鹏 on 2024-11-17.
-//
-
-import SwiftUI
 import MapKit
+import SwiftUI
 
+/**
+ `SearchResultView` displays the search results based on a user's query.
+ It shows relevant tags, deals, and their locations on a map.
+ */
 struct SearchResultView: View {
-    @StateObject private var locationManager = LocationManager()
-    @StateObject var viewModel: SearchResultViewModel
-    
-    //    @Environment(\.dismiss) private var dismiss // Environment to handle navigation back
-    @State private var showAlert = false // State to control the alert display
-    
+    @StateObject private var locationManager = LocationManager() // Manages user location
+    @StateObject var viewModel: SearchResultViewModel // ViewModel to handle data fetching and state
+
+    @State private var showAlert = false // Controls the display of alert when no deals are found
+
+    // Initialize the view model with search text and location manager
     init(searchText: String) {
         let locationManager = LocationManager()
         _viewModel = StateObject(wrappedValue: SearchResultViewModel(searchText: searchText, locationManager: locationManager))
     }
-    
+
     var body: some View {
         NavigationStack {
-            
             if viewModel.loading {
+                // Show loading indicator while deals are being fetched
                 ProgressView("Loading Deals...")
                     .task {
-                        locationManager.requestLocationPermission()
-                        await viewModel.fetchDeals()
+                        locationManager.requestLocationPermission() // Request location permissions
+                        await viewModel.fetchDeals() // Fetch deals based on search text
                         if !viewModel.hasDeals {
-                            showAlert = true
+                            showAlert = true // Show alert if no deals are found
                         }
                     }
             } else {
-                VStack(spacing: 0){
-                    VStack(alignment: .leading, spacing: 8){
+                // Content view when loading is done
+                VStack(spacing: 0) {
+                    // Header with search query and tag filters
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("Search Results for \"\(viewModel.searchText)\"")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundColor(.black)
@@ -42,6 +41,8 @@ struct SearchResultView: View {
                             .padding(.leading, 16)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top)
+
+                        // Filter tags displayed horizontally
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
                                 ForEach(viewModel.tags, id: \.label) { tag in
@@ -53,23 +54,28 @@ struct SearchResultView: View {
                                         .foregroundColor(isSelected ? .white : .black)
                                         .cornerRadius(16)
                                         .onTapGesture {
-                                            // Toggle selection
+                                            // Toggle selection of tags
                                             if isSelected {
                                                 viewModel.selectedTag = nil
                                             } else {
                                                 viewModel.selectedTag = tag
                                             }
-                                            viewModel.applyFilters()
+                                            viewModel.applyFilters() // Apply filter when tag is selected/deselected
                                         }
                                 }
                             }
                             .padding(.horizontal)
                         }
                     }
+
                     Spacer()
+
+                    // Display deals on a map if available
                     if viewModel.hasDeals {
                         Map(position: $viewModel.position) {
-                            UserAnnotation()
+                            UserAnnotation() // Show user's location annotation
+
+                            // Show annotations for each deal on the map
                             ForEach(viewModel.mapAnnotations) { annotation in
                                 Annotation(annotation.title, coordinate: annotation.coordinate) {
                                     NavigationLink(destination: SearchResultDetailView(store: annotation.store!, deals: viewModel.deals)) {
@@ -83,17 +89,14 @@ struct SearchResultView: View {
                                 }
                             }
                         }
-                        
-                    }
-                    else {
-                        Text("No deals found for \"\(viewModel.searchText)\".") // Fallback UI (in case the alert is dismissed)
+                    } else {
+                        // Show message if no deals found
+                        Text("No deals found for \"\(viewModel.searchText)\".")
                             .foregroundColor(.gray)
                         Spacer()
                     }
                 }
             }
-        }.onAppear{
-//            viewModel.locationManager.requestLocationPermission()
         }
     }
 }

@@ -4,16 +4,31 @@
 //
 //  Created by Angi Shi on 2024-11-24.
 //
-import SwiftUI
-import FirebaseFirestore
 
+import FirebaseFirestore
+import SwiftUI
+
+/**
+ A view that displays a review card, including user information, review text, rating, and optional image.
+ The review text can be expanded or collapsed depending on its length.
+ */
 struct ReviewCardView: View {
+    // MARK: - Properties
+
+    /// The review to be displayed in the card.
     let review: BarcodeItemReview
+    /// Indicates whether the user profile is being loaded.
     @State var isLoading = true
+    /// The user profile data for the reviewer.
     @State var user: UserProfile?
+    /// An error message to be displayed if fetching the user profile fails.
     @State private var errorMessage: String?
-    @State private var isExpanded: Bool = false // Tracks whether the text is expanded
-    private let maxTextLength: Int = 200 // Maximum visible characters before truncation
+    /// Indicates whether the review text is expanded.
+    @State private var isExpanded: Bool = false
+    /// The maximum number of characters to display before truncating the review text.
+    private let maxTextLength: Int = 200
+
+    // MARK: - View Body
 
     var body: some View {
         ZStack {
@@ -28,7 +43,7 @@ struct ReviewCardView: View {
                         ProgressView()
                             .frame(width: 40, height: 40)
                             .clipShape(Circle())
-                    } else if let errorMessage = errorMessage {
+                    } else if let errorMessage {
                         Text("Error: \(errorMessage)")
                             .font(.caption)
                             .foregroundColor(.red)
@@ -56,13 +71,13 @@ struct ReviewCardView: View {
 
                     // Rating
                     HStack(spacing: 2) {
-                        ForEach(0..<Int(review.reviewStars), id: \.self) { _ in
+                        ForEach(0 ..< Int(review.reviewStars), id: \.self) { _ in
                             Image(systemName: "star.fill")
                                 .resizable()
                                 .frame(width: 12, height: 12)
                                 .foregroundColor(.yellow)
                         }
-                        ForEach(0..<(5 - Int(review.reviewStars)), id: \.self) { _ in
+                        ForEach(0 ..< (5 - Int(review.reviewStars)), id: \.self) { _ in
                             Image(systemName: "star")
                                 .resizable()
                                 .frame(width: 12, height: 12)
@@ -141,26 +156,37 @@ struct ReviewCardView: View {
         }
     }
 
-    // Function to fetch user profile
+    // MARK: - Helper Functions
+
+    /**
+     Fetches the user profile associated with the review's user ID.
+
+     This function is called when the view appears to retrieve the reviewer’s profile.
+     */
     private func fetchUserProfile() {
         isLoading = true
         if !review.userID.isEmpty {
             UserService.shared.getUserById(id: review.userID) { result in
                 DispatchQueue.main.async {
                     switch result {
-                    case .success(let fetchUserProfilebyID):
-                        self.user = fetchUserProfilebyID
-                        self.isLoading = false
-                    case .failure(let error):
-                        self.errorMessage = error.localizedDescription
-                        self.isLoading = false
+                    case let .success(fetchUserProfilebyID):
+                        user = fetchUserProfilebyID
+                        isLoading = false
+                    case let .failure(error):
+                        errorMessage = error.localizedDescription
+                        isLoading = false
                     }
                 }
             }
         }
     }
 
-    // Function to format Timestamp to String
+    /**
+     Formats a Firebase Timestamp to a readable string.
+
+     - Parameter timestamp: The Firebase Timestamp to format.
+     - Returns: A formatted string representing the timestamp.
+     */
     private func formatTimestamp(_ timestamp: Timestamp) -> String {
         let date = timestamp.dateValue()
         let formatter = DateFormatter()

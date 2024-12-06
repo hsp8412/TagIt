@@ -7,23 +7,31 @@
 
 import SwiftUI
 
+/**
+ `RegisterView` provides a user interface for new users to sign up for the app.
+ It allows users to input their email, username, password, and confirm their password.
+ */
 struct RegisterView: View {
     @StateObject var viewModel = RegisterViewModel()
+
     var body: some View {
-        ZStack{
+        ZStack {
             Color.green
                 .ignoresSafeArea()
                 .onTapGesture {
                     // Dismiss the keyboard when tapping outside
                     UIApplication.shared.hideKeyboard()
                 }
-            VStack{
+            VStack {
+                // Title
                 Text("Sign up")
-                    .font(.system(size:40))
+                    .font(.system(size: 40))
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
-                VStack(spacing: 20){
-                    VStack(alignment:.leading){
+
+                VStack(spacing: 20) {
+                    // Email Input Field
+                    VStack(alignment: .leading) {
                         Text("Email")
                             .padding(.horizontal, 40)
                             .foregroundStyle(.white)
@@ -35,7 +43,9 @@ struct RegisterView: View {
                             .shadow(radius: 5)
                             .autocapitalization(.none)
                     }
-                    VStack(alignment:.leading){
+
+                    // Username Input Field
+                    VStack(alignment: .leading) {
                         Text("Username")
                             .padding(.horizontal, 40)
                             .foregroundStyle(.white)
@@ -47,7 +57,9 @@ struct RegisterView: View {
                             .shadow(radius: 5)
                             .autocapitalization(.none)
                     }
-                    VStack(alignment: .leading){
+
+                    // Password Input Field
+                    VStack(alignment: .leading) {
                         Text("Password")
                             .padding(.horizontal, 40)
                             .foregroundStyle(.white)
@@ -59,7 +71,9 @@ struct RegisterView: View {
                             .shadow(radius: 5)
                             .autocapitalization(.none)
                     }
-                    VStack(alignment:.leading){
+
+                    // Confirm Password Input Field
+                    VStack(alignment: .leading) {
                         Text("Confirm Password")
                             .padding(.horizontal, 40)
                             .foregroundStyle(.white)
@@ -72,22 +86,25 @@ struct RegisterView: View {
                             .autocapitalization(.none)
                     }
                 }
+
+                // Register Button
                 Button(action: {
                     print("Register was tapped!")
                     viewModel.register()
                 }) {
                     if viewModel.isLoading {
                         ProgressView()
-                    }else{
+                    } else {
                         Text("Register")
-                            .padding(.horizontal,20)
+                            .padding(.horizontal, 20)
                             .padding(.vertical, 15)
                             .background(.white)
                             .foregroundColor(.green)
                             .cornerRadius(25)
                     }
                 }.padding(.top, 20)
-                
+
+                // Error Message Display
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)

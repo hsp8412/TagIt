@@ -1,42 +1,44 @@
 //
-//  FirebaseManager.swift
+//  FirestoreService.swift
 //  TagIt
 //
 //  Created by Peter Tran on 2024-10-16.
 //
 
-// Error handling (.success, .failure) of completion
-// What are the outputs? Structure?
-
-
 import FirebaseFirestore
 
-/// Singleton class for managing Firebase Firestore interactions.
+/**
+ A singleton class responsible for managing Firestore interactions.
+
+ This service class provides helper functions for creating, reading, updating, and deleting Firestore documents.
+ It ensures consistent and error-free interactions with Firestore across different parts of the application.
+ */
 class FirestoreService {
-    /// Shared instance of FirebaseManager for global access.
+    /// Shared instance of `FirestoreService` for global access.
     static let shared = FirestoreService()
-    
+
+    /// Reference to the Firestore database.
     let db = Firestore.firestore()
-    
-    /// Init as singleton
+
+    /// Private initializer to enforce the singleton pattern.
     private init() {}
-    
-    // MARK: - API HELPER FUNCTIONS
-    
+
+    // MARK: - API Helper Functions
+
     /**
-     Creates a Firestore document if and only if it does not already exist.
-     
-     - Parameters:
-     - collectionName: The name of the Firestore collection.
-     - documentID: The ID of the document.
-     - data: The `Codable` object to store in the document.
-     - completion: A closure that returns an optional error if something goes wrong.
+         Creates a Firestore document if it does not already exist.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - documentID: The ID of the document.
+             - data: The `Codable` object to store in the document.
+             - completion: A closure that returns an optional error if the operation fails.
+
+         This method checks if a document with the specified `documentID` exists in the given `collectionName`.
+         If the document does not exist, it creates a new document with the provided `data`.
      */
-    
-    // use case? Should be in concrete services?
-    func createDocumentIfNotExists<T: Codable>(collectionName: String, documentID: String, data: T, completion: @escaping (Error?) -> Void) {
-        db.collection(collectionName).document(documentID).getDocument { (documentSnapshot, error) in
-            // Sets completion to nil if document doesnt exist, otherwise create document
+    func createDocumentIfNotExists(collectionName: String, documentID: String, data: some Codable, completion: @escaping (Error?) -> Void) {
+        db.collection(collectionName).document(documentID).getDocument { documentSnapshot, _ in
             if let document = documentSnapshot, document.exists {
                 completion(nil)
             } else {
@@ -44,20 +46,22 @@ class FirestoreService {
             }
         }
     }
-    
+
     /**
-     Creates a Firestore document with an optional provided `documentID`. If `documentID` is `nil`, Firestore will generate one.
-     
-     - Parameters:
-     - collectionName: The name of the Firestore collection.
-     - documentID: The optional ID of the document. If `documentID` is `nil`, Firestore generates an ID.
-     - data: The `Codable` data to set for the document.
-     - completion: A closure that returns an optional error if something goes wrong during document creation.
+         Creates a Firestore document with an optional `documentID`. If `documentID` is `nil`, Firestore generates one.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - documentID: The optional ID of the document. If `nil`, Firestore generates an ID.
+             - data: The `Codable` data to set for the document.
+             - completion: A closure that returns an optional error if the operation fails.
+
+         This method encodes the provided `data` and stores it in Firestore under the specified `collectionName` and `documentID`.
      */
-    func createDocument<T: Codable>(collectionName: String, documentID: String?, data: T, completion: @escaping (Error?) -> Void) {
+    func createDocument(collectionName: String, documentID: String?, data: some Codable, completion: @escaping (Error?) -> Void) {
         do {
             let dataDict = try Firestore.Encoder().encode(data)
-            if let documentID = documentID {
+            if let documentID {
                 // Use the provided documentID
                 db.collection(collectionName).document(documentID).setData(dataDict) { error in
                     completion(error)
@@ -72,33 +76,38 @@ class FirestoreService {
             completion(error)
         }
     }
-    
+
     /**
-     Updates a specific field in a Firestore document.
-     
-     - Parameters:
-     - collectionName: The name of the Firestore collection.
-     - documentID: The ID of the document.
-     - field: The field to update.
-     - value: The new value for the field.
-     - completion: A closure that returns an optional error if something goes wrong during the update.
+         Updates a specific field in a Firestore document.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - documentID: The ID of the document.
+             - field: The field to update.
+             - value: The new value for the field.
+             - completion: A closure that returns an optional error if the operation fails.
+
+         This method updates the specified `field` in the document identified by `documentID` within the given `collectionName` with the new `value`.
      */
     func updateField(collectionName: String, documentID: String, field: String, value: Any, completion: @escaping (Error?) -> Void) {
         db.collection(collectionName).document(documentID).updateData([field: value]) { error in
             completion(error)
         }
     }
-    
+
     /**
-     Reads data from a Firestore document.
-     
-     - Parameters:
-     - collectionName: The name of the Firestore collection.
-     - documentID: The ID of the document.
-     - completion: A closure that returns the document data or an error if something goes wrong during retrieval.
+         Reads data from a Firestore document.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - documentID: The ID of the document.
+             - modelType: The type of the model to decode the document data into.
+             - completion: A closure that returns a `Result` containing the decoded model or an error.
+
+         This method retrieves the document identified by `documentID` from the specified `collectionName` and attempts to decode it into the provided `modelType`.
      */
     func readDocument<T: Codable>(collectionName: String, documentID: String, modelType: T.Type, completion: @escaping (Result<T, Error>) -> Void) {
-        db.collection(collectionName).document(documentID).getDocument { (documentSnapshot, error) in
+        db.collection(collectionName).document(documentID).getDocument { documentSnapshot, error in
             if let document = documentSnapshot, document.exists {
                 do {
                     if modelType == UserProfile.self {
@@ -126,19 +135,27 @@ class FirestoreService {
                 } catch {
                     completion(.failure(error))
                 }
-            } else if let error = error {
+            } else if let error {
                 completion(.failure(error))
             } else {
                 completion(.failure(NSError(domain: "FirestoreError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Document does not exist"])))
             }
         }
     }
-    
-    
-    
+
+    /**
+         Reads all documents from a Firestore collection.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - modelType: The type of the model to decode the documents into.
+             - completion: A closure that returns a `Result` containing an array of decoded models or an error.
+
+         This method retrieves all documents from the specified `collectionName` and attempts to decode each document into the provided `modelType`.
+     */
     func readCollection<T: Codable>(collectionName: String, modelType: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
-        db.collection(collectionName).getDocuments { (querySnapshot, error) in
-            if let error = error {
+        db.collection(collectionName).getDocuments { querySnapshot, error in
+            if let error {
                 completion(.failure(error))
             } else if let documents = querySnapshot?.documents {
                 let results = documents.compactMap { document -> T? in
@@ -172,23 +189,23 @@ class FirestoreService {
             }
         }
     }
-    
-    
-    
+
     /**
-     Updates an entire document in a Firestore collection with the provided data.
-     
-     - Parameters:
-     - collectionName: The name of the Firestore collection.
-     - documentID: The ID of the document to update.
-     - data: A dictionary or `Codable` object containing the data to update.
-     - completion: A closure that returns an optional error if something goes wrong during the update.
+         Updates an entire Firestore document with the provided data.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - documentID: The ID of the document to update.
+             - data: A `Codable` object containing the data to update.
+             - completion: A closure that returns an optional error if the operation fails.
+
+         This method encodes the provided `data` and updates the specified document in Firestore. If `merge` is set to `true`, it merges the data with existing fields; otherwise, it overwrites the document.
      */
-    func updateDocument<T: Codable>(collectionName: String, documentID: String, data: T, completion: @escaping (Error?) -> Void) {
+    func updateDocument(collectionName: String, documentID: String, data: some Codable, completion: @escaping (Error?) -> Void) {
         do {
             let dataDict = try Firestore.Encoder().encode(data)
             db.collection(collectionName).document(documentID).setData(dataDict, merge: true) { error in
-                if let error = error {
+                if let error {
                     print("Error updating document \(documentID): \(error.localizedDescription)")
                     completion(error)
                 } else {
@@ -201,18 +218,20 @@ class FirestoreService {
             completion(error)
         }
     }
-    
+
     /**
-     Deletes a Firestore document from a collection.
-     
-     - Parameters:
-     - collectionName: The name of the Firestore collection.
-     - documentID: The ID of the document to delete.
-     - completion: A closure that returns an optional error if something goes wrong during the deletion process.
+         Deletes a Firestore document from a specified collection.
+
+         - Parameters:
+             - collectionName: The name of the Firestore collection.
+             - documentID: The ID of the document to delete.
+             - completion: A closure that returns an optional error if the operation fails.
+
+         This method removes the document identified by `documentID` from the specified `collectionName` in Firestore.
      */
     func deleteDocument(collectionName: String, documentID: String, completion: @escaping (Error?) -> Void) {
         db.collection(collectionName).document(documentID).delete { error in
-            if let error = error {
+            if let error {
                 print("Error deleting document \(documentID) from \(collectionName): \(error.localizedDescription)")
                 completion(error)
             } else {

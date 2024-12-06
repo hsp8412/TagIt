@@ -65,7 +65,6 @@
 		909AC5232CF4FAE30012C9B0 /* AddReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AC5202CF4FAE30012C9B0 /* AddReviewViewModel.swift */; };
 		909AC5252CF4FB040012C9B0 /* ReviewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AC5242CF4FB040012C9B0 /* ReviewCardView.swift */; };
 		909AC5272CF4FB0E0012C9B0 /* AddReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AC5262CF4FB0E0012C9B0 /* AddReviewView.swift */; };
-		909AC5292CF4FB1E0012C9B0 /* UpvotedPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AC5282CF4FB1E0012C9B0 /* UpvotedPostsView.swift */; };
 		909DFE532CD17E2200138D31 /* BarcodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */; };
 		909DFE552CD17E4100138D31 /* BarcodeScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */; };
 		90D774F32CDAB896005E2622 /* ScannedItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F22CDAB888005E2622 /* ScannedItemView.swift */; };
@@ -135,7 +134,6 @@
 		909AC5212CF4FAE30012C9B0 /* ScannedItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemViewModel.swift; sourceTree = "<group>"; };
 		909AC5242CF4FB040012C9B0 /* ReviewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCardView.swift; sourceTree = "<group>"; };
 		909AC5262CF4FB0E0012C9B0 /* AddReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReviewView.swift; sourceTree = "<group>"; };
-		909AC5282CF4FB1E0012C9B0 /* UpvotedPostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpvotedPostsView.swift; sourceTree = "<group>"; };
 		909DFE522CD17E2200138D31 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
 		909DFE542CD17E4100138D31 /* BarcodeScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerViewModel.swift; sourceTree = "<group>"; };
 		90D774F22CDAB888005E2622 /* ScannedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemView.swift; sourceTree = "<group>"; };
@@ -183,7 +181,6 @@
 		4086FCED2CB47B6100EB6411 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				909AC5282CF4FB1E0012C9B0 /* UpvotedPostsView.swift */,
 				909AC5262CF4FB0E0012C9B0 /* AddReviewView.swift */,
 				4086FD002CB4835A00EB6411 /* Components */,
 				40F8B5EE2C9FA8AF0024C7EF /* ContentView.swift */,
@@ -322,6 +319,7 @@
 				40F8B5E52C9FA8AF0024C7EF /* Sources */,
 				40F8B5E62C9FA8AF0024C7EF /* Frameworks */,
 				40F8B5E72C9FA8AF0024C7EF /* Resources */,
+				BF3B317E2D0262BE00B90637 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -395,6 +393,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		BF3B317E2D0262BE00B90637 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		40F8B5E52C9FA8AF0024C7EF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -442,7 +461,6 @@
 				40BB0CDD2CC0C462004D070B /* ProfileViewModel.swift in Sources */,
 				5DA00C2E2CC5D8730057041E /* CommentCardView.swift in Sources */,
 				909DFE552CD17E4100138D31 /* BarcodeScannerViewModel.swift in Sources */,
-				909AC5292CF4FB1E0012C9B0 /* UpvotedPostsView.swift in Sources */,
 				5DB365402CBEEC2000424571 /* DealCardView.swift in Sources */,
 				BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */,
 				4017C4672CC610DC00D110AD /* ImageUploadView.swift in Sources */,

@@ -4,8 +4,8 @@
 //
 //  Created by Peter Tran on 2024-10-21.
 //
-import Foundation
 import FirebaseFirestore
+import Foundation
 
 /// Service class responsible for handling comment-related operations, such as fetching, adding, and retrieving comments from Firestore.
 class CommentService {
@@ -27,10 +27,10 @@ class CommentService {
         db.collection(FirestoreCollections.userComm)
             .order(by: "dateTime", descending: true) // Order comments by dateTime in descending order
             .getDocuments { snapshot, error in
-                if let error = error {
+                if let error {
                     print("[DEBUG] Error fetching comments: \(error.localizedDescription)")
                     completion(.failure(error))
-                } else if let snapshot = snapshot {
+                } else if let snapshot {
                     let comments = snapshot.documents.compactMap { doc -> UserComments? in
                         do {
                             var comment = try doc.data(as: UserComments.self)
@@ -52,8 +52,6 @@ class CommentService {
             }
     }
 
-
-
     /**
      Fetches a comment by its unique ID from Firestore.
 
@@ -65,10 +63,10 @@ class CommentService {
         db.collection(FirestoreCollections.userComm)
             .document(id)
             .getDocument { snapshot, error in
-                if let error = error {
+                if let error {
                     print("[DEBUG] Error fetching comment by ID: \(error.localizedDescription)")
                     completion(.failure(error))
-                } else if let snapshot = snapshot, var comment = try? snapshot.data(as: UserComments.self) {
+                } else if let snapshot, var comment = try? snapshot.data(as: UserComments.self) {
                     if let timestamp = comment.dateTime {
                         comment.date = Utils.timeAgoString(from: timestamp)
                     }
@@ -95,10 +93,10 @@ class CommentService {
             .whereField("itemID", isEqualTo: itemID)
             .order(by: "dateTime", descending: true) // Order by dateTime
             .getDocuments { snapshot, error in
-                if let error = error {
+                if let error {
                     print("[DEBUG] Error fetching comments for item \(itemID): \(error.localizedDescription)")
                     completion(.failure(error))
-                } else if let snapshot = snapshot {
+                } else if let snapshot {
                     let comments = snapshot.documents.compactMap { doc -> UserComments? in
                         do {
                             var comment = try doc.data(as: UserComments.self)
@@ -119,8 +117,6 @@ class CommentService {
             }
     }
 
-
-
     /**
      Adds a new comment to Firestore and updates the user's total comments and ranking points.
 
@@ -134,7 +130,7 @@ class CommentService {
             documentID: newComment.id ?? UUID().uuidString,
             data: newComment
         ) { error in
-            if let error = error {
+            if let error {
                 print("[DEBUG] Error adding comment: \(error.localizedDescription)")
                 completion(.failure(error))
             } else {
@@ -143,7 +139,6 @@ class CommentService {
             }
         }
     }
-
 
     /**
      Increments the `totalComments` field for a user in Firestore and updates their ranking points.
@@ -159,7 +154,7 @@ class CommentService {
             field: "totalComments",
             value: FieldValue.increment(Int64(1))
         ) { error in
-            if let error = error {
+            if let error {
                 print("[DEBUG] Error incrementing totalComments for user \(userId): \(error.localizedDescription)")
                 completion(.failure(error))
             } else {
@@ -184,7 +179,7 @@ class CommentService {
             modelType: UserProfile.self
         ) { result in
             switch result {
-            case .success(let user):
+            case let .success(user):
                 let newRankingPoints = (user.totalDeals * 5) + user.totalUpvotes + user.totalComments
                 FirestoreService.shared.updateField(
                     collectionName: FirestoreCollections.user,
@@ -192,7 +187,7 @@ class CommentService {
                     field: "rankingPoints",
                     value: newRankingPoints
                 ) { error in
-                    if let error = error {
+                    if let error {
                         print("[DEBUG] Error updating rankingPoints for user \(userId): \(error.localizedDescription)")
                         completion(.failure(error))
                     } else {
@@ -200,7 +195,7 @@ class CommentService {
                         completion(.success(()))
                     }
                 }
-            case .failure(let error):
+            case let .failure(error):
                 print("[DEBUG] Error fetching user for rankingPoints update: \(error.localizedDescription)")
                 completion(.failure(error))
             }
@@ -218,10 +213,10 @@ class CommentService {
         db.collection(FirestoreCollections.userComm)
             .whereField("userID", isEqualTo: userID)
             .getDocuments { snapshot, error in
-                if let error = error {
+                if let error {
                     print("[DEBUG] Error fetching unique deals commented by user \(userID): \(error.localizedDescription)")
                     completion(.failure(error))
-                } else if let snapshot = snapshot {
+                } else if let snapshot {
                     // Extract unique itemIDs (deals) from comments
                     let uniqueDeals = Set(snapshot.documents.compactMap { $0.data()["itemID"] as? String })
                     print("[DEBUG] User \(userID) commented on \(uniqueDeals.count) unique deals.")

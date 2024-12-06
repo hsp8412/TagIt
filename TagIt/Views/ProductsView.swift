@@ -7,29 +7,54 @@
 
 // NEED TO BE DISCUSSED... SWIPE or LONG PRESS TO DELETE
 
-import SwiftUI
 import FirebaseAuth
+import SwiftUI
 
+/**
+ View that displays a list of saved deals for the user, with the ability to search and delete deals.
+ The list can be filtered by search text, and deals can be deleted via long press.
+ */
 struct ProductsView: View {
+    // MARK: - Properties
+
+    /// User ID, fetched from Firebase Authentication
     @State var userID: String?
+
+    /// List of saved deals
     @State var savedDeals: [Deal] = []
+
+    /// List of deals shown in the UI (filtered by search)
     @State var shownDeals: [Deal] = []
+
+    /// State to track the ID of the swiped deal (for deletion)
     @State var swipedDealID: String?
+
+    /// Currently selected deal (for deletion)
     @State var selectedDeal: Deal?
+
+    /// Search text entered by the user
     @State var search: String = ""
+
+    /// State for loading profile
     @State var isProfileLoading: Bool = true
+
+    /// State for loading saved deals
     @State var isSavedDealsLoading: Bool = true
+
+    /// State for error messages
     @State var errorMessage: String?
-    
+
+    // MARK: - View Body
+
     var body: some View {
         NavigationStack {
             VStack {
-                // Search bar
+                // Search bar for filtering deals
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(Color.gray)
                         .padding(.leading)
-                    
+
                     TextField("Search", text: $search)
                         .autocapitalization(.none)
                 }
@@ -43,7 +68,7 @@ struct ProductsView: View {
                     print("Searching \"\(search)\"")
                     searchSavedDeals(searchText: search)
                 }
-                
+
                 // Title
                 HStack {
                     Image(systemName: "cart.fill")
@@ -52,19 +77,19 @@ struct ProductsView: View {
                         .frame(height: 30)
                         .foregroundStyle(.green)
                         .padding(.horizontal)
-                    
+
                     Text("Saved Deal List")
                         .font(.system(size: 30, weight: .semibold))
                         .foregroundStyle(.green)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                
-                // Show deals
-                if (isProfileLoading || isSavedDealsLoading) {
+
+                // Show deals or loading state
+                if isProfileLoading || isSavedDealsLoading {
                     ProgressView("Loading saved deal...")
                         .padding(.top, 20) // Added top padding for spacing
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let errorMessage = errorMessage {
+                } else if let errorMessage {
                     Text("Error: \(errorMessage)")
                         .padding(.horizontal) // Added horizontal padding for better alignment
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -77,7 +102,7 @@ struct ProductsView: View {
                         if shownDeals.isEmpty {
                             ZStack {
                                 Spacer().containerRelativeFrame([.horizontal, .vertical])
-                                
+
                                 Text("Sorry, there is no saved deals...")
                                     .foregroundColor(.gray)
                             }
@@ -105,7 +130,6 @@ struct ProductsView: View {
                                     UIApplication.shared.hideKeyboard()
                                 })
                         }
-                        
                     }
                     .frame(maxHeight: .infinity)
                     .padding(.top, 10) // Added top padding for spacing
@@ -125,20 +149,22 @@ struct ProductsView: View {
                     }
                 }
             }
-            .onAppear() {
+            .onAppear {
                 fetchUserProfile()
                 // Fetch saved deal list
                 fetchSavedDeals()
             }
-            
         }.background(Color.white // <-- this is also a view
             .onTapGesture { // <-- add tap gesture to it
                 UIApplication.shared.hideKeyboard()
             })
     }
-    
+
+    // MARK: - Helper Functions
+
+    /// Filters the saved deals based on the search text
     private func searchSavedDeals(searchText: String) {
-        if (searchText == "") {
+        if searchText == "" {
             shownDeals = savedDeals
         } else {
             shownDeals = savedDeals.filter { $0.location.localizedCaseInsensitiveContains(searchText) ||
@@ -147,56 +173,57 @@ struct ProductsView: View {
             }
         }
     }
-    
+
+    /// Fetches the current user's profile
     private func fetchUserProfile() {
-        self.isProfileLoading = true
+        isProfileLoading = true
         if let currentUser = Auth.auth().currentUser {
-            self.userID = currentUser.uid
-            self.isProfileLoading = false
+            userID = currentUser.uid
+            isProfileLoading = false
         } else {
             print("Error: User not authenticated")
-            self.errorMessage = "User not authenticated."
+            errorMessage = "User not authenticated."
         }
     }
-    
+
+    /// Fetches the saved deals for the current user
     private func fetchSavedDeals() {
         isSavedDealsLoading = true
-        
-        DealService.shared.getSavedDealsByUserID(userID: self.userID!) { result in
+
+        DealService.shared.getSavedDealsByUserID(userID: userID!) { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let savedDeals):
+                case let .success(savedDeals):
                     self.savedDeals = savedDeals
                     print("[DEBUG] Fetch saved deals for user \(userID!)")
                     shownDeals = savedDeals
-                    self.isSavedDealsLoading = false
-                case .failure(let error):
+                    isSavedDealsLoading = false
+                case let .failure(error):
                     print("[DEBUG] Error when fetching saved deals for user \(userID!) due to \(error.localizedDescription)")
-                    self.isSavedDealsLoading = false
+                    isSavedDealsLoading = false
                 }
             }
         }
     }
-    
-    
+
+    /// Deletes a saved deal
     private func delSavedDeal(deal: Deal) {
         withAnimation {
             shownDeals.removeAll { $0.id == deal.id }
         }
-        
+
         DealService.shared.removeSavedDeal(userID: userID!, dealID: deal.id!) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
                     print("[DEBUG] user \(userID!) successfully deleted saved deal \(deal.id!)")
-                case .failure(let error):
-                    print("[DEBUG] user \(userID!) fail to delete saved deal \(deal.id!) deu to error \(error.localizedDescription)")
+                case let .failure(error):
+                    print("[DEBUG] user \(userID!) fail to delete saved deal \(deal.id!) due to error \(error.localizedDescription)")
                 }
             }
         }
     }
 }
-
 
 struct DealCardView1: View {
     let deal: Deal
@@ -204,13 +231,12 @@ struct DealCardView1: View {
     @State var user: UserProfile?
     @State private var errorMessage: String?
     @State private var commentCount: Int = 0 // Holds the number of comments for the deal
-    
+
     var body: some View {
-        //        NavigationLink(destination: DealDetailView(deal: deal)) {
         ZStack {
             Color.white
                 .cornerRadius(15) // Rounded corners, no shadow
-            
+
             VStack(alignment: .leading, spacing: 10) {
                 // User Info Row with Price
                 HStack {
@@ -218,7 +244,7 @@ struct DealCardView1: View {
                         ProgressView()
                             .frame(width: 40, height: 40)
                             .clipShape(Circle())
-                    } else if let errorMessage = errorMessage {
+                    } else if let errorMessage {
                         Text("Error: \(errorMessage)")
                             .font(.caption)
                             .foregroundColor(.red)
@@ -227,30 +253,30 @@ struct DealCardView1: View {
                             UserAvatarView(avatarURL: user?.avatarURL ?? "")
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
-                            
+
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(user?.displayName ?? "Unknown User")
                                     .font(.system(size: 16, weight: .semibold))
                                     .foregroundColor(.black)
-                                
+
                                 Text(deal.date)
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                             }
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     // Price
                     Text(String(format: "$%.2f", deal.price))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.red)
                 }
-                
+
                 Divider()
                     .background(Color.gray.opacity(0.5))
-                
+
                 // Content Area
                 HStack(alignment: .top, spacing: 10) {
                     VStack(alignment: .leading, spacing: 8) {
@@ -260,24 +286,24 @@ struct DealCardView1: View {
                             .foregroundColor(.black)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
-                        
+
                         Text("\"\(deal.postText)\"")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                             .italic()
                             .lineLimit(1)
-                        
+
                         Spacer()
-                        
+
                         HStack(spacing: 5) {
                             Image(systemName: "mappin.and.ellipse")
                                 .foregroundColor(.green)
                             Text(deal.location)
                                 .font(.system(size: 14))
                                 .foregroundColor(.green)
-                            
+
                             Spacer()
-                            
+
                             // Comments Icon and Count
                             Image(systemName: "bubble.left.and.bubble.right")
                                 .foregroundColor(.gray) // Updated to gray
@@ -286,9 +312,9 @@ struct DealCardView1: View {
                                 .foregroundColor(.gray) // Updated to gray
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     // Product Image
                     AsyncImage(url: URL(string: deal.photoURL)) { phase in
                         if let image = phase.image {
@@ -314,42 +340,42 @@ struct DealCardView1: View {
             fetchUserProfile()
             fetchCommentCount() // Fetch the number of comments for the deal
         }
-        //        }
     }
-    
+
     // Function to fetch user profile
     private func fetchUserProfile() {
         isLoading = true
         if deal.userID != "" {
             UserService.shared.getUserById(id: deal.userID) { result in
                 switch result {
-                case .success(let fetchUserProfilebyID):
-                    self.user = fetchUserProfilebyID
-                    self.isLoading = false
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                    self.isLoading = false
+                case let .success(fetchUserProfilebyID):
+                    user = fetchUserProfilebyID
+                    isLoading = false
+                case let .failure(error):
+                    errorMessage = error.localizedDescription
+                    isLoading = false
                 }
             }
         }
     }
-    
+
     // Function to fetch the number of comments for the deal
     private func fetchCommentCount() {
         guard let dealId = deal.id else { return }
-        
+
         CommentService.shared.getCommentsForItem(itemID: dealId) { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let comments):
-                    self.commentCount = comments.count
-                case .failure(let error):
+                case let .success(comments):
+                    commentCount = comments.count
+                case let .failure(error):
                     print("Error fetching comments for deal \(dealId): \(error.localizedDescription)")
                 }
             }
         }
     }
 }
+
 #Preview {
     ProductsView()
 }

@@ -1,18 +1,27 @@
 //
-//  CommentThreadsView.swift
+//  CommentsView.swift
 //  TagIt
 //
 //  Created by Chenghou Si on 2024-10-21.
 //
-import SwiftUI
-import FirebaseFirestore
 
+import FirebaseFirestore
+import SwiftUI
+
+/**
+ A view displaying a list of comments associated with a particular item (deal). It shows the number of comments and allows users to scroll through the comments. Each comment is displayed as a `CommentCardView`.
+ */
 struct CommentsView: View {
+    // MARK: - Properties
+
+    /// An array of comments to be displayed.
     @State var comments: [UserComments]
+
+    // MARK: - View Body
 
     var body: some View {
         VStack {
-            // Title
+            // Title with icon and comment count
             HStack {
                 Image(systemName: "list.bullet.rectangle.fill")
                     .resizable()
@@ -28,14 +37,14 @@ struct CommentsView: View {
             .padding(.leading)
             .padding(.bottom, 10)
 
-            // Comments List
+            // Comments List - Scrollable list of comment cards
             ScrollView {
                 VStack(alignment: .leading, spacing: 15) {
                     ForEach(comments) { comment in
                         CommentCardView(comment: comment)
-                            .background(Color.white)
-                            .cornerRadius(12)
-                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+                            .background(Color.white) // Background color for each comment
+                            .cornerRadius(12) // Rounded corners
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3) // Shadow effect
                             .padding(.horizontal)
                     }
                 }
@@ -81,8 +90,6 @@ struct CommentsView: View {
             downvote: 11,
             date: Utils.timeAgoString(from: Timestamp(date: Date().addingTimeInterval(-10800))), // 3 hours ago
             dateTime: Timestamp(date: Date().addingTimeInterval(-10800))
-        )
+        ),
     ])
 }
-
-

@@ -4,15 +4,47 @@
 //
 //  Created by Peter Tran on 2024-10-23.
 //
-import Foundation
-import FirebaseFirestore
 
+import FirebaseFirestore
+import Foundation
+
+/**
+ A service responsible for managing reviews within the TagIt application.
+
+ This service provides functionalities to handle adding reviews, creating barcodes if they don't exist,
+ and fetching all reviews associated with a specific user.
+ */
 class ReviewService {
+    /**
+     The shared singleton instance of `ReviewService`.
+
+     This ensures that a single, consistent instance of the service is used throughout the application.
+     */
     static let shared = ReviewService()
 
+    /**
+     The Firestore database instance used for all database operations.
+
+     This instance facilitates interactions with Firestore collections and documents.
+     */
     private let db = Firestore.firestore()
 
-    // Handle adding a review and creating a barcode if it doesn't exist
+    /**
+     Handles adding a review and creating a barcode if it doesn't exist.
+
+     - Parameters:
+       - userId: The ID of the user submitting the review.
+       - barcodeNumber: The barcode number associated with the product being reviewed.
+       - reviewStars: The star rating given in the review.
+       - productName: The name of the product being reviewed.
+       - reviewTitle: The title of the review.
+       - reviewText: The detailed text of the review.
+       - photoURL: The URL of the photo associated with the review.
+       - completion: A closure that receives a `Result<Void, Error>` indicating success or failure.
+
+     This function checks if the barcode exists in Firestore. If it does, it adds the review to the existing barcode.
+     If the barcode doesn't exist, it creates a new barcode document and then adds the review.
+     */
     func handleReview(
         userId: String,
         barcodeNumber: String,
@@ -26,7 +58,7 @@ class ReviewService {
         let barcodeRef = db.collection("barcodes").document(barcodeNumber)
 
         barcodeRef.getDocument { document, error in
-            if let error = error {
+            if let error {
                 completion(.failure(error))
                 return
             }
@@ -45,7 +77,7 @@ class ReviewService {
             } else {
                 // Create barcode and add the review
                 barcodeRef.setData(["productName": productName]) { error in
-                    if let error = error {
+                    if let error {
                         completion(.failure(error))
                         return
                     }
@@ -64,6 +96,20 @@ class ReviewService {
         }
     }
 
+    /**
+     Adds a review to a specific barcode's "reviews" subcollection in Firestore.
+
+     - Parameters:
+       - barcodeRef: The `DocumentReference` of the barcode to which the review will be added.
+       - userId: The ID of the user submitting the review.
+       - reviewStars: The star rating given in the review.
+       - reviewTitle: The title of the review.
+       - reviewText: The detailed text of the review.
+       - photoURL: The URL of the photo associated with the review.
+       - completion: A closure that receives a `Result<Void, Error>` indicating success or failure.
+
+     This helper function creates a `BarcodeItemReview` object and adds it to the "reviews" subcollection of the specified barcode.
+     */
     private func addReviewToBarcode(
         barcodeRef: DocumentReference,
         userId: String,
@@ -87,7 +133,7 @@ class ReviewService {
 
         do {
             _ = try barcodeRef.collection("reviews").addDocument(from: review) { error in
-                if let error = error {
+                if let error {
                     completion(.failure(error))
                 } else {
                     completion(.success(()))
@@ -97,21 +143,21 @@ class ReviewService {
             completion(.failure(error))
         }
     }
-    
+
     /**
-     Fetches all existing reviews for a specific user, if it exists.
-     
+     Fetches all existing reviews for a specific user, if they exist.
+
      - Parameters:
-        - userID: The ID of the user who reviewed the item.
-        - completion: A closure that returns a `Result<[BarcodeItemReview], Error>` indicating success or failure.
+       - userID: The ID of the user who reviewed the item.
+       - completion: A closure that returns a `Result<[BarcodeItemReview], Error>` indicating success or failure.
      */
     func getAllUserReviews(userID: String, completion: @escaping (Result<[BarcodeItemReview], Error>) -> Void) {
         Firestore.firestore().collection(FirestoreCollections.revItem)
             .whereField("userID", isEqualTo: userID)
             .getDocuments { snapshot, error in
-                if let error = error {
+                if let error {
                     completion(.failure(error))
-                } else if let snapshot = snapshot {
+                } else if let snapshot {
                     let reviews = snapshot.documents.compactMap { doc -> BarcodeItemReview? in
                         try? doc.data(as: BarcodeItemReview.self)
                     }

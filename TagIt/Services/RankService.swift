@@ -7,22 +7,37 @@
 
 import Foundation
 
+/**
+ A service responsible for managing user rankings.
+
+ This service provides functionalities to fetch and sort users based on their ranking points,
+ retrieve top-ranked users, determine a user's rank, and update ranking points in Firestore.
+ */
 class RankService {
-    // Singleton instance
+    /**
+     The shared singleton instance of `RankService`.
+
+     This ensures that a single, consistent instance of the service is used throughout the application.
+     */
     static let shared = RankService()
 
-    // Private initializer to prevent creating multiple instances
+    /**
+     Private initializer to enforce the singleton pattern.
+     */
     private init() {}
 
-    // Ranking weights used for calculation
+    /**
+     The ranking weights used for calculating user ranking points.
+
+     These weights determine how different user activities contribute to their overall ranking.
+     */
     private let rankingWeights = RankingWeights.defaultWeights
 
     /**
-     Fetches and sorts all users by ranking points.
-     
-     - Parameters:
-        - completion: A closure that returns a `Result` containing a sorted array of `UserProfile` on success or an `Error` on failure.
-     
+     Fetches and sorts all users by their ranking points.
+
+     - Parameter completion: A closure that receives a `Result` containing a sorted array of `UserProfile` on success or an `Error` on failure.
+
      This function retrieves all users from Firestore, calculates their ranking points, and returns a sorted list of users in descending order of ranking points.
      */
     func fetchAndSortAllUsers(completion: @escaping (Result<[UserProfile], Error>) -> Void) {
@@ -31,9 +46,9 @@ class RankService {
             modelType: UserProfile.self
         ) { result in
             switch result {
-            case .success(let users):
+            case let .success(users):
                 print("Fetched \(users.count) users from Firestore.")
-                
+
                 var usersWithUpdatedPoints: [UserProfile] = []
                 let group = DispatchGroup()
 
@@ -51,7 +66,7 @@ class RankService {
                     let sortedUsers = usersWithUpdatedPoints.sorted { $0.rankingPoints > $1.rankingPoints }
                     completion(.success(sortedUsers))
                 }
-            case .failure(let error):
+            case let .failure(error):
                 print("Error fetching users: \(error.localizedDescription)")
                 completion(.failure(error))
             }
@@ -59,63 +74,62 @@ class RankService {
     }
 
     /**
-    Fetches the top-ranked users based on a given limit.
+     Fetches the top-ranked users based on a specified limit.
 
-    - Parameters:
-        - limit: The maximum number of top users to return.
-        - completion: A closure that returns a `Result` containing an array of the top `UserProfile` objects on success or an `Error` on failure.
+     - Parameters:
+       - limit: The maximum number of top users to return.
+       - completion: A closure that receives a `Result` containing an array of the top `UserProfile` objects on success or an `Error` on failure.
 
-    This function retrieves all users, sorts them by ranking points, and extracts the top users based on the given limit.
-    */
+     This function retrieves all users, sorts them by ranking points, and extracts the top users based on the given limit.
+     */
     func getTopUsers(limit: Int, completion: @escaping (Result<[UserProfile], Error>) -> Void) {
         fetchAndSortAllUsers { result in
             switch result {
-            case .success(let sortedUsers):
+            case let .success(sortedUsers):
                 let topUsers = Array(sortedUsers.prefix(limit))
                 print("Top \(limit) users by ranking points:")
-                topUsers.forEach { user in
+                for user in topUsers {
                     print("\(user.displayName): \(user.rankingPoints) points")
                 }
                 completion(.success(topUsers))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
-
     /**
-    Fetches the rank of a specific user based on their ID.
+     Fetches the rank of a specific user based on their ID.
 
-    - Parameters:
-        - userId: The ID of the user whose rank needs to be fetched.
-        - completion: A closure that returns a `Result` containing the rank (as an `Int`) on success or an `Error` on failure.
+     - Parameters:
+       - userId: The ID of the user whose rank needs to be fetched.
+       - completion: A closure that receives a `Result` containing the rank (as an `Int`) on success or an `Error` on failure.
 
-    This function fetches all users, sorts them by ranking points, and determines the rank of the specified user.
-    */
+     This function fetches all users, sorts them by ranking points, and determines the rank of the specified user.
+     */
     func getUserRank(userId: String, completion: @escaping (Result<Int, Error>) -> Void) {
         fetchAndSortAllUsers { result in
             switch result {
-            case .success(let sortedUsers):
+            case let .success(sortedUsers):
                 if let rank = sortedUsers.firstIndex(where: { $0.id == userId }) {
                     completion(.success(rank + 1))
                 } else {
                     completion(.failure(NSError(domain: "RankService", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found in the list."])))
                 }
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
-
-
     /**
      Updates the ranking points for a specific user in Firestore.
-     
+
      - Parameters:
-        - userId: The ID of the user to update.
-        - completion: A closure that returns an `Error?` indicating success or failure.
+       - userId: The ID of the user to update.
+       - completion: A closure that returns an `Error?` indicating success or failure.
+
+     This function fetches the user's profile, recalculates their ranking points, and updates the `rankingPoints` field in Firestore.
      */
     func updateRankingPoints(for userId: String, completion: @escaping (Error?) -> Void) {
         FirestoreService.shared.readDocument(
@@ -124,7 +138,7 @@ class RankService {
             modelType: UserProfile.self
         ) { result in
             switch result {
-            case .success(let user):
+            case let .success(user):
                 self.calculateRankingPoints(for: user) { newRankingPoints in
                     FirestoreService.shared.updateField(
                         collectionName: FirestoreCollections.user,
@@ -132,7 +146,7 @@ class RankService {
                         field: "rankingPoints",
                         value: newRankingPoints
                     ) { error in
-                        if let error = error {
+                        if let error {
                             print("[DEBUG] Error updating ranking points for user \(userId): \(error.localizedDescription)")
                             completion(error)
                         } else {
@@ -141,7 +155,7 @@ class RankService {
                         }
                     }
                 }
-            case .failure(let error):
+            case let .failure(error):
                 print("[DEBUG] Error fetching user for ranking points update: \(error.localizedDescription)")
                 completion(error)
             }
@@ -149,15 +163,18 @@ class RankService {
     }
 
     /**
-     Calculates ranking points for a given user based on weights and user activity, comments from deals are limited to 1
-     
-     - Parameter user: The `UserProfile` for which to calculate ranking points.
-     - Returns: The calculated ranking points.
+     Calculates ranking points for a given user based on predefined weights and user activities.
+
+     - Parameters:
+       - user: The `UserProfile` for which to calculate ranking points.
+       - completion: A closure that receives the calculated ranking points as an `Int`.
+
+     This function considers the number of deals, upvotes, and unique comments by the user to compute their total ranking points.
      */
     func calculateRankingPoints(for user: UserProfile, completion: @escaping (Int) -> Void) {
         CommentService.shared.getUniqueDealsCommentedByUser(userID: user.id) { result in
             switch result {
-            case .success(let uniqueDeals):
+            case let .success(uniqueDeals):
                 let weights = RankingWeights.defaultWeights
                 let pointsFromDeals = user.totalDeals * weights.dealWeight
                 let pointsFromUpvotes = user.totalUpvotes * weights.upvoteWeight
@@ -170,11 +187,10 @@ class RankService {
                 print(" - Comments (limited to 1 per deal): \(pointsFromComments)")
                 print(" - Total: \(totalPoints)")
                 completion(totalPoints)
-            case .failure(let error):
+            case let .failure(error):
                 print("[DEBUG] Error calculating ranking points for user \(user.id): \(error.localizedDescription)")
                 completion(0)
             }
         }
     }
-
 }

@@ -7,12 +7,23 @@
 
 import SwiftUI
 
+/**
+ A custom button used for filtering options, displaying an icon and label, and allowing for selection state changes.
+ */
 struct FilterButton: View {
+    // MARK: - Properties
+
+    /// The name of the system image icon to display on the button.
     var icon: String
+    /// The text label displayed alongside the icon.
     var text: String
-    var isSelected: Bool // Indicates if the button is selected
-    var action: () -> Void // Callback for button tap
-    
+    /// Indicates whether the button is currently selected.
+    var isSelected: Bool
+    /// A closure that is called when the button is tapped.
+    var action: () -> Void
+
+    // MARK: - View Body
+
     var body: some View {
         Button(action: action) {
             HStack {
@@ -21,7 +32,7 @@ struct FilterButton: View {
                     .scaledToFit()
                     .frame(width: 18, height: 18)
                     .foregroundColor(isSelected ? .white : .black)
-                
+
                 Text(text)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(isSelected ? .white : .black)

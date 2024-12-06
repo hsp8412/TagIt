@@ -7,14 +7,24 @@
 
 import SwiftUI
 
+/**
+ The view that displays ranking information. It allows users to toggle between viewing the "User" rankings
+ and the "Product" (Deal) rankings. A tab-like interface is used to switch between the two views.
+ */
 struct RankingView: View {
+    // MARK: - Properties
+
+    /// The selected tab index, determining whether to show User rankings or Product (Deal) rankings.
     @State private var selected: Int = 0
+
+    // MARK: - View Body
 
     var body: some View {
         NavigationStack {
             VStack {
+                // Tab Buttons for User and Product Rankings
                 HStack {
-                    // User
+                    // User Rankings Button
                     Button(action: {
                         withAnimation {
                             selected = 0
@@ -24,11 +34,10 @@ struct RankingView: View {
                             Text("Users")
                                 .foregroundColor(selected == 0 ? .blue : .gray)
                         }
-                        
                     }
                     .frame(width: 100)
-                    
-                    // Product
+
+                    // Product Rankings Button
                     Button(action: {
                         withAnimation {
                             selected = 1
@@ -59,13 +68,12 @@ struct RankingView: View {
                             .animation(.easeInOut(duration: 0.3), value: selected)
                     }
                 )
-                
-                
-                // Conditional rendering
-                if (selected == 0) {
-                    UserRankingView()
+
+                // Conditional rendering based on selected tab
+                if selected == 0 {
+                    UserRankingView() // Show User Ranking
                 } else {
-                    DealRankingView()
+                    DealRankingView() // Show Product (Deal) Ranking
                 }
             }
         }
