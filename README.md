@@ -101,4 +101,4 @@ Before running any of the Python scripts, ensure you've installed the Firebase A
 
 ## Contributors
 
-Chenghou Si, Ang
+Angi Shi, Chenghou Si, Mahbub Prutik Iftekhar, Mingyang Li, Mu He, Peter Tran, Sipeng He
