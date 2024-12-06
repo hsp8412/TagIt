@@ -37,6 +37,7 @@ fastlane/test_output
 
 # Firebase
 GoogleService-Info.plist
+Info.plist
 
 # Temporary files
 *.tmp
