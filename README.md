@@ -98,10 +98,10 @@ The project is organized into the following directories:
 * **`nuke_db.py`:** Deletes all data (deals, users, reviews, etc.) from Firestore and storage. **Use with extreme caution!**
 * **`set_dummy.py`:** Populates the Firestore database with dummy data from `dummy_data.json`, creates dummy users and handles image uploads to Storage.
 
-Before running any of the Python scripts, ensure you've installed the Firebase Admin SDK: `pip install firebase-admin` and have a valid service account key file (e.g., `tagit-39035-firebase-adminsdk-hugo8-9c33455468.json`) in the scripts directory.  The `set_dummy.py` script relies on image URLs and will download those images as part of its execution.
+Before running any of the Python scripts, ensure you've installed the Firebase Admin SDK: `pip install firebase-admin` and have a valid service account key file (e.g., `tagit-39035-firebase-adminsdk-hugo8-00000000.json`) in the scripts directory.  The `set_dummy.py` script relies on image URLs and will download those images as part of its execution.
 
 ## Contributors
 
-Chenghou Si, Ang
+Angi Shi, Chenghou Si, Mahbub Prutik Iftekhar, Mingyang Li, Mu He, Peter Tran, Sipeng He
 
 
