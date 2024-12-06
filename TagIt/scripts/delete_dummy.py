@@ -1,13 +1,26 @@
+"""
+Firebase Dummy Data Cleanup Script
+
+This script cleans up dummy data from Firebase services. Specifically, it:
+1. Deletes images associated with dummy documents in Firestore collections.
+2. Deletes dummy documents from specified Firestore collections.
+3. Deletes dummy users from Firebase Authentication.
+
+The dummy data being cleaned up is generated using the `set_dummy.py` script, which populates Firebase with data from `dummy_data.json`. 
+All dummy documents are identified by the "isDummy" field set to `True`, and dummy users are identified by a display name ending with "_dummy".
+
+WARNING: This script will permanently delete data marked as dummy. Use it with caution.
+
+Dependencies:
+- Firebase Admin SDK service account JSON file.
+- Permissions to access Firestore, Storage, and Authentication.
+
+"""
+
 import firebase_admin
 from firebase_admin import credentials, firestore, storage, auth
-
-import json
-from datetime import datetime
 import os
-import requests
-from PIL import Image
-from io import BytesIO
-import uuid
+from typing import List, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVICE_ACCOUNT_PATH = os.path.join(SCRIPT_DIR, "tagit-39035-firebase-adminsdk-hugo8-9c33455468.json")
@@ -18,7 +31,7 @@ cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
 firebase_admin.initialize_app(cred, {'storageBucket': BUCKET_NAME})
 
 # Firestore database reference
-db = firestore.client()
+db: firestore.Client = firestore.client()
 
 # Enum-like structure for image folders
 class ImageFolder:
@@ -27,8 +40,13 @@ class ImageFolder:
     PRODUCT_IMAGE = "productImage"
     REVIEW_IMAGE = "reviewImage"
 
-# Function to delete an image from Firebase Storage
-def delete_image_from_storage(image_url):
+def delete_image_from_storage(image_url: str) -> None:
+    """
+    Deletes an image from Firebase Storage.
+
+    Args:
+        image_url (str): The URL of the image to delete.
+    """
     try:
         bucket = storage.bucket()
         # Extract the blob name from the image URL
@@ -46,10 +64,12 @@ def delete_image_from_storage(image_url):
     except Exception as e:
         print(f"Error deleting image {image_url}: {e}")
 
-# Function to delete images associated with dummy data
-def delete_dummy_images():
-    # Collections to clean up
-    collections = [
+def delete_dummy_images() -> None:
+    """
+    Deletes images associated with dummy data from specified Firestore collections.
+    Dummy data is identified by the "isDummy" field set to True.
+    """
+    collections: List[str] = [
         "Deals",
         "UserComments",
         "BarcodeItemReview",
@@ -64,7 +84,6 @@ def delete_dummy_images():
         collection_ref = db.collection(collection_name)
         query = collection_ref.where(filter=firestore.FieldFilter("isDummy", "==", True))
 
-        # Get all documents marked as dummy
         docs = query.stream()
         deleted_count = 0
         for doc in docs:
@@ -85,10 +104,12 @@ def delete_dummy_images():
 
     print("Dummy data image cleanup completed.")
 
-# Function to delete dummy data and associated images
-def delete_dummy_data():
-    # Collections to clean up
-    collections = [
+def delete_dummy_data() -> None:
+    """
+    Deletes dummy documents from specified Firestore collections.
+    Dummy data is identified by the "isDummy" field set to True.
+    """
+    collections: List[str] = [
         "Deals",
         "UserComments",
         "BarcodeItemReview",
@@ -103,13 +124,11 @@ def delete_dummy_data():
         collection_ref = db.collection(collection_name)
         query = collection_ref.where(filter=firestore.FieldFilter("isDummy", "==", True))
 
-        # Get and delete all documents marked as dummy
         docs = query.stream()
         deleted_count = 0
         for doc in docs:
             doc_id = doc.id
             try:
-                # Delete the document from Firestore
                 db.collection(collection_name).document(doc_id).delete()
                 deleted_count += 1
                 print(f"Deleted document {doc_id} from {collection_name}.")
@@ -120,14 +139,15 @@ def delete_dummy_data():
 
     print("Dummy data cleanup completed.")
 
-# Function to delete dummy users from Firebase Authentication
-def delete_dummy_users():
+def delete_dummy_users() -> None:
+    """
+    Deletes dummy users from Firebase Authentication.
+    Dummy users are identified by a display name ending with "_dummy".
+    """
     try:
-        # Fetch all users
         users = auth.list_users().iterate_all()
         for user in users:
-            # Check if the user is a dummy user
-            if user.display_name.endswith("_dummy"):
+            if user.display_name and user.display_name.endswith("_dummy"):
                 try:
                     auth.delete_user(user.uid)
                     print(f"Deleted user: {user.uid}")
@@ -136,8 +156,9 @@ def delete_dummy_users():
     except Exception as e:
         print(f"Error fetching users: {e}")
 
-# Run the cleanup script
 if __name__ == "__main__":
+    print("Starting dummy data cleanup...")
     delete_dummy_images()
     delete_dummy_data()
     delete_dummy_users()
+    print("Dummy data cleanup process completed.")

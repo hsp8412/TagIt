@@ -1,8 +1,24 @@
+"""
+Firebase Admin Cleanup Script
+
+This script performs a cleanup operation on Firebase services. Specifically, it:
+1. Deletes all documents in specified Firestore collections.
+2. Deletes all files in specified Firebase Storage folders.
+3. Deletes all users from Firebase Authentication.
+
+WARNING: This script will permanently delete data. Use it with caution.
+
+Prerequisites:
+- Firebase Admin SDK service account JSON file.
+- Permissions to access Firestore, Storage, and Authentication.
+"""
+
 import firebase_admin
 from firebase_admin import credentials, firestore, storage, auth
+from typing import List
 
 # Initialize Firebase Admin SDK
-SERVICE_ACCOUNT_PATH = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
+SERVICE_ACCOUNT_PATH: str = "/Users/petertran/Downloads/tagit-39035-firebase-adminsdk-hugo8-9c33455468.json"
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
 firebase_admin.initialize_app(cred, {'storageBucket': 'tagit-39035.appspot.com'})
 
@@ -10,7 +26,7 @@ firebase_admin.initialize_app(cred, {'storageBucket': 'tagit-39035.appspot.com'}
 db = firestore.client()
 
 # List of collections to clear
-collections_to_clear = [
+collections_to_clear: List[str] = [
     "BarcodeItemReview",
     "Deals",
     "Stores",
@@ -21,20 +37,20 @@ collections_to_clear = [
 ]
 
 # List of folders to clear in Firebase Storage
-folders_to_clear = [
+folders_to_clear: List[str] = [
     "avatar/",
     "dealImage/",
     "productImage/",
     "reviewImage/"
 ]
 
-def delete_collection(collection_name, batch_size=500):
+def delete_collection(collection_name: str, batch_size: int = 500) -> None:
     """
-    Deletes all documents in a Firestore collection.
-    
+    Deletes all documents in a specified Firestore collection.
+
     Args:
-        collection_name (str): The name of the collection to delete.
-        batch_size (int): The number of documents to delete per batch.
+        collection_name (str): The name of the Firestore collection to delete.
+        batch_size (int): Number of documents to delete per batch. Defaults to 500.
     """
     collection_ref = db.collection(collection_name)
     try:
@@ -48,14 +64,15 @@ def delete_collection(collection_name, batch_size=500):
                 doc.reference.delete()
                 deleted += 1
 
+            # Break loop when no more documents to delete
             if deleted < batch_size:
                 break
     except Exception as e:
         print(f"Error deleting documents in {collection_name}: {e}")
 
-def delete_files_in_folders():
+def delete_files_in_folders() -> None:
     """
-    Deletes all files in the specified folders in Firebase Storage.
+    Deletes all files in the specified folders within Firebase Storage.
     """
     bucket = storage.bucket()
     try:
@@ -71,9 +88,9 @@ def delete_files_in_folders():
     except Exception as e:
         print(f"Error deleting files in folders: {e}")
 
-def delete_all_users():
+def delete_all_users() -> None:
     """
-    Deletes all users in Firebase Authentication.
+    Deletes all users from Firebase Authentication.
     """
     try:
         print("Fetching users from Firebase Authentication...")
@@ -92,7 +109,7 @@ def delete_all_users():
 
 if __name__ == "__main__":
     print("WARNING: THIS WILL DELETE ALL DOCUMENTS, FILES, AND USERS IN THE TAG IT DB AND STORAGE.")
-    confirmation = input("Are you sure you want to proceed? Type 'yes' to confirm: ").strip().lower()
+    confirmation: str = input("Are you sure you want to proceed? Type 'yes' to confirm: ").strip().lower()
     if confirmation == 'yes':
         for collection in collections_to_clear:
             print(f"Clearing collection: {collection}")
