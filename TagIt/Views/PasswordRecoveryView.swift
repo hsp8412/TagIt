@@ -16,7 +16,12 @@ struct PasswordRecoveryView: View {
 
     var body: some View {
         ZStack {
-            Color.green.ignoresSafeArea() // Background color for the view
+            LinearGradient(
+                gradient: Gradient(colors: [Color.green, Color.cyan]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
             VStack {
                 // Title
                 Text("Password Recovery")
@@ -28,15 +33,18 @@ struct PasswordRecoveryView: View {
 
                 // Email input form
                 VStack(alignment: .leading) {
-                    Text("Email")
-                        .padding(.horizontal, 40)
-                        .foregroundStyle(.white)
-                    TextField("Email", text: $viewModel.email) // User inputs email for recovery
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .padding(.horizontal, 40)
-                        .shadow(radius: 5)
+                    HStack {
+                        Image(systemName: "envelope.fill") // Icon for email
+                            .foregroundColor(.gray)
+                            .frame(width: 30, height: 30)
+                        TextField("Email", text: $viewModel.email)
+                            .autocapitalization(.none)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .padding(.horizontal, 40)
+                    .shadow(radius: 5)
                 }
 
                 // Submit button

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 /**
  The LoginView provides a user interface for logging in. It includes fields for the email and password,
@@ -13,107 +14,162 @@ import SwiftUI
  */
 struct LoginView: View {
     @StateObject var viewModel = LoginViewModel() // View model to handle login logic
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.green // Background color for the login view
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        // Dismiss the keyboard when tapping outside the text fields
-                        UIApplication.shared.hideKeyboard()
-                    }
-                VStack {
-                    Spacer()
-                    // Logo icon displayed at the top of the view
-                    Image(systemName: "tag.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
-                        .padding(.leading, 16)
-                        .foregroundStyle(.white)
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.green, Color.cyan]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                    // Welcome text
-                    Text("Welcome to Tagit")
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                        .font(.system(size: 40))
-
-                    VStack(spacing: 20) {
-                        // Email input field
-                        TextField("Email", text: $viewModel.email)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .padding(.horizontal, 40)
-                            .shadow(radius: 5)
-                            .autocapitalization(.none)
-
-                        // Password input field
-                        SecureField("Password", text: $viewModel.password)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .padding(.horizontal, 40)
-                            .shadow(radius: 5)
-                            .autocapitalization(.none)
-                    }.padding(.top, 30)
-
-                    // Forgot password link
-                    NavigationLink(destination: PasswordRecoveryView()) {
-                        Text("Forgot Password?")
+                VStack(spacing: 0) {
+                    // Fixed header at the top
+                    VStack {
+                        Image(systemName: "tag.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
+                            .padding(.leading, 16)
                             .foregroundStyle(.white)
-                            .underline()
-                            .font(.system(size: 16))
-                            .fontWeight(.light)
+
+                        Text("Discover. Share. Save.")
+                            .font(.system(size: 34, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.top, 30)
+                    .padding(.bottom, 20)
+                    // The header stays put at the top
+
+                    // Scrollable area for fields and buttons
+                    ScrollView {
+                        VStack(spacing: 10) {
+                            // Email field
+                            HStack {
+                                Image(systemName: "envelope.fill")
+                                    .foregroundColor(.gray)
+                                    .frame(width: 30, height: 30)
+                                TextField("Email", text: $viewModel.email)
+                                    .autocapitalization(.none)
+                            }
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(10)
+                            .padding(.horizontal, 40)
+                            .shadow(radius: 5)
+
+                            // Password field with Forgot Password link
+                            ZStack {
+                                HStack {
+                                    Image(systemName: "lock.fill")
+                                        .foregroundColor(.gray)
+                                        .frame(width: 30, height: 30)
+                                    SecureField("Password", text: $viewModel.password)
+                                        .autocapitalization(.none)
+                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(10)
+                                .padding(.horizontal, 40)
+                                .shadow(radius: 5)
+
+                                NavigationLink(destination: PasswordRecoveryView()) {
+                                    Text("Forgot Password?")
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .foregroundStyle(.white)
+                                        .underline()
+                                        .font(.system(size: 16))
+                                        .fontWeight(.light)
+                                        .padding(.trailing, 40)
+                                        .padding(.top, 90)
+                                }
+                            }
+                            .padding(.top, 20)
+
+                            // Display error if any
+                            if let errorMessage = viewModel.errorMessage {
+                                Text(errorMessage)
+                                    .foregroundColor(.red)
+                                    .padding(.horizontal)
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(nil)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            // Login button
+                            Button(action: {
+                                viewModel.login()
+                            }) {
+                                if viewModel.isLoading {
+                                    ProgressView()
+                                } else {
+                                    Text("Login")
+                                        .font(.system(size: 17, weight: .semibold))
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 14)
+                                        .background(Color.white)
+                                        .foregroundColor(.black)
+                                        .cornerRadius(8)
+                                        .shadow(radius: 5)
+                                }
+                            }
+                            .frame(height: 50)
+                            .padding(.horizontal, 40)
+                            .padding(.top, 20)
+
+                            // Sign In with Apple Button
+                            SignInWithAppleButton(
+                                onRequest: { request in
+                                    request.requestedScopes = [.fullName, .email]
+                                    request.nonce = AuthService.shared.generateAndSetNonce()
+                                },
+                                onCompletion: { result in
+                                    switch result {
+                                    case .success(let authorization):
+                                        AuthService.shared.signInWithApple(authorization: authorization) { result in
+                                            switch result {
+                                            case .success(let userId):
+                                                print("Successfully signed in with Apple: \(userId)")
+                                                viewModel.isLoggedIn = true
+                                            case .failure(let error):
+                                                viewModel.errorMessage = error.localizedDescription
+                                            }
+                                        }
+                                    case .failure(let error):
+                                        viewModel.errorMessage = error.localizedDescription
+                                    }
+                                }
+                            )
+                            .signInWithAppleButtonStyle(.black)
+                            .frame(height: 50)
+                            .padding(.horizontal, 40)
+                            .cornerRadius(8)
+                            .shadow(radius: 5)
                             .padding(.top, 10)
-                    }
 
-                    // Display error message if there is any
-                    if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding(.horizontal)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(nil)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                            HStack {
+                                Text("New here?")
+                                    .foregroundStyle(.white)
+                                NavigationLink(destination: RegisterView()) {
+                                    Text("Click here to join us!")
+                                        .foregroundStyle(.white)
+                                        .underline()
+                                }
+                            }.padding(.top, 30)
 
-                    // Login button
-                    Button(action: {
-                        viewModel.login() // Call the login function in the view model
-                    }) {
-                        if viewModel.isLoading {
-                            ProgressView() // Show a loading spinner while logging in
-                        } else {
-                            Text("Login")
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 15)
-                                .background(.white)
-                                .foregroundColor(.green)
-                                .cornerRadius(25)
+                            Spacer().frame(height: 50)
                         }
-                    }.padding(.top, 20)
-
-                    // Navigation to RegisterView
-                    HStack {
-                        Text("New here?")
-                            .foregroundStyle(.white)
-                        NavigationLink(destination: RegisterView()) {
-                            Text("Click here to join us!")
-                                .foregroundStyle(.white)
-                                .underline()
-                        }
-                    }.padding(.top, 30)
-
-                    Spacer() // Push the elements towards the top of the screen
+                        .padding(.top, 30)
+                    }
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
             }
+            .tint(.white)
         }
-        .tint(.white) // Set the default tint color to white
     }
 }
-
 #Preview {
     LoginView() // Preview the LoginView
 }

@@ -8,28 +8,87 @@
 import FirebaseAuth
 import FirebaseFirestore
 import Foundation
+import AuthenticationServices
+import CryptoKit
+import SwiftUI // Added for UIApplication access
 
 /// A service responsible for handling user authentication and profile management using Firebase Authentication and Firestore.
-class AuthService {
+class AuthService: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    
     /// The shared singleton instance of `AuthService`.
     static let shared = AuthService()
 
     /// The currently authenticated user's profile. This is cached to minimize Firestore reads.
     private var currentUserProfile: UserProfile?
+    
+    /// The current nonce used for Apple Sign-In. This should be set before initiating the sign-in request.
+    private var currentNonce: String?
 
     /// Private initializer to enforce singleton usage.
-    private init() {}
+    private override init() {}
+    
+    // MARK: - Nonce Generation
+    
+    /// Generates a new nonce, sets it as the current nonce, and returns its SHA256 hash.
+    func generateAndSetNonce() -> String {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+        return sha256(nonce)
+    }
+    
+    // Generate a random nonce for authentication
+    private func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        let charset: [Character] =
+            Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = length
 
+        while remainingLength > 0 {
+            let randoms: [UInt8] = (0 ..< 16).map { _ in
+                var random: UInt8 = 0
+                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+                if errorCode != errSecSuccess {
+                    fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
+                }
+                return random
+            }
+
+            randoms.forEach { random in
+                if remainingLength == 0 {
+                    return
+                }
+
+                if random < charset.count {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        print("Generated nonce: \(result)")
+        return result
+    }
+    
+    // Compute the SHA256 hash of the nonce
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            String(format: "%02x", $0)
+        }.joined()
+        
+        print("Hashed nonce: \(hashString)")
+        return hashString
+    }
+
+    // MARK: - User Profile Management
+    
     /// Resets the cached current user profile.
-    ///
-    /// Use this method to clear the cached user profile, forcing a fresh fetch from Firestore on the next retrieval.
     func resetCurrentUserProfile() {
         currentUserProfile = nil
     }
 
     /// Retrieves the current authenticated user's profile.
-    ///
-    /// - Parameter completion: A closure that receives the `UserProfile` if available, or `nil` if the user is not authenticated or an error occurs.
     func getCurrentUser(completion: @escaping (UserProfile?) -> Void) {
         if let profile = currentUserProfile {
             completion(profile)
@@ -41,18 +100,11 @@ class AuthService {
     }
 
     /// Retrieves the current authenticated user's ID.
-    ///
-    /// - Returns: The user's ID as a `String`, or `nil` if the user is not authenticated.
     func getCurrentUserID() -> String? {
         Auth.auth().currentUser?.uid
     }
 
     /// Adds an authentication state change listener.
-    ///
-    /// This listener notifies you whenever the user's sign-in state changes (e.g., sign-in or sign-out).
-    ///
-    /// - Parameter completion: A closure that receives the user's ID as a `String` if signed in, or `nil` if signed out.
-    /// - Returns: A handle to the authentication state change listener, which can be used to remove the listener later.
     func addAuthStateChangeListener(completion: @escaping (_ userId: String?) -> Void) -> AuthStateDidChangeListenerHandle {
         Auth.auth().addStateDidChangeListener { _, user in
             DispatchQueue.main.async {
@@ -62,18 +114,11 @@ class AuthService {
     }
 
     /// Checks whether a user is currently signed in.
-    ///
-    /// - Returns: `true` if a user is signed in, otherwise `false`.
     func isSignedIn() -> Bool {
         Auth.auth().currentUser != nil
     }
 
     /// Logs in a user with the provided email and password.
-    ///
-    /// - Parameters:
-    ///   - email: The user's email address.
-    ///   - password: The user's password.
-    ///   - completion: A closure that receives a `Result` containing the user's ID as a `String` on success or an `AuthError` on failure.
     func loginUser(withEmail email: String, password: String, completion: @escaping (Result<String, AuthError>) -> Void) {
         Auth.auth().signIn(withEmail: email,
                            password: password)
@@ -95,12 +140,6 @@ class AuthService {
     }
 
     /// Registers a new user with the provided email, password, and display name.
-    ///
-    /// - Parameters:
-    ///   - email: The user's email address.
-    ///   - password: The user's password.
-    ///   - displayName: The display name for the user's profile.
-    ///   - completion: A closure that receives a `Result` containing the user's ID as a `String` on success or an `Error` on failure.
     func registerUser(withEmail email: String, password: String, displayName: String, completion: @escaping (Result<String, Error>) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
             if let error {
@@ -122,13 +161,6 @@ class AuthService {
     }
 
     /// Creates a dummy user with the provided details. Useful for testing purposes.
-    ///
-    /// - Parameters:
-    ///   - email: The dummy user's email address.
-    ///   - password: The dummy user's password.
-    ///   - displayName: The display name for the dummy user's profile.
-    ///   - avatarURL: An optional URL string for the dummy user's avatar.
-    ///   - completion: A closure that receives a `Result` containing the user's ID as a `String` on success or an `Error` on failure.
     func createDummyUser(withEmail email: String, password: String, displayName: String, avatarURL: String?, completion: @escaping (Result<String, Error>) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error {
@@ -141,19 +173,12 @@ class AuthService {
                 return
             }
 
-            // Insert the user profile data into Firestore after registration
             self.insertUserRecord(id: userId, displayName: displayName, email: email, avatarURL: avatarURL)
             completion(.success(userId)) // Return userId if successful
         }
     }
 
     /// Inserts a new user record into Firestore.
-    ///
-    /// - Parameters:
-    ///   - id: The user's unique identifier.
-    ///   - displayName: The display name for the user's profile.
-    ///   - email: The user's email address.
-    ///   - avatarURL: An optional URL string for the user's avatar.
     private func insertUserRecord(id: String, displayName: String, email: String, avatarURL: String?) {
         let newUser = UserProfile(
             id: id,
@@ -164,9 +189,9 @@ class AuthService {
             savedDeals: [],
             totalUpvotes: 0,
             totalDownvotes: 0,
-            totalDeals: 0, // Default value for new users
-            totalComments: 0, // Default value for new users
-            rankingPoints: 0 // Default value for new users
+            totalDeals: 0,
+            totalComments: 0,
+            rankingPoints: 0
         )
         let db = Firestore.firestore()
 
@@ -176,8 +201,6 @@ class AuthService {
     }
 
     /// Fetches the current user's profile from Firestore.
-    ///
-    /// - Parameter completion: A closure that receives the `UserProfile` if fetched successfully, or `nil` if an error occurs or the user is not authenticated.
     private func fetchUser(completion: @escaping (UserProfile?) -> Void) {
         let db = Firestore.firestore()
         guard let userId = Auth.auth().currentUser?.uid else {
@@ -204,9 +227,9 @@ class AuthService {
                     savedDeals: data["savedDeals"] as? [String] ?? [],
                     totalUpvotes: data["totalUpvotes"] as? Int ?? 0,
                     totalDownvotes: data["totalDownvotes"] as? Int ?? 0,
-                    totalDeals: data["totalDeals"] as? Int ?? 0, // Include new field
-                    totalComments: data["totalComments"] as? Int ?? 0, // Include new field
-                    rankingPoints: data["rankingPoints"] as? Int ?? 0 // Include new field
+                    totalDeals: data["totalDeals"] as? Int ?? 0,
+                    totalComments: data["totalComments"] as? Int ?? 0,
+                    rankingPoints: data["rankingPoints"] as? Int ?? 0
                 )
                 completion(self?.currentUserProfile)
             } else {
@@ -217,17 +240,138 @@ class AuthService {
     }
 }
 
+// MARK: - Apple Sign In Helper Methods
+extension AuthService {
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            fatalError("No window scene found.")
+        }
+        return window
+    }
+    
+    /**
+     Core authentication logic for handling Apple Sign In credentials.
+     This method processes the Apple ID credential, converts it to a Firebase credential,
+     and completes the sign-in process.
+     */
+    private func handleAppleSignInCredential(_ credential: ASAuthorizationAppleIDCredential,
+                                             completion: @escaping (Result<String, Error>) -> Void) {
+        // Verify we have a valid nonce
+        print("Handling Apple Sign In Credential")
+        guard let nonce = currentNonce else {
+            completion(.failure(NSError(
+                domain: "AppleSignIn",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid state: No nonce found for authentication"]
+            )))
+            return
+        }
+        
+        // Verify we have a valid token
+        guard let appleIDToken = credential.identityToken,
+              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            completion(.failure(NSError(
+                domain: "AppleSignIn",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Unable to fetch or serialize identity token"]
+            )))
+            return
+        }
+        
+        // Create Firebase credential
+        let firebaseCredential = OAuthProvider.credential(
+            providerID: AuthProviderID.apple,
+            idToken: idTokenString,
+            rawNonce: nonce,
+            accessToken: nil
+        )
+        
+        // Sign in with Firebase
+        Auth.auth().signIn(with: firebaseCredential) { [weak self] authResult, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let userId = authResult?.user.uid else {
+                completion(.failure(NSError(
+                    domain: "AppleSignIn",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "Unable to get user ID"]
+                )))
+                return
+            }
+            
+            // For new users, create a profile with their Apple ID information
+            if let email = credential.email,
+               let fullName = credential.fullName {
+                let displayName = [fullName.givenName, fullName.familyName]
+                    .compactMap { $0 }
+                    .joined(separator: " ")
+                
+                self?.insertUserRecord(
+                    id: userId,
+                    displayName: displayName,
+                    email: email,
+                    avatarURL: nil
+                )
+            }
+            
+            self?.fetchUser { _ in
+                print("User profile fetched after Apple Sign In")
+            }
+            
+            // Reset the nonce after successful sign-in
+            self?.currentNonce = nil
+            
+            completion(.success(userId))
+        }
+    }
+}
+
+// MARK: - Public Apple Sign In Method
+extension AuthService {
+    /**
+     Handles the authorization completion from SignInWithAppleButton.
+     */
+    func signInWithApple(authorization: ASAuthorization, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
+            print("Invalid credential type received")
+            completion(.failure(NSError(domain: "AppleSignIn", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid credential type"])))
+            return
+        }
+        print("Current nonce in callback: \(String(describing: currentNonce))")
+        
+        if let appleIDToken = appleIDCredential.identityToken,
+           let idTokenString = String(data: appleIDToken, encoding: .utf8) {
+            print("Received identity token in callback: \(idTokenString)")
+        } else {
+            print("Unable to retrieve identity token from the credential")
+        }
+        
+        // Use the shared authentication logic
+        handleAppleSignInCredential(appleIDCredential) { result in
+            switch result {
+            case .success(let userId):
+                print("Successfully signed in with Apple ID: \(userId)")
+                completion(.success(userId))
+            case .failure(let error):
+                print("Error signing in with Apple: \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+    }
+}
+
+// MARK: - AuthError Enumeration
 /// An enumeration of possible authentication errors.
 enum AuthError: Error {
-    /// The password provided is incorrect.
     case wrongPassword
-    /// No user was found for the provided credentials.
     case userNotFound
-    /// The email address provided is invalid.
     case invalidEmail
-    /// An unknown error occurred during authentication.
     case unknownError
-    /// The credential provided is invalid.
     case invalidCredential
 
     /// Creates an `AuthError` from a given `Error`.
@@ -255,9 +399,9 @@ enum AuthError: Error {
     var localizedDescription: String {
         switch self {
         case .wrongPassword, .userNotFound, .invalidEmail, .invalidCredential:
-            "Invalid credentials. Please check your email and password."
+            return "Invalid credentials. Please check your email and password."
         case .unknownError:
-            "An unknown error occurred. Please try again."
+            return "An unknown error occurred. Please try again."
         }
     }
 }

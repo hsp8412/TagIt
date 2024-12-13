@@ -70,12 +70,12 @@
 		90D774F32CDAB896005E2622 /* ScannedItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F22CDAB888005E2622 /* ScannedItemView.swift */; };
 		90D774F52CDAD18E005E2622 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D774F42CDAD186005E2622 /* ChangePasswordView.swift */; };
 		90D7754F2CED6062005E2622 /* EditUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D7754E2CED6054005E2622 /* EditUsernameView.swift */; };
-		90F3EE6C2CF8E6A600D87D95 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 90F3EE6B2CF8E6A600D87D95 /* GoogleService-Info.plist */; };
 		90F3EE6E2CF8E6B800D87D95 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 90F3EE6D2CF8E6B800D87D95 /* Config.xcconfig */; };
 		BF255E8B2CF541360003C3A4 /* FilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF255E8A2CF541290003C3A4 /* FilterButton.swift */; };
 		BF255FFF2CF6957A0003C3A4 /* reviewStars.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF255FFE2CF695780003C3A4 /* reviewStars.swift */; };
 		BF51F7E62CF0114E00886C8F /* RankingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF51F7E52CF0114600886C8F /* RankingModel.swift */; };
 		BF69F1F32CF193EC001E1F20 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF69F1F22CF193EA001E1F20 /* HomeViewModel.swift */; };
+		BF93E11B2D0BDF500080FBFD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF93E11A2D0BDF500080FBFD /* GoogleService-Info.plist */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
@@ -139,12 +139,13 @@
 		90D774F22CDAB888005E2622 /* ScannedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedItemView.swift; sourceTree = "<group>"; };
 		90D774F42CDAD186005E2622 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
 		90D7754E2CED6054005E2622 /* EditUsernameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameView.swift; sourceTree = "<group>"; };
-		90F3EE6B2CF8E6A600D87D95 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		90F3EE6D2CF8E6B800D87D95 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		BF255E8A2CF541290003C3A4 /* FilterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterButton.swift; sourceTree = "<group>"; };
 		BF255FFE2CF695780003C3A4 /* reviewStars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reviewStars.swift; sourceTree = "<group>"; };
 		BF51F7E52CF0114600886C8F /* RankingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingModel.swift; sourceTree = "<group>"; };
 		BF69F1F22CF193EA001E1F20 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		BF93E1152D0BA5250080FBFD /* TagIt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TagIt.entitlements; sourceTree = "<group>"; };
+		BF93E11A2D0BDF500080FBFD /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -257,6 +258,7 @@
 				40F8B5EB2C9FA8AF0024C7EF /* TagIt */,
 				401335142CEB3DCD00730E06 /* Frameworks */,
 				40F8B5EA2C9FA8AF0024C7EF /* Products */,
+				BF93E11A2D0BDF500080FBFD /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -271,8 +273,8 @@
 		40F8B5EB2C9FA8AF0024C7EF /* TagIt */ = {
 			isa = PBXGroup;
 			children = (
+				BF93E1152D0BA5250080FBFD /* TagIt.entitlements */,
 				90F3EE6D2CF8E6B800D87D95 /* Config.xcconfig */,
-				90F3EE6B2CF8E6A600D87D95 /* GoogleService-Info.plist */,
 				40851C7B2CC04CAC009AE166 /* Other */,
 				BF3FBB362CBF37EE00F026FC /* Services */,
 				90294B702CB60DF8006FAE3A /* Models */,
@@ -385,9 +387,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				90F3EE6E2CF8E6B800D87D95 /* Config.xcconfig in Resources */,
+				BF93E11B2D0BDF500080FBFD /* GoogleService-Info.plist in Resources */,
 				40F8B5F42C9FA8B10024C7EF /* Preview Assets.xcassets in Resources */,
 				40F8B5F12C9FA8B10024C7EF /* Assets.xcassets in Resources */,
-				90F3EE6C2CF8E6A600D87D95 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +615,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TagIt/TagIt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"TagIt/Preview Content\"";
@@ -632,7 +635,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ucalgary.cpsc575.TagIttt;
+				PRODUCT_BUNDLE_IDENTIFIER = TagItApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -646,6 +649,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TagIt/TagIt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"TagIt/Preview Content\"";
@@ -665,7 +669,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ucalgary.cpsc575.TagIttestt;
+				PRODUCT_BUNDLE_IDENTIFIER = TagItApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

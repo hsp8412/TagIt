@@ -18,7 +18,7 @@ class CommentService {
     private init() {}
 
     /**
-     Fetches all comments from Firestore.
+     Fetc   hes all comments from Firestore.
 
      - Parameters:
         - completion: A closure that returns a `Result` containing an array of `UserComments` on success or an `Error` on failure.

@@ -16,8 +16,12 @@ struct RegisterView: View {
 
     var body: some View {
         ZStack {
-            Color.green
-                .ignoresSafeArea()
+            LinearGradient(
+                gradient: Gradient(colors: [Color.green, Color.cyan]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
                 .onTapGesture {
                     // Dismiss the keyboard when tapping outside
                     UIApplication.shared.hideKeyboard()
