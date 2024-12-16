@@ -34,6 +34,7 @@ struct TagItApp: App {
             LaunchScreenTransitionView {
                 MainView()
             }
+            .preferredColorScheme(.light)
         }
     }
 }
