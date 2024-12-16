@@ -17,38 +17,44 @@ import Search
  the corresponding deal details based on search results.
  */
 class SearchService {
-    /**
-     The Algolia `SearchClient` used to perform search operations.
-
-     This client is initialized with credentials obtained from the app's configuration.
-     */
     private let client: SearchClient
-
-    /**
-     The name of the Algolia index used for searching deals.
-
-     This should correspond to the index configured in Algolia for deal-related data.
-     */
     private let indexName: String = "search_deals"
 
-    /**
-     Initializes the `SearchService` by setting up the Algolia `SearchClient` with necessary credentials.
-
-     This initializer retrieves the Algolia API key and App ID from the app's configuration and
-     initializes the `SearchClient`. If the credentials are missing or invalid, the initializer
-     will cause a runtime failure.
-     */
     init() {
-        guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_API_KEY") as? String,
-              let appID = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_APP_ID") as? String
+        // First try to get credentials from Info.plist
+        let credentials: (apiKey: String, appID: String)
+        
+        // We use multiple methods to fetch credentials to provide better error messages
+        if let infoPlistPath = Bundle.main.path(forResource: "Info", ofType: "plist"),
+           let infoPlist = NSDictionary(contentsOfFile: infoPlistPath),
+           let apiKey = infoPlist["ALGOLIA_API_KEY"] as? String,
+           let appID = infoPlist["ALGOLIA_APP_ID"] as? String {
+            credentials = (apiKey, appID)
+        }
+        // Fallback to reading from Bundle directly
+        else if let apiKey = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_API_KEY") as? String,
+                let appID = Bundle.main.object(forInfoDictionaryKey: "ALGOLIA_APP_ID") as? String {
+            credentials = (apiKey, appID)
+        }
         else {
-            fatalError("Missing Algolia credentials in AppConfig.xcconfig")
+            print("""
+                ⚠️ Algolia configuration error:
+                Could not find Algolia credentials in either Info.plist or Bundle.
+                Please check:
+                1. Config.xcconfig is properly linked in Build Settings
+                2. Info.plist contains ALGOLIA_APP_ID and ALGOLIA_API_KEY entries
+                3. The configuration files are included in the target
+                Current Bundle Path: \(Bundle.main.bundlePath)
+                """)
+            fatalError("Missing Algolia configuration")
         }
 
         do {
-            client = try SearchClient(appID: appID, apiKey: apiKey)
+            client = try SearchClient(appID: credentials.appID, apiKey: credentials.apiKey)
+            print("✅ Algolia client initialized successfully with App ID: \(credentials.appID)")
         } catch {
-            fatalError("Failed to initialize SearchClient: \(error)")
+            print("❌ Failed to initialize Algolia client: \(error.localizedDescription)")
+            fatalError(error.localizedDescription)
         }
     }
 

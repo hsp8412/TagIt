@@ -31,7 +31,9 @@ struct TagItApp: App {
         WindowGroup {
             /// The root view of the app, responsible for determining whether to display
             /// the login screen or the main content based on authentication status.
-            MainView()
+            LaunchScreenTransitionView {
+                MainView()
+            }
         }
     }
 }

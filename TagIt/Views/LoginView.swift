@@ -13,11 +13,12 @@ import AuthenticationServices
  a "Forgot Password" link, and a "Login" button. It also includes navigation to the registration and password recovery views.
  */
 struct LoginView: View {
-    @StateObject var viewModel = LoginViewModel() // View model to handle login logic
+    @StateObject var viewModel = LoginViewModel()
     
     var body: some View {
         NavigationStack {
             ZStack {
+                // Keep your existing gradient background
                 LinearGradient(
                     gradient: Gradient(colors: [Color.green, Color.cyan]),
                     startPoint: .topLeading,
@@ -26,7 +27,7 @@ struct LoginView: View {
                 .ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    // Fixed header at the top
+                    // Logo and tagline section remains the same
                     VStack {
                         Image(systemName: "tag.fill")
                             .resizable()
@@ -41,12 +42,10 @@ struct LoginView: View {
                     }
                     .padding(.top, 30)
                     .padding(.bottom, 20)
-                    // The header stays put at the top
 
-                    // Scrollable area for fields and buttons
                     ScrollView {
                         VStack(spacing: 10) {
-                            // Email field
+                            // Email field remains the same
                             HStack {
                                 Image(systemName: "envelope.fill")
                                     .foregroundColor(.gray)
@@ -60,35 +59,35 @@ struct LoginView: View {
                             .padding(.horizontal, 40)
                             .shadow(radius: 5)
 
-                            // Password field with Forgot Password link
-                            ZStack {
-                                HStack {
-                                    Image(systemName: "lock.fill")
-                                        .foregroundColor(.gray)
-                                        .frame(width: 30, height: 30)
-                                    SecureField("Password", text: $viewModel.password)
-                                        .autocapitalization(.none)
-                                }
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(10)
-                                .padding(.horizontal, 40)
-                                .shadow(radius: 5)
-
+                            // Password field - now separated from Forgot Password
+                            HStack {
+                                Image(systemName: "lock.fill")
+                                    .foregroundColor(.gray)
+                                    .frame(width: 30, height: 30)
+                                SecureField("Password", text: $viewModel.password)
+                                    .autocapitalization(.none)
+                            }
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(10)
+                            .padding(.horizontal, 40)
+                            .shadow(radius: 5)
+                            
+                            // Forgot Password link now properly positioned below password field
+                            HStack {
+                                Spacer()
                                 NavigationLink(destination: PasswordRecoveryView()) {
                                     Text("Forgot Password?")
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
                                         .foregroundStyle(.white)
                                         .underline()
                                         .font(.system(size: 16))
                                         .fontWeight(.light)
-                                        .padding(.trailing, 40)
-                                        .padding(.top, 90)
                                 }
                             }
-                            .padding(.top, 20)
+                            .padding(.horizontal, 40)
+                            .padding(.top, 8)
 
-                            // Display error if any
+                            // Error message display
                             if let errorMessage = viewModel.errorMessage {
                                 Text(errorMessage)
                                     .foregroundColor(.red)
@@ -119,7 +118,7 @@ struct LoginView: View {
                             .padding(.horizontal, 40)
                             .padding(.top, 20)
 
-                            // Sign In with Apple Button
+                            // Sign In with Apple button
                             SignInWithAppleButton(
                                 onRequest: { request in
                                     request.requestedScopes = [.fullName, .email]
@@ -149,6 +148,7 @@ struct LoginView: View {
                             .shadow(radius: 5)
                             .padding(.top, 10)
 
+                            // Registration link section
                             HStack {
                                 Text("New here?")
                                     .foregroundStyle(.white)
@@ -157,7 +157,8 @@ struct LoginView: View {
                                         .foregroundStyle(.white)
                                         .underline()
                                 }
-                            }.padding(.top, 30)
+                            }
+                            .padding(.top, 30)
 
                             Spacer().frame(height: 50)
                         }
