@@ -78,6 +78,8 @@
 		BF93E11B2D0BDF500080FBFD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF93E11A2D0BDF500080FBFD /* GoogleService-Info.plist */; };
 		BF93E13D2D0FD5E90080FBFD /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93E13C2D0FD5E10080FBFD /* LaunchScreenView.swift */; };
 		BF93E13F2D0FD6070080FBFD /* LaunchScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93E13E2D0FD6040080FBFD /* LaunchScreenViewModel.swift */; };
+		BF991A1E2D1119CA000F853E /* PrivacySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF991A1D2D1119C5000F853E /* PrivacySettingsView.swift */; };
+		BF991A202D111ADE000F853E /* PrivacySettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF991A1F2D111AD7000F853E /* PrivacySettingsModel.swift */; };
 		BFAADB342CC5CFFE00DA6D6B /* VoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */; };
 		BFADC5F22CC07AE900013366 /* FirestoreCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */; };
 /* End PBXBuildFile section */
@@ -150,6 +152,8 @@
 		BF93E11A2D0BDF500080FBFD /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BF93E13C2D0FD5E10080FBFD /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		BF93E13E2D0FD6040080FBFD /* LaunchScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenViewModel.swift; sourceTree = "<group>"; };
+		BF991A1D2D1119C5000F853E /* PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySettingsView.swift; sourceTree = "<group>"; };
+		BF991A1F2D111AD7000F853E /* PrivacySettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySettingsModel.swift; sourceTree = "<group>"; };
 		BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteModel.swift; sourceTree = "<group>"; };
 		BFADC5F12CC07AE500013366 /* FirestoreCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,6 +190,7 @@
 		4086FCED2CB47B6100EB6411 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BF991A1D2D1119C5000F853E /* PrivacySettingsView.swift */,
 				BF93E13C2D0FD5E10080FBFD /* LaunchScreenView.swift */,
 				909AC5262CF4FB0E0012C9B0 /* AddReviewView.swift */,
 				4086FD002CB4835A00EB6411 /* Components */,
@@ -304,6 +309,7 @@
 		90294B702CB60DF8006FAE3A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BF991A1F2D111AD7000F853E /* PrivacySettingsModel.swift */,
 				BF255FFE2CF695780003C3A4 /* reviewStars.swift */,
 				BF51F7E52CF0114600886C8F /* RankingModel.swift */,
 				BFAADB332CC5CFFB00DA6D6B /* VoteModel.swift */,
@@ -487,8 +493,10 @@
 				402271212CF946D200E5B04D /* NavAvatarView.swift in Sources */,
 				5DB365442CBEECC500424571 /* DealInfoView.swift in Sources */,
 				BF255E8B2CF541360003C3A4 /* FilterButton.swift in Sources */,
+				BF991A202D111ADE000F853E /* PrivacySettingsModel.swift in Sources */,
 				5DB3653C2CBEDF8500424571 /* UserCommentModel.swift in Sources */,
 				40FD1EA92CE9808100729291 /* StoreModel.swift in Sources */,
+				BF991A1E2D1119CA000F853E /* PrivacySettingsView.swift in Sources */,
 				40F8B5ED2C9FA8AF0024C7EF /* TagItApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

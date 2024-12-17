@@ -106,6 +106,18 @@ struct ProfileView: View {
                         }
 
                         Divider()
+                        
+                        NavigationLink(destination: PrivacySettingsView()) {
+                            HStack {
+                                Image(systemName: "lock.shield")
+                                Text("Privacy Settings")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.black)
+                                Spacer()
+                            }
+                        }
+                        
+                        Divider()
 
                         // Logout Button
                         Button(action: {
