@@ -1,4 +1,4 @@
-# TagIt: A Grocery Deal Sharing App
+# TagIt: A Mobile Deal Sharing & Product Review Platform
 
 TagIt is a mobile application built using SwiftUI and Firebase for sharing grocery deals and user reviews. This README provides comprehensive documentation for developers working with the TagIt codebase.
 
